@@ -40,6 +40,7 @@ fl_file <- dbGetQuery(db, "select LALVOTERID, Voters_LastName,
                            Residence_Addresses_Longitude,
                            Voters_Gender,
                            Voters_Age,
+                           Voters_BirthDate,
                            Voters_OfficialRegDate,
                            Parties_Description,
                            EthnicGroups_EthnicGroup1Desc
