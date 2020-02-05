@@ -1,3 +1,5 @@
+library(kevostools)
+library(ggmap)
 library(RSQLite)
 library(tidyverse)
 library(data.table)
