@@ -280,6 +280,7 @@ bg_level$to_14 <- bg_level$General_2014_11_04 / bg_level$cvap
 bg_level$to_12 <- bg_level$General_2012_11_06 / bg_level$cvap
 bg_level$to_10 <- bg_level$General_2010_11_02 / bg_level$cvap
 
+
 bg_level <- filter(bg_level, !is.infinite(to))
 
 bg_level <- inner_join(bg_level, census_data)
