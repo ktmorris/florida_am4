@@ -221,10 +221,17 @@ ggplot() +
   ggtitle("Marginal Effect of Disenfranchised Voters on Support for Amendment 4") +
   labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
   theme(plot.caption = element_text(hjust = 0))
-##
+
+#############
 
 history <- dbConnect(SQLite(), "D:/national_file_history.db")
-fl_history <- dbGetQuery(history, "select LALVOTERID, General_2018_11_06 from fl_history_18")
+fl_history <- dbGetQuery(history, "select LALVOTERID,
+                                   General_2018_11_06,
+                                   General_2016_11_08,
+                                   General_2014_11_04,
+                                   General_2012_11_06,
+                                   General_2010_11_02
+                                   from fl_history_18")
 
 fl_file <- left_join(fl_file, fl_history, by = "LALVOTERID")
 
@@ -236,7 +243,12 @@ bg_level <- fl_file %>%
 
 bg2 <- fl_file %>% 
   group_by(county, GEOID) %>% 
-  summarize(votes_cast = sum(General_2018_11_06 == "Y"))
+  summarize_at(vars(General_2018_11_06,
+                    General_2016_11_08,
+                    General_2014_11_04,
+                    General_2012_11_06,
+                    General_2010_11_02),
+               ~ sum(. == "Y"))
 
 bg_level <- inner_join(bg_level, bg2)
 rm(bg2)
@@ -244,12 +256,36 @@ rm(bg2)
 doc_bg <- readRDS("./temp/released_with_addresses.rds") %>% 
   mutate(county = substring(precinct, 1, 3),
          PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
-  filter(!is.na(GEOID)) %>% 
+  filter(!is.na(block_group)) %>% 
   group_by(address1) %>% 
   mutate(big_release = n() >= 5) %>% 
-  group_by(GEOID) %>% 
+  group_by(GEOID = block_group) %>% 
   summarize(all_doc = n(),
             small_res_doc = sum(1 - big_release))
 
 bg_level <- left_join(bg_level, doc_bg) %>% 
   mutate_at(vars(all_doc, small_res_doc), ~ ifelse(is.na(.), 0, .))
+
+cvap <- fread("./raw_data/misc/CVAP_2014-2018_ACS_csv_files/BlockGr.csv") %>% 
+  mutate(GEOID = substring(geoid, 8)) %>% 
+  filter(substring(GEOID, 1, 2) == "12",
+         lntitle == "Total") %>% 
+  select(GEOID, cvap = cvap_est)
+
+bg_level <- inner_join(bg_level, cvap)
+
+bg_level$to_18 <- bg_level$General_2018_11_06 / bg_level$cvap
+bg_level$to_16 <- bg_level$General_2016_11_08 / bg_level$cvap
+bg_level$to_14 <- bg_level$General_2014_11_04 / bg_level$cvap
+bg_level$to_12 <- bg_level$General_2012_11_06 / bg_level$cvap
+bg_level$to_10 <- bg_level$General_2010_11_02 / bg_level$cvap
+
+bg_level <- filter(bg_level, !is.infinite(to))
+
+bg_level <- inner_join(bg_level, census_data)
+
+summary(lm(to_18 ~ small_res_doc + 
+             white + black + latino + asian +
+             female + male + dem + rep + age +
+             median_income + some_college + unem +
+             to_16 + to_14 + to_12 + to_10, bg_level))
