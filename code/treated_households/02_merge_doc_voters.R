@@ -17,11 +17,8 @@ for(i in 1:nrow(address_cleaner)){
                                           released_with_addresses$address)
 }
 
-released_with_addresses <- filter(released_with_addresses,
-                                  grepl("[0-9]", substring(address, 1, 1)))
 
 ####
-tt <- dbGetQuery(db, "select Voters_OfficialRegDate from fl")
 
 fl_file <- dbGetQuery(db, "select LALVOTERID, 
                            Voters_StateVoterID,
