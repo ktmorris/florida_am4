@@ -23,7 +23,9 @@ released_with_addresses <- filter(released_with_addresses,
 ####
 tt <- dbGetQuery(db, "select Voters_OfficialRegDate from fl")
 
-fl_file <- dbGetQuery(db, "select LALVOTERID, Voters_LastName,
+fl_file <- dbGetQuery(db, "select LALVOTERID, 
+                           Voters_StateVoterID,
+                           Voters_LastName,
                            Residence_Addresses_AddressLine,
                            Residence_Addresses_HouseNumber,
                            Residence_Addresses_PrefixDirection,
