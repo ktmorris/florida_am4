@@ -1,0 +1,198 @@
+---
+title: "Turnout and Amendment 4"
+subtitle: ""
+thanks: The author thanks Many People for their comments on this project. All errors are my responsibility.
+author: Kevin Morris^[Researcher, Brennan Center for Justice at NYU School of Law, 120 Broadway Ste 1750, New York, NY 10271 (kevin.morris@nyu.edu)]
+institute: "Brennan Center for Justice"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  bookdown::pdf_document2:
+    toc: no
+    fig_caption: yes
+    latex_engine: xelatex
+    keep_tex: true
+bibliography: "am4.bib"
+link-citations: yes
+fontsize: 12pt
+header-includes:
+    - \usepackage{rotating}
+    - \usepackage{setspace}\doublespacing
+    - \newcommand{\beginsupplement}{\setcounter{table}{0}  \renewcommand{\thetable}{A\arabic{table}} \setcounter{figure}{0} \renewcommand{\thefigure}{A\arabic{figure}}}
+abstract: |
+  Here is an abstract.
+---
+\pagenumbering{gobble}
+\pagebreak
+```{r setup, echo = F, message = F, warning = F}
+knitr::opts_knit$set(root.dir = "..", dev = "cairo_pdf")
+library(systemfit)
+library(AER)
+library(sandwich)
+library(lmtest)
+library(scales)
+library(tidyverse)
+library(extrafont)
+library(kableExtra)
+library(data.table)
+library(stargazer)
+loadfonts()
+```
+\pagenumbering{arabic}
+# Introduction {-}
+
+On November 6^th^, 2018, Floridians voted to amend their state constitution to allow individuals with felony convictions in their past [@Taylor2018]. The move was hailed as transformational for Floridian --- and American --- democracy [@Morris2018]; the Sentencing Project [-@sentencing_2016] had estimated a few years earlier that some 1.5 million Floridians were disenfranchised and had finished serving their sentences. The racial implications for the constitutional amendment were also clear: according to the same Sentencing Project report, more than 1 out of every 5 Black Floridians was prohibited from democratic participation thanks to the state's disenfranchisement policies. The Amendment received broad support. Although it needed just 60 percent of the vote to pass, precinct-level data from the Florida Division of Elections shows that `r round(readRDS("./temp/share_am4.rds")*100, digits = 1)` percent of voters supported the ballot initiative. Conversely, the winning candidates for Governor and United States Senate won just `r round(readRDS("./temp/share_gov.rds")*100, digits = 1)` and `r round(readRDS("./temp/share_sen.rds")*100, digits = 1)` percent of the vote, respectively, implying that the constitutional amendment enjoyed some bipartisan support.
+
+Felony disenfranchisement is not unique to Florida's electoral system: in all but two states in the United States, individuals convicted of felony offenses lose their right to vote for at least some period of time [@bcj_laws]. According to the Brennan Center for Justice, felony convictions result in lifetime prohibitions from voting for some citizens in 11 states based on the severity of the crime.^[Iowa stands alone in disenfranchising all individuals ever convicted of felony offenses.] Nevertheless, the shift in Florida from permanent disenfranchisement for all individuals convicted of felony offenses to restoring voting rights to most individuals^[Individuals convicted of felony sexual assault or murder remain permanently disenfranchised] upon the termination of their sentence moved the needle significantly: according to the same Sentencing Project report, post-sentence Floridians accounted for roughly 24 percent of all disenfranchised Americans [@sentencing_2016].
+
+The case of Amendment 4 was somewhat unique in how Floridians with felony convictions in their past had their voting rights restored. Usually, the question of voting rights restoration is not put directly to the voters. In New York State in 2018 and Kentucky in 2019, for instance, governors signed executive order restoring voting rights to some disenfranchised individuals [@Wang2018; @Wines2019]. In other states such as Louisiana [@Crisp2019] and Colorado [@Baumann2019], state lawmakers have passed bills restoring voting rights to formerly incarcerated individuals. In Florida, however, put the question was put directly to voters. In the Sunshine State, voters had the opportunity to democratically decide whether they wanted to restore voting rights to their formerly incarcerated or probationed neighbors.
+
+This paper explores whether the presence of Amendment 4 on the ballot increased participation among individuals who live in close proximity to the disenfranchised. There is much literature that establishes that proximal contact with the criminal justice system reduces eligible Americans' propensity to vote [e.g. @Ochs2006; @Bowers2009; @Burch2013; @King2016]. Little work, however, has been done exploring whether the re-enfranchisement of family and community members can bring back these lost votes. The case of Amendment 4 in Florida offers a unique opportunity to investigate whether these eligible individuals can be reincorporated into our democratic processes.
+
+# Theory and Literature {-}
+
+## Democratic Withdrawal {-}
+
+## Self-Interested Voting {-}
+
+# Research Design {-}
+
+I begin by testing whether neighborhoods the number of formerly incarcerated individuals living in a neighborhood influenced the turnout in 2018 of that neighborhood. "Neighborhoods" and "turnout" are defined in multiple ways throughout the neighborhood analysis --- each definition suffers slightly because of data limitations, but together they paint a full picture.
+
+I begin by defining neighborhoods as precincts. Defining neighborhoods as precincts provides two benefits: firstly, because the Florida Division of Elections produces results at this level, we can identify not only how many people cast a ballot at all, but also how many people participated in the contest for Amendment 4. This is an important distinction: voters are more likely to vote for the top-line contests for Governor and United States Senator, and "roll-off" (that is, abstain from participating) when it comes to downballot questions such as ballot initiatives [CITE]. Given that some research indicates that Black voters are more likely to roll-off than white voters [@Vanderleeuw1987, but see @Knack2008], the question of roll-off is of particular interest when considering a question that intersects with race such as the criminal justice system. Precinct-level data, therefore, allows us to determine not how many voters in a neighborhood voted for *any* contest, but specifically for Amendment 4.
+
+Precinct-level data also allows us to tell the extent to which neighborhoods supported Amendment 4. The secret ballot, of course, prevents us from knowing how individuals voted; precinct-level data, therefore, offer the lowest-level picture of what sorts of communities were more or less likely to support Amendment 4.
+
+Unfortunately, the use of precinct-level data leaves us with a major drawback: when doing analysis at this level, bias-free turnout denominators are hard to come by. Because the Census Bureau does not produce population estimates for individual voting precincts, turnout cannot be calculated by dividing the number of ballots cast by the eligible population; turnout, rather, has to be constructed as a share of registered voters. If there is a relationship between the independent variable of interest and the registration rate of a neighborhood, this could bias our estimates. In other words, if turnout among *registered voters* is the same in two neighborhoods, but one neighborhood has a higher registration rate, that neighborhood has a higher true turnout rate --- but that fact cannot be uncovered using precinct-level data.
+
+To sidestep this potential problem, I also define neighborhoods as Census block groups. The Census makes estimates of the citizen voting-age population available at this level, providing a better denominator for calculating turnout. In this case, however, I must use a geocoded voter file to determine turnout. Thus, because I aggregate the number of ballots cast in a block group from individual level data, I am unable to determine whether an individual actually participated in the contest for Amendment 4 or they rolled off. Similarly, I am unable to interrogate the relationship between block group characteristics and support for Amendment 4.
+
+After examining whether the presence of formerly incarcerated individuals was related with a *neighborhood's* turnout rate, I ask whether the individuals with the potentially closest relationship to the disenfranchised voters were more likely to turnout. For this analysis, I use release addresses provided to the DOC and voter file data to identify registered voters who live with formerly incarcerated individuals. Voters are considered "treated" if they live with a formerly incarcerated individual, and "untreated" otherwise. I then use a variety of individual- and neighborhood-level characteristics to match treated and untreated voters using a genetic algorithm [@Sekhon2011]. After matching these voters, I employ a difference-in-differences specification to determine whether treated voters participated at higher rates in the 2018 election.
+
+# Data {-}
+
+I leverage multiple data sources to investigate whether individuals in proximate contact with disenfranchised residents were more likely to vote in the 2018 election.
+
+## Department of Corrections Data {-}
+
+Data from the Florida Department of Corrections is used to identify individuals who have been to prison in Florida. These records include all individuals released from prison since October 1, 1997.^[Using the last-known address for individuals last released from prison in 1997 presents some difficulty; it is possible that the formerly incarcerated individuals have died or moved. In Appendix A, I show that the results presented in the body of this article continue to hold even when limiting the pool of formerly incarcerated people to individuals released from prison during or after 2015.] Using records of individuals currently in prison or on parole, I can identify all individuals who had been to prison but were not serving a sentence at the time of the 2018 midterm election. These are the individuals who would be re-enfranchsied by Amendment 4, and therefore the people most likely to encourage their friends and neighbors to vote on their behalf. I include only individuals with a valid release; individuals who died or absconded before their sentence was completed are removed from the dataset. I identify `r comma(readRDS("./temp/number_released.rds"))` such individuals.
+
+The Florida Department of Corrections provides the last-known addresses of all individuals who were formerly incarcerated. The address data, however, are messy. In some cases, the address field is left blank; in others, the records simply notes the road or the town of the former inmate, without providing full address information. These addresses require substantial cleaning.
+
+I begin the cleaning process by removing all records where the address does not begin with an integer. In other words, I assume that any record that begins with a letter does not have a fill address and cannot be used. I then geocode these addresses using Google Maps' geocoder, and drop all individuals whose addresses could not be geocoded or were geocoded outside of Florida. The resulting list includes `r comma(readRDS("./temp/good_geocoded.rds"))`. This represents `r round(readRDS("./temp/good_geocoded.rds") / readRDS("./temp/number_released.rds")*100, digits = 1)` percent of the formerly incarcerated individuals. The failure to identify the home location of so many formerly incarcerated individuals may pose problems; if we end up undercounting the number of formerly incarcerated individuals in some neighborhoods, we may underestimate the effects of the presence of formerly incarcerated individuals on neighborhood or individual level turnout.
+
+Many formerly incarcerated individuals leave prison not for homes with family members, but rather to homeless shelters and halfway houses. The body of this paper excludes formerly incarcerated individuals whose last known address was also listed by five or more other individuals, because neighborhoods may respond differently to institutions for returning citizens than the return of a family or community member. Appendix B demonstrates that the primary findings in the paper hold when we include all formerly incarcerated individuals, even if they returned to the same location as many other formerly incarcerated individuals.
+
+The successfully geocoded, formerly incarcerated individuals are then mapped to their home Census block groups using shapefiles from the Census Bureau, and to their home voter precincts using data collected by @Kelso2018.
+
+Statewide data on individuals who formerly served a term on felony probation are not available. This too may pose a problem for this study; neighborhoods with disenfranchised former probationers are also "treated." Such data is available, however from COUNTY COUNTY. In Appendix C, I incorporate these data to interrogate whether the omission of these individuals from the statewide analyses is likely impacting my results.
+
+## Voter File Data {-}
+
+Individual-level voter file data are used for a variety of purposes in this analysis. I primarily use Florida voter file data from the data vendor L2. This file includes information on individuals such as their home address, their age and gender, their participation history, and their political affiliation. L2 also geocodes voters to their home Census blocks, and provides latitude and longitudes.
+
+Although the L2 data includes estimates of voters' race and ethnicity, the raw Florida voter file includes self-identificated race and ethnicity. In place of L2's estimates, I use the self-reported data found in the raw Florida voter file (the two lists can be joined using a unique identifier). I also use the raw Florida file to provide the gender for voters for whom L2 did not have an estimate, as well as voters' home counties and precincts.
+
+Precinct and block group demographics are constructed using the voter file data. A precinct's average age, therefore, is the average age of all voters registered in that precinct; the same is true for Census block groups. Some information such as median income, however, is not available at the individual level. For these variables, voters are assigned the median income (or education level, et cetera) of their home block group; the precinct average income, therefore, is effectively the average of all the block groups within that precinct, weighted by the number of registered voters in each block group.
+
+For the individual-level analyses, I use individual-level demographic controls obtained from the voter files, and neighborhood-level demographic controls like income from the voter's block group.
+
+## Division of Election Results Data {-}
+
+As discussed above, the Florida Division of Elections makes precinct-level results data available. These data come with precinct identifiers that correspond to the precinct reported in the Florida voter file.
+
+## Matched Department of Corrections and Voter File Data {-}
+
+Identifying eligible registered voters who lived with formerly incarcerated individuals in the 2018 election requires matching on addresses. As discussed above, these addresses are often in different formats. To increase the quality of the matches, I standardize common street and address abbreviations as well as capitalization. "Boulevard," for instance, becomes "BLVD" in each instance in the DOC and voter file data. These standardizations are taken from Appendix C of the USPS Postal Addressing Standards [-@USPS2015]. Exact matching is required.
+
+# Results{-}
+
+I begin by examining whether --- and to what extent --- neighborhoods with formerly incarcerated individuals differ from neighborhoods elsewhere in the state. A simple comparison of neighborhoods with and without formerly incarcerated individuals, however, proves unhelpful: `r round(readRDS("./temp/share_bgs_have_lost.rds") * 100, digits = 1)` percent of block groups in the state are home to someone who has been to prison, lending credence to the notion that the criminal justice system impacts nearly every neighborhood in the Sunshine State. There are, however, neighborhoods where formerly incarcerated individuals are concentrated. In Table \ref{tab:demos}, I weight the characteristics of each block group in the state by the number of formerly incarcerated individuals who live there. These are compared to the characteristics of all block groups in the state, weighted by total population.
+
+```{r demos-chunk, echo = F, warning = F}
+t <- readRDS("./temp/demos_nhoods.rds")
+j <- knitr::kable(t, booktabs = T, caption = "(\\#tab:demos) Comparing Neighborhoods with Formerly Incarcerated Individuals to Overall Neighborhoods", linesep = "",
+                  align = c("l", "c", "c"), "latex") %>% 
+  kable_styling(latex_options = c("HOLD_position"),
+                full_width = F) 
+
+write(j, "./temp/tempo.tex")
+
+j <- fread("./temp/tempo.tex", sep = "+", header = F)
+
+note.latex <- "\\multicolumn{3}{l}{\\scriptsize{\\parbox{.5\\linewidth}{\\vspace{2pt}$^*$ Difference is significant at 95 percent confidence level.}}}"
+
+j <- j %>% 
+  mutate(n = row_number())
+
+lab <- "\\caption{\\label{tab:demos} Demographics of Neighborhoods}"
+insert1 <- "\\fontsize{10}{12}\\selectfont"
+
+j <- bind_rows(j, data.frame(V1 = c(note.latex, insert1), n = c(16.5, 1.1))) %>% 
+  arrange(n) %>% 
+  select(-n)
+
+j$V1[4] <- lab
+
+
+
+write.table(j, "./temp/table_whatever2.tex", quote = F, col.names = F,
+            row.names = F)
+```
+\input{"../temp/table_whatever2.tex"}
+
+Although nearly all parts of the state are impacted by the criminal justice system (and, more specifically, mass incarceration), Table \ref{tab:demos} makes clear that individuals return home to neighborhoods with lower incomes, higher levels of unemployment, and where a much larger share of the population is Black than other neighborhoods.
+
+I now test whether the presence of formerly incarerated individuals impacted whether and how neighborhoods voted. I start by exploring the relationship between the number of formerly incarcerated individuals living in a neighborhood and neighborhood support for Amendment 4. Unsurprisingly, as Table \ref{tab:support-reg} makes clear, neighborhoods with higher numbers of disenfranchised individuals supported Amendment 4 at higher rates. Table \ref{tab:support-reg} presents OLS estimates with robust standard errors clustered at the United States congressional district level.^[Where a precinct crosses district lines, it is assigned to the district that is home to the largest number of registered voters in the precinct.]
+\begin{singlespace}
+```{r support-chunk, echo = F, results = "hide", message = F, warning = F}
+load("./temp/support_reg.rdata")
+
+stargazer(m1,
+          header = F,
+          type = "latex", notes.align = "l",
+          covariate.labels = c("Formerly Incarcerated Residents", "Percent White", "Percent Black",
+                               "Percent Latino", "Percent Asian", "Percent Female", "Percent Democrats",
+                               "Average Age", "Average Income", "Percent With Some College",
+                               "Percent Unemployed"),
+          dep.var.labels.include = FALSE,
+          title = "\\label{tab:support-reg} Share Voting \"Yes\" on Amendment 4",
+          table.placement = "H",
+          omit.stat = c("f", "ser"),
+          omit = c("US_Congressional_District", "female", "rep"),
+          table.layout = "-cm#-t-a-s-n",
+          out = "./temp/test.tex",
+          out.header = F,
+          notes = "TO REPLACE",
+          se = list(m1_ses))
+
+j <- fread("./temp/test.tex", header = F, sep = "+")
+
+note.latex <- "\\multicolumn{2}{l}{\\scriptsize{\\parbox{.5\\linewidth}{\\vspace{2pt}$^{***}p<0.01$, $^{**}p<0.05$, $^*p<0.1$. \\\\Robust standard errors (clustered by congressional district) in parentheses.}}}"
+
+j <- j %>% 
+  mutate(n = row_number(),
+         V1 = ifelse(grepl("TO REPLACE", V1), note.latex, V1),
+         V1 = ifelse(grepl("\\\\#tab", V1), gsub("\\\\#", "", V1), V1)) %>% 
+  filter(!grepl("Note:", V1))
+
+insert1 <- "\\fontsize{10}{12}\\selectfont"
+
+j <- bind_rows(j, data.frame(V1 = c(insert1), n = c(7.5))) %>% 
+  arrange(n) %>% 
+  select(-n)
+
+write.table(j, "./temp/table1.tex", quote = F, col.names = F,
+            row.names = F)
+```
+\input{"../temp/table1.tex"}
+\end{singlespace}
+
+Okay now the marginal effects plot
+
+```{r marg1, echo = FALSE, message = F, warning = F, fig.width = 5, fig.height = 5, fig.cap = "\\label{fig:marg1}Marginal Effect of Formerly Incarcerated Residents on Precinct Support for Amendment 4", fig.pos = "H", fig.align = "center"}
+j <- readRDS("./temp/marg_support_am4.rds")
+print(j)
+```
+
+\newpage
+# References {-}
