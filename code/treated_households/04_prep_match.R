@@ -2,7 +2,7 @@
 ## get real race gender from file
 db2 <- dbConnect(SQLite(), "D:/rolls.db")
 
-fl_race <- dbGetQuery(db2, "select Race, Voter_ID, Gender from fl_roll_0319")
+fl_race <- dbGetQuery(db2, "select Race, Voter_ID, Gender from fl_roll_201902")
 dbDisconnect(db2)
 rm(db2)
 
