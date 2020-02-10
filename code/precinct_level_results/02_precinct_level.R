@@ -1,7 +1,6 @@
 ## get real race gender from file
 db2 <- dbConnect(SQLite(), "D:/rolls.db")
-
-fl_race <- dbGetQuery(db2, "select Race, Voter_ID, Gender from fl_roll_201902")
+fl_race <- dbGetQuery(db2, "select Race, Voter_ID, Gender, Precinct, County_Code from fl_roll_201902")
 dbDisconnect(db2)
 rm(db2)
 ### find precinct demos
@@ -11,24 +10,13 @@ fl_file <- dbGetQuery(db, "select LALVOTERID,
                            Voters_Gender,
                            Voters_Age,
                            Parties_Description,
-                           Precinct,
-                           County,
                            Residence_Addresses_CensusTract,
                            Residence_Addresses_CensusBlockGroup,
                            Voters_FIPS,
                            US_Congressional_District
                            from fl where Voters_Active == 'A'")
 
-fl_file <- inner_join(fl_file, fl_race, by = c("Voters_StateVoterID" = "Voter_ID"))
-
-rm(fl_race)
-
-counties <- fread("D:/rolls/florida/counties.csv") %>% 
-  mutate(name = toupper(name))
-
-fl_file <- inner_join(fl_file, counties, c("County" = "name")) %>% 
-  select(-County) %>% 
-  rename(county = code) %>% 
+fl_file <- inner_join(fl_file, fl_race, by = c("Voters_StateVoterID" = "Voter_ID")) %>% 
   mutate(GEOID = paste0("12", str_pad(Voters_FIPS, width = 3, side = "left", pad = "0"),
                         str_pad(Residence_Addresses_CensusTract, width = 6, side = "left", pad = "0"),
                         Residence_Addresses_CensusBlockGroup),
@@ -40,8 +28,10 @@ fl_file <- inner_join(fl_file, counties, c("County" = "name")) %>%
          male = Gender == "M",
          dem = Parties_Description == "Democratic",
          rep = Parties_Description == "Republican") %>% 
-  rename(age = Voters_Age)
+  rename(age = Voters_Age,
+         county = County_Code)
 
+rm(fl_race)
 ## downloading census data works better county-by-county
 ## commenting out because it takes so long
 # census_data <- rbindlist(lapply(filter(fips_codes, state == "FL")$county_code, function(c){
@@ -55,21 +45,61 @@ census_data <- readRDS("./temp/block_group_census_data.RDS") %>%
 fl_file <- inner_join(fl_file, census_data)
 
 precinct_level <- fl_file %>% 
-  group_by(county, Precinct,US_Congressional_District) %>% 
+  mutate(precinct = str_pad(Precinct, width = 10, side = "left", pad = "0"),
+         cp = paste0(county, precinct)) %>% 
+  group_by(county, cp) %>% 
   summarize_at(vars(white, black, latino, asian,
                     female, male, dem, rep, age,
                     median_income, some_college, unem),
-               mean, na.rm = T) %>% 
-  mutate(precinct = str_pad(Precinct, width = 10, side = "left", pad = "0"),
-         cp = paste0(county, precinct)) %>% 
-  select(-Precinct)
+               mean, na.rm = T)
 
 pc <- fl_file %>% 
-  group_by(county, Precinct,US_Congressional_District) %>% 
+  mutate(precinct = str_pad(Precinct, width = 10, side = "left", pad = "0"),
+         cp = paste0(county, precinct)) %>% 
+  group_by(county, cp) %>% 
   summarize(voter_count = n())
 
+cd <- fl_file %>% 
+  mutate(precinct = str_pad(Precinct, width = 10, side = "left", pad = "0"),
+         cp = paste0(county, precinct)) %>% 
+  group_by(cp, US_Congressional_District) %>% 
+  summarize(voter_count = n()) %>% 
+  group_by(cp) %>% 
+  filter(voter_count == max(voter_count)) %>% 
+  group_by(cp) %>% 
+  filter(row_number() == 1) %>% 
+  select(-voter_count)
+
 precinct_level <- inner_join(precinct_level, pc)
-rm(pc)
+precinct_level <- inner_join(precinct_level, cd)
+rm(pc, cd)
+### results stats for writing
+results_stats <- rbindlist(lapply(
+  list.files("./raw_data/election_results/precinctlevelelectionresults2018gen/", full.names = T),
+  fread)) %>% 
+  filter(!(V18 %in% c(901, 902)),
+         V12 %in% c("United States Senator",
+                    "Governor",
+                    "Amendment No. 4: Voting Restoration Amendment")) %>% 
+  group_by(V15, V12) %>% 
+  summarize(votes = sum(V19)) %>% 
+  group_by(V12) %>% 
+  mutate(share = votes / sum(votes)) %>% 
+  filter(share == max(share))
+
+share_gov <- filter(results_stats, V12 == "Governor") %>% 
+  select(share) %>% 
+  pull()
+saveRDS(share_gov, "./temp/share_gov.rds")
+
+share_sen <- filter(results_stats, V12 == "United States Senator") %>% 
+  select(share) %>% 
+  pull()
+saveRDS(share_sen, "./temp/share_sen.rds")
+share_am4 <- filter(results_stats, V12 == "Amendment No. 4: Voting Restoration Amendment") %>% 
+  select(share) %>% 
+  pull()
+saveRDS(share_am4, "./temp/share_am4.rds")
 ### read in results for am 4
 
 results <- rbindlist(lapply(
@@ -102,7 +132,7 @@ results_to <- rbindlist(lapply(
   filter(highest_votes != 0) %>% 
   mutate(precinct = str_pad(precinct, width = 10, side = "left", pad = "0"),
          cp = paste0(county, precinct))
-  
+
 
 ### combine
 
@@ -127,10 +157,10 @@ doc <- readRDS("./temp/released_with_addresses.rds") %>%
 results_demos <- left_join(results_demos, doc) %>% 
   mutate_at(vars(all_doc, small_res_doc), ~ ifelse(is.na(.), 0, .))
 
-results_demos$US_Congressional_District <- as.factor(results_demos$US_Congressional_District)
 results_demos$to <- results_demos$votes / results_demos$voter_count
 results_demos$highest_to <- results_demos$highest_votes / results_demos$voter_count
 results_demos$roll_off <- results_demos$votes / results_demos$highest_votes
+results_demos$US_Congressional_District <- as.factor(results_demos$US_Congressional_District)
 ###########
 
 m0 <- lm_robust(share_yes ~ small_res_doc, data = results_demos)
@@ -152,16 +182,24 @@ ggplot() +
   geom_hline(yintercept = mean(results_demos$share_yes)) + theme_bw() +
   theme(plot.caption = element_text(hjust = 0))
 ###########
-m1 <- lm_robust(share_yes ~ small_res_doc + 
+m1 <- lm(share_yes ~ small_res_doc + 
                   white + black + latino + asian +
                   female + male + dem + rep + age +
                   median_income + some_college + unem +
-                  US_Congressional_District, data = results_demos,
-                clusters = US_Congressional_District)
+                  US_Congressional_District, data = results_demos)
+m1_rob <- lm_robust(share_yes ~ small_res_doc + 
+           white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           US_Congressional_District, data = results_demos, clusters = US_Congressional_District)
+m1_ses <- data.frame(
+  summary(m1_rob)$coefficients)[, 2]
 
-marg <- ggeffect(model = m1, c("small_res_doc [all]"))
+save(m1, m1_ses, file = "./temp/support_reg.rdata")
 
-ggplot() + 
+marg <- ggeffect(model = m1_rob, c("small_res_doc [all]"))
+
+p1 <- ggplot() + 
   geom_histogram(aes(x = small_res_doc, y = ..count../2500), position="identity", linetype=1,
                  fill="gray60", data = results_demos, alpha=0.5, bins = 30) + 
   geom_line(aes(x = x, y = predicted), data = marg) +
@@ -171,15 +209,16 @@ ggplot() +
   xlab("Number of Formerly Incarcerated Residents") +
   ylab("Support for Amendment 4") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
   scale_y_continuous(labels = percent) +
-  ggtitle("Marginal Effect of Disenfranchised Voters on Turnout for Amendment 4") +
   labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
-  theme(plot.caption = element_text(hjust = 0))
+  theme_bw() + theme(plot.caption = element_text(hjust = 0),
+                     text = element_text(family = "LM Roman 10"))
+saveRDS(p1, "./temp/marg_support_am4.rds")
 
 #############
-m2 <- lmer(to ~ small_res_doc + white + black + latino + asian +
+m2 <- lm_robust(to ~ small_res_doc + white + black + latino + asian +
                   female + male + dem + rep + age +
                   median_income + some_college + unem +
-                  (1 | US_Congressional_District), data = results_demos)
+                  US_Congressional_District, data = filter(results_demos, to <= 1))
 
 marg <- ggeffect(model = m2, "small_res_doc [all]")
 
@@ -193,18 +232,18 @@ ggplot() +
   xlab("Number of Formerly Incarcerated Residents") +
   ylab("Turnout") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
   scale_y_continuous(labels = percent) +
-  ggtitle("Marginal Effect of Disenfranchised Voters on Support for Amendment 4") +
+  ggtitle("Marginal Effect of Disenfranchised Voters on Turnout") +
   labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
-  geom_hline(yintercept = mean(results_demos$share_yes)) + theme_bw() +
+  geom_hline(yintercept = mean(results_demos$share_yes)) + theme_minimal() +
   theme(plot.caption = element_text(hjust = 0))
 
 
 #############
-m3 <- lmer(roll_off ~ small_res_doc + 
+m3 <- lm_robust(roll_off ~ small_res_doc + 
                   white + black + latino + asian +
                   female + male + dem + rep + age +
                   median_income + some_college + unem +
-                  (1 | US_Congressional_District), data = results_demos)
+                  US_Congressional_District, data = results_demos)
 
 marg <- ggeffect(model = m3, "small_res_doc")
 
@@ -236,13 +275,13 @@ fl_history <- dbGetQuery(history, "select LALVOTERID,
 fl_file <- left_join(fl_file, fl_history, by = "LALVOTERID")
 
 bg_level <- fl_file %>% 
-  group_by(county, GEOID) %>% 
+  group_by(GEOID) %>% 
   summarize_at(vars(white, black, latino, asian,
                     female, male, dem, rep, age),
                mean, na.rm = T)
 
 bg2 <- fl_file %>% 
-  group_by(county, GEOID) %>% 
+  group_by(GEOID) %>% 
   summarize_at(vars(General_2018_11_06,
                     General_2016_11_08,
                     General_2014_11_04,
@@ -266,6 +305,8 @@ doc_bg <- readRDS("./temp/released_with_addresses.rds") %>%
 bg_level <- left_join(bg_level, doc_bg) %>% 
   mutate_at(vars(all_doc, small_res_doc), ~ ifelse(is.na(.), 0, .))
 
+saveRDS(mean(bg_level$small_res_doc > 0), "./temp/share_bgs_have_lost.rds")
+
 cvap <- fread("./raw_data/misc/CVAP_2014-2018_ACS_csv_files/BlockGr.csv") %>% 
   mutate(GEOID = substring(geoid, 8)) %>% 
   filter(substring(GEOID, 1, 2) == "12",
@@ -281,7 +322,7 @@ bg_level$to_12 <- bg_level$General_2012_11_06 / bg_level$cvap
 bg_level$to_10 <- bg_level$General_2010_11_02 / bg_level$cvap
 
 
-bg_level <- filter(bg_level, !is.infinite(to))
+bg_level <- filter(bg_level, !is.infinite(to_18))
 
 bg_level <- inner_join(bg_level, census_data)
 
@@ -290,3 +331,69 @@ summary(lm(to_18 ~ small_res_doc +
              female + male + dem + rep + age +
              median_income + some_college + unem +
              to_16 + to_14 + to_12 + to_10, bg_level))
+######
+
+bgs_new <- inner_join(readRDS("./temp/block_group_census_data.RDS"),
+                      select(bg_level, GEOID, small_res_doc)) %>% 
+  ungroup()
+
+bgs_new <- rbind(
+  bgs_new %>% 
+    mutate(group = "former_inc",
+           weight = small_res_doc),
+  bgs_new %>% 
+    mutate(group = "overall",
+           weight = population)
+)
+
+######
+
+tot <- rbindlist(lapply(c("median_income", "median_age", "unem", "some_college",
+                          "nh_white", "nh_black", "latino"), function(m){
+  ints <- rbindlist(lapply(unique(bgs_new$group), function(r){
+    r <- as.character(r)
+    t <- bgs_new %>% 
+      filter(group == r) %>% 
+      select(weight, measure = m) %>% 
+      filter(!is.na(measure))
+    j <- weighted.ttest.ci((t$measure), weights = t$weight,)
+    j <- data.table(group = c(r),
+                    measure = m,
+                    lower = j[1],
+                    upper = j[2])
+  }))
+  d <- data.table(sig = (ints$lower[1] > ints$upper[2]) | (ints$lower[2] > ints$upper[1]),
+                  measure = m)
+  return(d)
+}))
+
+
+
+ll <- bgs_new %>% 
+  group_by(group) %>% 
+  summarize_at(vars("median_income", "median_age", "unem", "some_college",
+                    "nh_white", "nh_black", "latino"),
+               ~ weighted.mean(., weight, na.rm = T)) %>% 
+  mutate(median_income = dollar(median_income, accuracy = 1),
+         median_age = round(median_age, digits = 1)) %>% 
+  mutate_at(vars(unem, some_college,
+                 nh_white, nh_black, latino), ~ percent(., accuracy = 0.1))
+
+ll <- transpose(ll)
+ll$var <- c("measure", "median_income", "median_age", "unem", "some_college",
+            "nh_white", "nh_black", "latino")
+
+colnames(ll) <- ll[1,]
+ll <- ll[2:nrow(ll),]
+
+ll <- left_join(ll, tot)
+
+ll$measure <- c( "Median Income", "Median Age", "% Unemployed", "% with Some College",
+                 "% Non-Hispanic White", "% Non-Hispanic Black", "% Latino")
+ll <- ll %>% 
+  mutate(measure = ifelse(sig, paste0(measure, "*"), measure)) %>% 
+  select(measure, overall, former_inc)
+
+colnames(ll) <- c("Measure", "Average Neighborhood", "Average Neighborhood for Formerly Incarcerated")
+
+saveRDS(ll, "./temp/demos_nhoods.rds")
