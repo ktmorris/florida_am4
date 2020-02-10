@@ -12,9 +12,15 @@ released <- filter(released, !(DCNumber %in% parole$DCNumber),
 addresses <- fread("./raw_data/doc/INMATE_RELEASE_RESIDENCE_0419.csv")
 
 released_with_addresses <- inner_join(released, addresses) %>% 
-  filter(releasedateflag_descr == "valid release date",
-         grepl("[0-9]", substring(address, 1, 1))) %>% 
+  filter(releasedateflag_descr == "valid release date")
+
+saveRDS(nrow(released_with_addresses), "./temp/number_released.rds")
+
+released_with_addresses <- released_with_addresses %>% 
+  filter(grepl("[0-9]", substring(AddressLine1, 1, 1))) %>% 
   mutate(address = gsub("[#]", "", paste(AddressLine1, City)))
+
+saveRDS(nrow(released_with_addresses), "./temp/number_released_goodnumber.rds")
 
 lats_longs <- geocode(released_with_addresses$address, override_limit = T, output = "more")
 
@@ -46,3 +52,5 @@ pings  <- SpatialPoints(released_with_addresses[c('lon','lat')], proj4string = b
 released_with_addresses$block_group <- over(pings, bgs)$GEOID
 
 saveRDS(released_with_addresses, "./temp/released_with_addresses.rds")
+
+saveRDS(sum(released_with_addresses$loctype %in% c("range_interpolated", "rooftop")), "./temp/good_geocoded.rds")
