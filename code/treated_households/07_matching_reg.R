@@ -52,98 +52,123 @@ matches <- full_join(matches, fl_history, by = c("voter" = "LALVOTERID"))
 
 matches <- left_join(matches, fl_roll, by = c("voter" = "LALVOTERID"))
 
-m1 <- glm.cluster(voted ~ I(year == "2018")*treated, data = matches,
-                  family = "binomial", cluster = matches$match_group,
+m1 <- glm(voted ~ I(year == "2018")*treated, data = matches,
+                  family = "binomial",
                   weight = matches$weight)
 
-m2 <- glm.cluster(voted ~ I(year == "2018")*treated +
+m2 <- glm(voted ~ I(year == "2018")*treated +
                     white + black + latino + asian + female +
                     male + reg_date + age + dem + rep +
                     median_income + some_college, data = matches,
-                  family = "binomial", cluster = matches$match_group,
+                  family = "binomial",
                   weight = matches$weight)
+
+save(m1, m2, file = "./temp/full_match_reg.rdata")
+
+c1 <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = matches,
+                              family = "binomial",
+                              weight = matches$weight,
+                              cluster = matches$match_group)))
+
+c2 <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
+                                white + black + latino + asian + female +
+                                male + reg_date + age + dem + rep +
+                                median_income + some_college, data = matches,
+                              family = "binomial",
+                              weight = matches$weight,
+                              cluster = matches$match_group)))
 
 #### subgroup
 
 black_voters <- filter(matches, match_group %in%
                          filter(fl_roll, black == 1)$LALVOTERID)
 
-m1_black <- glm.cluster(voted ~ I(year == "2018")*treated, data = black_voters,
-                        family = "binomial", cluster = black_voters$match_group,
-                        weight = black_voters$weight)
+c1_b <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = black_voters,
+                              family = "binomial",
+                              weight = black_voters$weight,
+                              cluster = black_voters$match_group)))
 
-m2_black <- glm.cluster(voted ~ I(year == "2018")*treated +
-                          white + black + latino + asian + female +
-                          male + reg_date + age + dem + rep +
-                          median_income + some_college, data = black_voters,
-                        family = "binomial", cluster = black_voters$match_group,
-                        weight = black_voters$weight)
+c2_b <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
+                                white + black + latino + asian + female +
+                                male + reg_date + age + dem + rep +
+                                median_income + some_college, data = black_voters,
+                              family = "binomial",
+                              weight = black_voters$weight,
+                              cluster = black_voters$match_group)))
 
 #### white
 
 white_voters <- filter(matches, match_group %in%
                          filter(fl_roll, white == 1)$LALVOTERID)
 
-m1_white <- glm.cluster(voted ~ I(year == "2018")*treated, data = white_voters,
-                        family = "binomial", cluster = white_voters$match_group,
-                        weight = white_voters$weight)
+c1_w <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = white_voters,
+                              family = "binomial",
+                              weight = white_voters$weight,
+                              cluster = white_voters$match_group)))
 
-m2_white <- glm.cluster(voted ~ I(year == "2018")*treated +
-                          white + black + latino + asian + female +
-                          male + reg_date + age + dem + rep +
-                          median_income + some_college, data = white_voters,
-                        family = "binomial", cluster = white_voters$match_group,
-                        weight = white_voters$weight)
+c2_w <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
+                                white + black + latino + asian + female +
+                                male + reg_date + age + dem + rep +
+                                median_income + some_college, data = white_voters,
+                              family = "binomial",
+                              weight = white_voters$weight,
+                              cluster = white_voters$match_group)))
 
 #### latino
 
 latino_voters <- filter(matches, match_group %in%
                          filter(fl_roll, latino == 1)$LALVOTERID)
 
-m1_latino <- glm.cluster(voted ~ I(year == "2018")*treated, data = latino_voters,
-                        family = "binomial", cluster = latino_voters$match_group,
-                        weight = latino_voters$weight)
+c1_l <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = latino_voters,
+                              family = "binomial",
+                              weight = latino_voters$weight,
+                              cluster = latino_voters$match_group)))
 
-m2_latino <- glm.cluster(voted ~ I(year == "2018")*treated +
-                          white + black + latino + asian + female +
-                          male + reg_date + age + dem + rep +
-                          median_income + some_college, data = latino_voters,
-                        family = "binomial", cluster = latino_voters$match_group,
-                        weight = latino_voters$weight)
+c2_l <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
+                                white + black + latino + asian + female +
+                                male + reg_date + age + dem + rep +
+                                median_income + some_college, data = latino_voters,
+                              family = "binomial",
+                              weight = latino_voters$weight,
+                              cluster = latino_voters$match_group)))
 #### women
 
 female_voters <- filter(matches, match_group %in%
                           filter(fl_roll, female == 1)$LALVOTERID)
 
-m1_female <- glm.cluster(voted ~ I(year == "2018")*treated, data = female_voters,
-                         family = "binomial", cluster = female_voters$match_group,
-                         weight = female_voters$weight)
+c1_f <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = female_voters,
+                              family = "binomial",
+                              weight = female_voters$weight,
+                              cluster = female_voters$match_group)))
 
-m2_female <- glm.cluster(voted ~ I(year == "2018")*treated +
-                           white + black + latino + asian + female +
-                           male + reg_date + age + dem + rep +
-                           median_income + some_college, data = female_voters,
-                         family = "binomial", cluster = female_voters$match_group,
-                         weight = female_voters$weight)
+c2_f <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
+                                white + black + latino + asian + female +
+                                male + reg_date + age + dem + rep +
+                                median_income + some_college, data = female_voters,
+                              family = "binomial",
+                              weight = female_voters$weight,
+                              cluster = female_voters$match_group)))
 
 #### men
 
 male_voters <- filter(matches, match_group %in%
                           filter(fl_roll, male == 1)$LALVOTERID)
 
-m1_male <- glm.cluster(voted ~ I(year == "2018")*treated, data = male_voters,
-                         family = "binomial", cluster = male_voters$match_group,
-                         weight = male_voters$weight)
+c1_m <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = male_voters,
+                              family = "binomial",
+                              weight = male_voters$weight,
+                              cluster = male_voters$match_group)))
 
-m2_male <- glm.cluster(voted ~ I(year == "2018")*treated +
-                           white + black + latino + asian + female +
-                           male + reg_date + age + dem + rep +
-                           median_income + some_college, data = male_voters,
-                         family = "binomial", cluster = male_voters$match_group,
-                         weight = male_voters$weight)
+c2_m <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
+                                white + black + latino + asian + female +
+                                male + reg_date + age + dem + rep +
+                                median_income + some_college, data = male_voters,
+                              family = "binomial",
+                              weight = male_voters$weight,
+                              cluster = male_voters$match_group)))
 
-save(m1, m2, m1_black, m2_black, m1_white, m2_white, m1_latino, m2_latino,
-     m1_female, m2_female, m1_male, m2_male, file = "./temp/matched_reg_output.rdata")
+save(c1, c2, c1_b, c2_b, c1_w, c2_w, c1_l, c2_l,
+     c1_f, c2_f, c1_m, c2_m, file = "./temp/confints.rdata")
 ####
 ll <- matches %>% 
   mutate(treated) %>% 
@@ -281,7 +306,20 @@ df <- full_join(df, order, by = c("names" = "variable")) %>%
   select(name, TrMean, PreMean, TrMean2, PostMean, change_mean, change_eqqmed, change_eqqmean, change_eqqmax) %>%
   filter(!is.na(TrMean))
 
-colnames(df) <- c("", "Treated", "Control", "Treated", "Control", "Mean Diff", "eQQ Med", "eQQ Mean", "eQQ Max")
 
+df <- df %>% 
+  mutate_at(vars(TrMean, PreMean, TrMean2, PostMean),
+            ~ ifelse(name == "Median Income", dollar(round(as.numeric(gsub(",", "", .)))), .)) %>% 
+  mutate_at(vars(TrMean, PreMean, TrMean2, PostMean),
+            ~ ifelse(name == "Registration Date",
+                     as.numeric(gsub(",", "", .)), .)) %>% 
+  mutate_at(vars(TrMean, PreMean, TrMean2, PostMean),
+            ~ ifelse(name == "Registration Date",
+                     as.character(as.integer(.) + as.Date("2000-01-01")),
+                     .)) %>% 
+  mutate_at(vars(TrMean, PreMean, TrMean2, PostMean),
+            ~ ifelse(substring(name, 1, 1) == "%", percent(as.numeric(.), accuracy = .1), .))
+
+colnames(df) <- c("", "Treated", "Control", "Treated", "Control", "Mean Diff", "eQQ Med", "eQQ Mean", "eQQ Max")
 
 saveRDS(df, "./temp/balance_table.rds")
