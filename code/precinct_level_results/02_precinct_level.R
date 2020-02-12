@@ -32,6 +32,17 @@ fl_file <- inner_join(fl_file, fl_race, by = c("Voters_StateVoterID" = "Voter_ID
          county = County_Code)
 
 rm(fl_race)
+
+### historical turnout from vf
+history <- dbConnect(SQLite(), "D:/national_file_history.db")
+fl_history <- dbGetQuery(history, "select LALVOTERID,
+                                   General_2016_11_08,
+                                   General_2014_11_04,
+                                   General_2012_11_06,
+                                   General_2010_11_02
+                                   from fl_history_18")
+dbDisconnect(history)
+rm(history)
 ## downloading census data works better county-by-county
 ## commenting out because it takes so long
 # census_data <- rbindlist(lapply(filter(fips_codes, state == "FL")$county_code, function(c){
@@ -43,14 +54,17 @@ census_data <- readRDS("./temp/block_group_census_data.RDS") %>%
   select(GEOID, median_income, some_college, unem)
 
 fl_file <- inner_join(fl_file, census_data)
+fl_file <- inner_join(fl_file, fl_history, by = "LALVOTERID")
 
 precinct_level <- fl_file %>% 
   mutate(precinct = str_pad(Precinct, width = 10, side = "left", pad = "0"),
          cp = paste0(county, precinct)) %>% 
   group_by(county, cp) %>% 
+  mutate_at(vars(starts_with("General")), ~ ifelse(. == "Y", 1, 0)) %>% 
   summarize_at(vars(white, black, latino, asian,
                     female, male, dem, rep, age,
-                    median_income, some_college, unem),
+                    median_income, some_college, unem,
+                    starts_with("General")),
                mean, na.rm = T)
 
 pc <- fl_file %>% 
@@ -72,7 +86,7 @@ cd <- fl_file %>%
 
 precinct_level <- inner_join(precinct_level, pc)
 precinct_level <- inner_join(precinct_level, cd)
-rm(pc, cd)
+rm(pc, cd, fl_history, census_data)
 ### results stats for writing
 results_stats <- rbindlist(lapply(
   list.files("./raw_data/election_results/precinctlevelelectionresults2018gen/", full.names = T),
@@ -161,6 +175,7 @@ results_demos$to <- results_demos$votes / results_demos$voter_count
 results_demos$highest_to <- results_demos$highest_votes / results_demos$voter_count
 results_demos$roll_off <- results_demos$votes / results_demos$highest_votes
 results_demos$US_Congressional_District <- as.factor(results_demos$US_Congressional_District)
+results_demos$median_income <- results_demos$median_income / 10000
 ###########
 
 m0 <- lm_robust(share_yes ~ small_res_doc, data = results_demos)
@@ -215,29 +230,63 @@ p1 <- ggplot() +
 saveRDS(p1, "./temp/marg_support_am4.rds")
 
 #############
-m2 <- lm_robust(to ~ small_res_doc + white + black + latino + asian +
+m2 <- lm(to ~ small_res_doc + white + black + latino + asian +
                   female + male + dem + rep + age +
                   median_income + some_college + unem +
+                  General_2016_11_08 + General_2014_11_04 +
+                  General_2012_11_06 + General_2010_11_02 +
                   US_Congressional_District, data = filter(results_demos, to <= 1))
 
-marg <- ggeffect(model = m2, "small_res_doc [all]")
+m2_rob <- lm_robust(to ~ small_res_doc + white + black + latino + asian +
+                  female + male + dem + rep + age +
+                  median_income + some_college + unem +
+                  General_2016_11_08 + General_2014_11_04 +
+                  General_2012_11_06 + General_2010_11_02 +
+                  US_Congressional_District, data = filter(results_demos, to <= 1),
+                  clusters = US_Congressional_District)
 
-ggplot() + 
+m2_ses <- data.frame(
+  summary(m2_rob)$coefficients)[, 2]
+
+m2b <- lm(to ~ small_res_doc + I(small_res_doc^2) + I(small_res_doc^3) + white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           General_2016_11_08 + General_2014_11_04 +
+           General_2012_11_06 + General_2010_11_02 +
+           US_Congressional_District, data = filter(results_demos, to <= 1))
+
+m2b_rob <- lm_robust(to ~ small_res_doc + I(small_res_doc^2) + I(small_res_doc^3) + white + black + latino + asian +
+                      female + male + dem + rep + age +
+                      median_income + some_college + unem +
+                      General_2016_11_08 + General_2014_11_04 +
+                      General_2012_11_06 + General_2010_11_02 +
+                      US_Congressional_District, data = filter(results_demos, to <= 1),
+                    clusters = US_Congressional_District)
+
+m2b_ses <- data.frame(
+  summary(m2b_rob)$coefficients)[, 2]
+
+save(m2, m2_ses, m2b, m2b_ses, file = "./temp/precinct_turnout.rdata")
+
+marg <- ggeffect(model = m2_rob, "small_res_doc [all]")
+cm <- mean(filter(results_demos, to <= 1)$to)
+p2 <- ggplot() + 
   geom_histogram(aes(x = small_res_doc, y = ..count../2500), position="identity", linetype=1,
                  fill="gray60", data = results_demos, alpha=0.5, bins = 30) + 
-  geom_line(aes(x = x, y = predicted), data = marg) +
-  geom_line(aes(x = x, y = conf.low), linetype = 0, data = marg) +
-  geom_line(aes(x = x, y = conf.high), linetype = 0, data = marg) +
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), fill= "blue", alpha=0.25, data = marg) +
+  geom_line(aes(x = x, y = predicted), data = marg, color = "black") +
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), fill= "black", alpha=0.25, data = marg) +
   xlab("Number of Formerly Incarcerated Residents") +
-  ylab("Turnout") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
+  ylab("Turnout Among Registered Voters") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
   scale_y_continuous(labels = percent) +
-  ggtitle("Marginal Effect of Disenfranchised Voters on Turnout") +
   labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
-  geom_hline(yintercept = mean(results_demos$share_yes)) + theme_minimal() +
-  theme(plot.caption = element_text(hjust = 0))
+  geom_hline(yintercept = cm, linetype = 2) +
+  geom_text(aes(300, cm, label = "Average Precinct Turnout (Statewide)",
+                vjust = -.5, family = "LM Roman 10", hjust = 1)) +
+  theme(plot.caption = element_text(hjust = 0)) +
+  theme_bw() + theme(plot.caption = element_text(hjust = 0),
+                     text = element_text(family = "LM Roman 10"))
 
-
+save(p2, cm, file = "./temp/marg_pct_to.rdata")
 #############
 m3 <- lm_robust(roll_off ~ small_res_doc + 
                   white + black + latino + asian +
@@ -265,11 +314,7 @@ ggplot() +
 
 history <- dbConnect(SQLite(), "D:/national_file_history.db")
 fl_history <- dbGetQuery(history, "select LALVOTERID,
-                                   General_2018_11_06,
-                                   General_2016_11_08,
-                                   General_2014_11_04,
-                                   General_2012_11_06,
-                                   General_2010_11_02
+                                   General_2018_11_06
                                    from fl_history_18")
 
 fl_file <- left_join(fl_file, fl_history, by = "LALVOTERID")
@@ -289,8 +334,17 @@ bg2 <- fl_file %>%
                     General_2010_11_02),
                ~ sum(. == "Y"))
 
-bg_level <- inner_join(bg_level, bg2)
-rm(bg2)
+cd <- fl_file %>% 
+  group_by(GEOID, US_Congressional_District) %>% 
+  summarize(voter_count = n()) %>% 
+  group_by(GEOID) %>% 
+  filter(voter_count == max(voter_count)) %>% 
+  group_by(GEOID) %>% 
+  filter(row_number() == 1) %>% 
+  select(-voter_count)
+
+bg_level <- inner_join(bg_level, inner_join(bg2, cd))
+rm(bg2, cd)
 
 doc_bg <- readRDS("./temp/released_with_addresses.rds") %>% 
   mutate(county = substring(precinct, 1, 3),
@@ -315,22 +369,60 @@ cvap <- fread("./raw_data/misc/CVAP_2014-2018_ACS_csv_files/BlockGr.csv") %>%
 
 bg_level <- inner_join(bg_level, cvap)
 
+bg_level$cvap <- bg_level$cvap - bg_level$all_doc
+
 bg_level$to_18 <- bg_level$General_2018_11_06 / bg_level$cvap
 bg_level$to_16 <- bg_level$General_2016_11_08 / bg_level$cvap
 bg_level$to_14 <- bg_level$General_2014_11_04 / bg_level$cvap
 bg_level$to_12 <- bg_level$General_2012_11_06 / bg_level$cvap
 bg_level$to_10 <- bg_level$General_2010_11_02 / bg_level$cvap
-
+bg_level$US_Congressional_District <- as.factor(bg_level$US_Congressional_District)
+bg_level$median_income <- bg_level$median_income / 10000
 
 bg_level <- filter(bg_level, !is.infinite(to_18))
 
-bg_level <- inner_join(bg_level, census_data)
+bg_level <- inner_join(bg_level, readRDS("./temp/block_group_census_data.RDS"),
+                       by = "GEOID")
 
-summary(lm(to_18 ~ small_res_doc + 
-             white + black + latino + asian +
-             female + male + dem + rep + age +
-             median_income + some_college + unem +
-             to_16 + to_14 + to_12 + to_10, bg_level))
+m1 <- lm(to_18 ~ small_res_doc + 
+           nh_white + nh_black + latino.y + asian.y +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           to_16 + to_14 + to_12 + to_10 + 
+           US_Congressional_District,
+         data = filter(bg_level, to_18 <= 1))
+
+m1_rob <- lm_robust(to_18 ~ small_res_doc +
+                      nh_white + nh_black + latino.y + asian.y +
+                      female + male + dem + rep + age +
+                      median_income + some_college + unem +
+                      to_16 + to_14 + to_12 + to_10 + 
+                      US_Congressional_District,
+                    data = filter(bg_level, to_18 <= 1),
+                    clusters = US_Congressional_District)
+
+
+m1_ses <- data.frame(
+  summary(m1_rob)$coefficients)[, 2]
+
+save(m1, m1_ses, file = "./temp/bg_turnout.rdata")
+
+marg <- ggpredict(model = m1_rob, c("small_res_doc [all]"))
+p2 <- ggplot() + 
+  geom_histogram(aes(x = small_res_doc, y = ..count../2500), position="identity", linetype=1,
+                 fill="gray60", data = results_demos, alpha=0.5, bins = 30) + 
+  geom_line(aes(x = x, y = predicted), data = marg, color = "black") +
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), fill= "black", alpha=0.25, data = marg) +
+  xlab("Number of Formerly Incarcerated Residents") +
+  ylab("Turnout Among Registered Voters") + scale_x_continuous(labels = comma, limits = c(0, 115)) +
+  scale_y_continuous(labels = percent) +
+  labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
+  theme(plot.caption = element_text(hjust = 0)) +
+  theme_bw() + theme(plot.caption = element_text(hjust = 0),
+                     text = element_text(family = "LM Roman 10"))
+
+save(p2, file = "./temp/marg_bg_to.rdata")
+
 ######
 
 bgs_new <- inner_join(readRDS("./temp/block_group_census_data.RDS"),
