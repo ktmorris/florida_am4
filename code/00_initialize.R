@@ -1,3 +1,5 @@
+library(extrafont)
+library(miceadds)
 library(Hmisc)
 library(lubridate)
 library(lme4)
@@ -28,3 +30,14 @@ weighted.ttest.ci <- function(x, weights, conf.level = 0.95) {
   cint <- tstat + c(-cint, cint)
   cint * stderr
 }
+
+save <- c("db", "cleanup", "theme_bc", "save", "weighted.ttest.ci")
+
+
+cleanup <- function(...){
+  save2 <- c(save, ...)
+  rm(list=ls(envir = .GlobalEnv)[! ls(envir = .GlobalEnv) %in% save2], envir = .GlobalEnv)
+}
+
+options("RStata.StataVersion" = 15)
+options("RStata.StataPath" = "\"C:\\Program Files (x86)\\Stata15\\StataSE-64\"")
