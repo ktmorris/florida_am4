@@ -173,7 +173,7 @@ results_demos <- left_join(results_demos, doc) %>%
 
 results_demos$to <- results_demos$votes / results_demos$voter_count
 results_demos$highest_to <- results_demos$highest_votes / results_demos$voter_count
-results_demos$roll_off <- results_demos$votes / results_demos$highest_votes
+results_demos$roll_off <- 1- (results_demos$votes / results_demos$highest_votes)
 results_demos$US_Congressional_District <- as.factor(results_demos$US_Congressional_District)
 results_demos$median_income <- results_demos$median_income / 10000
 ###########
@@ -197,16 +197,20 @@ ggplot() +
   geom_hline(yintercept = mean(results_demos$share_yes)) + theme_bw() +
   theme(plot.caption = element_text(hjust = 0))
 ###########
-m1 <- lm(share_yes ~ small_res_doc + 
-                  white + black + latino + asian +
-                  female + male + dem + rep + age +
-                  median_income + some_college + unem +
-                  US_Congressional_District, data = results_demos)
-m1_rob <- lm_robust(share_yes ~ small_res_doc + 
-           white + black + latino + asian +
+m1 <- lm(share_yes ~ small_res_doc + white + black + latino + asian +
            female + male + dem + rep + age +
            median_income + some_college + unem +
-           US_Congressional_District, data = results_demos, clusters = US_Congressional_District)
+           General_2016_11_08 + General_2014_11_04 +
+           General_2012_11_06 + General_2010_11_02 +
+           US_Congressional_District, data = filter(results_demos, to <= 1))
+
+m1_rob <- lm_robust(share_yes ~ small_res_doc + white + black + latino + asian +
+                      female + male + dem + rep + age +
+                      median_income + some_college + unem +
+                      General_2016_11_08 + General_2014_11_04 +
+                      General_2012_11_06 + General_2010_11_02 +
+                      US_Congressional_District, data = filter(results_demos, to <= 1),
+                    clusters = US_Congressional_District)
 m1_ses <- data.frame(
   summary(m1_rob)$coefficients)[, 2]
 
@@ -288,11 +292,25 @@ p2 <- ggplot() +
 
 save(p2, cm, file = "./temp/marg_pct_to.rdata")
 #############
-m3 <- lm_robust(roll_off ~ small_res_doc + 
-                  white + black + latino + asian +
-                  female + male + dem + rep + age +
-                  median_income + some_college + unem +
-                  US_Congressional_District, data = results_demos)
+m3 <- lm(roll_off ~ small_res_doc + white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           General_2016_11_08 + General_2014_11_04 +
+           General_2012_11_06 + General_2010_11_02 +
+           US_Congressional_District, data = filter(results_demos, to <= 1))
+
+m3_rob <- lm_robust(roll_off ~ small_res_doc + white + black + latino + asian +
+                      female + male + dem + rep + age +
+                      median_income + some_college + unem +
+                      General_2016_11_08 + General_2014_11_04 +
+                      General_2012_11_06 + General_2010_11_02 +
+                      US_Congressional_District, data = filter(results_demos, to <= 1),
+                    clusters = US_Congressional_District)
+
+m3_ses <- data.frame(
+  summary(m3_rob)$coefficients)[, 2]
+
+save(m3, m3_ses, file = "./temp/precinct_rolloff.rdata")
 
 marg <- ggeffect(model = m3, "small_res_doc")
 
@@ -377,12 +395,13 @@ bg_level$to_14 <- bg_level$General_2014_11_04 / bg_level$cvap
 bg_level$to_12 <- bg_level$General_2012_11_06 / bg_level$cvap
 bg_level$to_10 <- bg_level$General_2010_11_02 / bg_level$cvap
 bg_level$US_Congressional_District <- as.factor(bg_level$US_Congressional_District)
-bg_level$median_income <- bg_level$median_income / 10000
 
 bg_level <- filter(bg_level, !is.infinite(to_18))
 
 bg_level <- inner_join(bg_level, readRDS("./temp/block_group_census_data.RDS"),
                        by = "GEOID")
+
+bg_level$median_income <- bg_level$median_income / 10000
 
 m1 <- lm(to_18 ~ small_res_doc + 
            nh_white + nh_black + latino.y + asian.y +
