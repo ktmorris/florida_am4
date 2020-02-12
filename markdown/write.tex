@@ -178,7 +178,7 @@ Individual-level voter file data are used for a variety of purposes in this anal
 
 Although the L2 data includes estimates of voters' race and ethnicity, the raw Florida voter file includes self-identificated race and ethnicity. In place of L2's estimates, I use the self-reported data found in the raw Florida voter file (the two lists can be joined using a unique identifier). I also use the raw Florida file to provide the gender for voters for whom L2 did not have an estimate, as well as voters' home counties and precincts.
 
-Precinct and block group demographics are constructed using the voter file data. A precinct's average age, therefore, is the average age of all voters registered in that precinct; the same is true for Census block groups. Some information such as median income, however, is not available at the individual level. For these variables, voters are assigned the median income (or education level, et cetera) of their home block group; the precinct average income, therefore, is effectively the average of all the block groups within that precinct, weighted by the number of registered voters in each block group.
+Precinct and block group demographics are constructed using the voter file data. A precinct's average age, therefore, is the average age of all voters registered in that precinct; the same is true for Census block groups. Some information such as median income, however, is not available at the individual level. For these variables, voters are assigned the median income (or education level, et cetera) of their home block group from the ACS 5 year estimates ending with 2018; the precinct average income, therefore, is effectively the average of all the block groups within that precinct, weighted by the number of registered voters in each block group.
 
 For the individual-level analyses, I use individual-level demographic controls obtained from the voter files, and neighborhood-level demographic controls like income from the voter's block group.
 
@@ -204,9 +204,12 @@ I begin by examining whether --- and to what extent --- neighborhoods with forme
 
 Although nearly all parts of the state are impacted by the criminal justice system (and, more specifically, mass incarceration), Table \ref{tab:demos} makes clear that individuals return home to neighborhoods with lower incomes, higher levels of unemployment, and where a much larger share of the population is Black than other neighborhoods.
 
+\hypertarget{precinct-results}{%
+\subsection{Precinct Results}\label{precinct-results}}
+
 Having established that formerly incarcerated individuals are concentrated in lower-resourced neighborhoods, I investigate whether turnout in their neighborhoods was higher in 2018 thanks to the inclusion of Amendment 4 on the ballot. To test this relationship I run an OLS regression, where precinct-level turnout is the dependent variable. Turnout is defined by dividing the number of ballots cast for or against Amendment 4 by the number of actively registered voters in the precinct.\footnote{Roughly 0.6 percent of precincts reported turnout of greater than 100 percent; these 35 precincts have been dropped from the analysis.} The number of formerly incarcerated residents\footnote{As discussed above, this includes only formerly incarcerated residents who returned to home addresses reported by three or fewer other formerly incarcerated individuals.} as the primary independent variable.
 
-Table \ref{tab:to-precinct} presents the results of this regression. In addition to the number of formerly incarcerated residents, I control for the racial, gender, and partisan composition of the precinct, as well as turnout rates from the past few elections (calculated using the voter file). I also control for the average age of the precinct, as well as the median income, share with some collegiate education, and unemployment rate. Finally, fixed effects for congressional districts are included.\footnote{Where precincts cross congressional boundaries, precincts are assigned to the congressional district in which most of their voters live.} Robust standard errors are clustered at the congressional district level.
+Table \ref{tab:to-precinct} presents the results of this regression. In addition to the number of formerly incarcerated residents, I control for the racial, gender, and partisan composition of the precinct, as well as turnout rates from the past few elections. Historical turnout is calculated using the registered voter file, not published state results, to account for the redrawing of precinct boundaries between elections. I also control for the average age of the precinct, as well as the median income, share with some collegiate education, and unemployment rate. Finally, fixed effects for congressional districts are included.\footnote{Where precincts cross congressional boundaries, precincts are assigned to the congressional district in which most of their voters live.} Robust standard errors are clustered at the congressional district level.
 
 \begin{singlespace}
 
@@ -239,7 +242,20 @@ The coefficient on D(February -- October, 2018) in Table \ref{tab:neg-bin} indic
 
 Table \ref{tab:neg-bin} also indicates that, over the whole period, monthly registrations were higher in precincts with more formerly incarcerated individuals. We cannot reject the null hypothesis, however, that Amendment 4 did not lead to more registrations in 2018 in neighborhoods with more formerly incarcerated residents. In other words, although registrations did increase over this period in communities with formerly incarcerated residents, this increase was not statistically distinguishable from the increase in registrations in other parts of the state. The depressed turnout in these neighborhoods in 2018, therefore, probably cannot be attributed to higher registration rates among voters with a lower propensity to vote.
 
-As a final test of the relationship between the presence of formerly incarcerated community members, Amendment 4, and turnout in 2018, I use turnout at the Census block group level. As discussed above, the Census Bureau provides estimates of the citizen voting age population (or CVAP) in each block group, which provides a denominator which is unbiased by uneven registration rates. In the block group analysis, I subtract the number of formerly incarcerated residents from the CVAP, because they were ineligible to participate in the election.
+Although the precinct-level model implies that \emph{turnout} for Amendment 4 was lower in the places most directly impacted by disenfranchisement laws, the precinct-level data allows us to test for other relationships between the number of formerly incarcerated residents in a neighborhood and that neighborhood's engagement with Amendment 4. In Table \ref{tab:other-precincts} I present the results of OLS models that test whether the number of formerly incarcerated community members influences a neighborhood's support for Amendment 4, and Amendment 4 roll-off. Roll-off is calculated as \(1 - \frac{Ballots\:Cast\:for\:Amendment\:4}{Ballots\:Cast\:in\:Contest\:with\:the\:Most\:Votes}\). It ranges from zero (if everyone who cast a ballot made a decision on the Amendment 4 question) to one (if no participants voted for or against Amendment 4).
+
+\begin{singlespace}
+
+\input{"../temp/precinct_other.tex"}
+\end{singlespace}
+
+Table \ref{tab:other-precincts} demonstrates that, although Amendment 4 does not appear to have boosted precinct-level turnout relative to other precincts' turnout, precincts with more formerly incarcerated residents \emph{did} support Amendment 4 at slightly higher rates. Similarly, roll-off was lower in these neighborhoods, which means that a higher share of residents expressed a preference on the question. Thus it appears that the presence of formerly incarcerated individuals in a neighborhood was not associated with getting people into the polling place, it was associated with how voters who \emph{did} participate cast their ballots.
+
+\hypertarget{block-group-results}{%
+\subsection*{Block Group Results}\label{block-group-results}}
+\addcontentsline{toc}{subsection}{Block Group Results}
+
+As a final test of the relationship between the presence of formerly incarcerated community members, Amendment 4, and turnout in 2018, I use turnout at the Census block group level. As discussed above, the Census Bureau provides estimates of the citizen voting age population (or CVAP) in each block group, which provides a denominator which is unbiased by uneven registration rates. In the block group analysis, I subtract the number of formerly incarcerated residents from the CVAP, because they were ineligible to participate in the election. The number of votes cast in a block group come aggregating the individual voter file; turnout is calculated by dividing the number of voters who participated by the adjusted CVAP estimates.
 
 Table \ref{tab:to-bg} fits the same suite of covariates from Table \ref{tab:to-precinct} on the block group level data. In this block group model, racial characteristics are taken from the ACS 5 year estimates ending in 2018, rather than from the registered voters in that block group. As before, robust standard errors are clustered by congressional district.
 
@@ -247,6 +263,82 @@ Table \ref{tab:to-bg} fits the same suite of covariates from Table \ref{tab:to-p
 
 \input{"../temp/bg_to.tex"}
 \end{singlespace}
+
+Table \ref{tab:to-bg} demonstrates that, even when turnout is calculated as the share of adjusted CVAP, neighborhoods with more formerly incarcerated residents turned out at lower rates. The effect in this model, however, is smaller than in the precinct-model: the predicted turnout in a block group with no formerly incarcerated residents was 54.8 percent, when all other are set to their means; in block groups with 115 formerly incarcerated residents (the 99 percent bound) the predicted turnout was 53.0 percent, implying a decrease of fewer than 2 percentage points over the effective range of the observed data. Although this estimation of turnout uncovers smaller negative effects than the precinct-based model, it still appears that the presence of Amendment 4 on the ballot in the 2018 did not boost turnout for directly impacted communities by enough to overcome the negative depressive effects of criminal justice involvement.
+
+\hypertarget{individual-level-results}{%
+\section*{Individual-Level Results}\label{individual-level-results}}
+\addcontentsline{toc}{section}{Individual-Level Results}
+
+Thus far I have established that neighborhoods with more formerly incarcerated residents turned out at lower rates than other neighborhoods. Although this is in line with past scholarship that has found negative indirect turnout effects from incarceration and felony disenfranchisement, it is sobering to note that even a ballot initiative that would increase these neighborhoods' political representation via the expansion of the franchise was not enough to overcome these negative effects.
+
+The use of neighborhood data, however, can obscure underlying patterns. The use of administrative data, as Walker (\protect\hyperlink{ref-Walker2020}{2020}) puts it, does ``not accurately assess the relational aspect central to the concept of proximal contact'' (123). The finding that neighborhood turnout is lower in places with more formerly incarcerated individuals does not help us understand the mechanism(s) through which proximal contact causes lower turnout.
+
+An examination of the relationship between individual-level proximal contact and turnout does not entirely obviate the problem described by Walker (\protect\hyperlink{ref-Walker2020}{2020}) and others. If turnout is lower among the eligible household members of a formerly incarcerated individual, we cannot immediately attribute that decrease to perceptions of injusice. We can imagine other causal mechanisms through which cohabitating with a formerly incarcerated person would reduce propensity to vote. Re-integrating citizens may, for example, have a hard time finding employment; household members may therefore be required to work more hours, reducing their capacity to engage in political information gathering and participation. {[}CITATIONS{]}
+
+Nevertheless, examining the relationship between cohabitation with formerly incarcerated individuals and turnout can shed light on the ways in which proximal contact depress turnout. It is possible that Amendment 4 shaped turnout differently for individuals who cohabitate with formerly incarcerated individuals than for their neighbors. A neighborhood may have disengaged from the political process thanks to a history of aggressive state action. Household members of the formerly incarcerated may have had a similar historical response, and yet be more susceptible to mobilization from Amendment 4's placement on the ballot; their family members and housemates, after all, are the individuals who stood to benefit from the passage of the Amendment. These formerly incarcerated individuals may have successfully mobilized other members of their households but failed to do so for their neighborhood.
+
+Using individual-level data, I here distinguish the effect of proximal neighborhood contact from individual-level contact on turnout in 2018. As discussed above, I identify individuals who live with formerly incarcerated individuals by matching addresses listed in the Department of Corrections release data to the registered voter file. All registered voters who live at an address reported by a formerly incarcerated individual are considered ``treated'' with proximal contact to the carceral state.
+
+Each treated individual is then matched with five untreated registered voters elsewhere in the state.\footnote{Due to computing constraints, a random 1 percent random sample stratified by treatment status is used to calculate the genetic weights. The full sample is used for matching.} Exact matching is done on all characteristics with the exception of registration date, age, median income, and share with some collegiate education, and matching is done with replacement. Voters are matched using their block group's median income and share with some collegiate education (from the ACS 5 year estimates ending in 2018), while all other characteristics come from the individual-level voter file. Table \ref{tab:bal-table} presents the results of this matching exercise.
+
+\begin{table}[H]
+
+\caption{\label{tab:balance-tab-chunk}\label{tab:bal-table} Balance Table}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{lllllrrrr}
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{2}{c}{Means: Unmatched Data} & \multicolumn{2}{c}{Means: Matched Data} & \multicolumn{4}{c}{Percent Improvement} \\
+\cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5} \cmidrule(l{3pt}r{3pt}){6-9}
+ & Treated & Control & Treated & Control & Mean Diff & eQQ Med & eQQ Mean & eQQ Max\\
+\midrule
+\%White & 41.0\% & 63.0\% & 41.0\% & 41.0\% & 100.00 & 100.00 & 100.00 & 100.00\\
+\% Black & 39.0\% & 13.0\% & 39.0\% & 39.0\% & 100.00 & 100.00 & 100.00 & 100.00\\
+\% Latino & 13.0\% & 17.0\% & 13.0\% & 13.0\% & 100.00 & 100.00 & 100.00 & 100.00\\
+\% Asian & 1.0\% & 2.0\% & 1.0\% & 1.0\% & 100.00 & 100.00 & 100.00 & 100.00\\
+\% Female & 55.0\% & 52.0\% & 55.0\% & 55.0\% & 100.00 & 100.00 & 100.00 & 100.00\\
+\% Male & 41.0\% & 45.0\% & 41.0\% & 41.0\% & 100.00 & 100.00 & 100.00 & 100.00\\
+Registration Date & 2004-02-17 & 2004-09-23 & 2004-02-17 & 2004-02-20 & 98.40 & 93.90 & 85.57 & 64.79\\
+Age & 48.87 & 52.45 & 48.87 & 48.85 & 99.35 & 99.37 & 99.23 & 98.81\\
+\% Democrat & 54.0\% & 37.0\% & 54.0\% & 54.0\% & 100.00 & 100.00 & 100.00 & 100.00\\
+\% Republican & 21.0\% & 35.0\% & 21.0\% & 21.0\% & 100.00 & 100.00 & 100.00 & 100.00\\
+\% with Some College & 67.0\% & 75.0\% & 67.0\% & 67.0\% & 99.92 & 99.88 & 99.82 & 99.42\\
+Median Income & \$47,481 & \$62,998 & \$47,481 & \$47,503 & 99.86 & 99.78 & 99.60 & 98.46\\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+As Table \ref{tab:bal-table} makes clear, the treated registered voters differ in meaningful ways from the rest of the electorate: they are three times as likely to be Black, they are substantially more likely to be registered as Democrats, and they live in neighborhoods with lower incomes. The matching process, however, results in a control group that is very similar to the treatment group; in each measure, there was at least a 98 percent improvement in the mean difference.
+
+After matching the treated voters to appropriate controls, I construct a difference-in-differences model. Before presenting the results of the model, I show in Figure \ref{fig:dind} that the parallel trends assumption is satisfied: although the treatment group has lower turnout rates in general, the distance between the treatment and control groups is largely constant between 2010 and 2016.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{write_files/figure-latex/dind-1} 
+
+}
+
+\caption{\label{fig:dind}General Election Turnout for Treated and Control Voters, 2010 -- 2018}\label{fig:dind}
+\end{figure}
+
+The trends presented in Figure \ref{fig:dind} offer preliminary corroboration of what I find at the neighborhood level --- namely, that proximal contact with formerly incarcerated individuals resulted in lower, not higher, turnout in the 2018 election even after controlling for (here, individual-level) historical turnout. Table \ref{tab:tab-dind} formalizes these trends into a logistic regression. The dependent variable takes the value 0 if the voter did not vote, and 1 if she did. A treatment dummy distinguishes treated from control voters. The treatment dummy is interacted with another dummy identifying the 2018 election. Robust standard errors are clustered at the level of the match (Abadie and Spiess \protect\hyperlink{ref-Abadie2019}{2019}), and each control observation is assigned one-fifth the weight of the treatment observations (to account for the five-to-one match). Model 1 presents the model output without the other controls used for matching; Model two includes these covariates.
+
+\begin{singlespace}
+
+\input{"../temp/dind_reg.tex"}
+\end{singlespace}
+
+Break out by subgroup
+
+\begin{figure}[H]
+
+{\centering \includegraphics{write_files/figure-latex/dind-groups-1} 
+
+}
+
+\caption{\label{fig:dind-groups}Estimated Treatment Effect by Group}\label{fig:dind-groups}
+\end{figure}
 
 \newpage
 
@@ -256,6 +348,9 @@ Table \ref{tab:to-bg} fits the same suite of covariates from Table \ref{tab:to-p
 
 \hypertarget{refs}{}
 \begin{cslreferences}
+\leavevmode\hypertarget{ref-Abadie2019}{}%
+Abadie, Alberto, and Jann Spiess. 2019. ``Robust Post-Matching Inference.'' \emph{Working Paper.}
+
 \leavevmode\hypertarget{ref-Baumann2019}{}%
 Baumann, Joella. 2019. ``Paroled Coloradans Are Now Eligible to Vote.'' \emph{Colorado Public Radio}, July 1, 2019. \url{https://www.cpr.org/2019/07/01/paroled-coloradans-are-now-eligible-to-vote/}.
 
@@ -303,6 +398,9 @@ USPS. 2015. ``Appendix C.'' Postal Addressing Standards. May 2015. \url{https://
 
 \leavevmode\hypertarget{ref-Vanderleeuw1987}{}%
 Vanderleeuw, James M., and Richard L. Engstrom. 1987. ``Race, Referendums, and Roll-Off.'' \emph{The Journal of Politics} 49 (4): 1081--92. \url{https://doi.org/10.2307/2130785}.
+
+\leavevmode\hypertarget{ref-Walker2020}{}%
+Walker, Hannah L. 2020. ``Targeted: The Mobilizing Effect of Perceptions of Unfair Policing Practices.'' \emph{The Journal of Politics} 82 (1): 119--34. \url{https://doi.org/10.1086/705684}.
 
 \leavevmode\hypertarget{ref-Wang2018}{}%
 Wang, Vivian. 2018. ``Cuomo Plans to Restore Voting Rights to Paroled Felons.'' \emph{The New York Times: New York}, April 18, 2018. \url{https://www.nytimes.com/2018/04/18/nyregion/felons-pardon-voting-rights-cuomo.html}.
