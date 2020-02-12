@@ -99,6 +99,13 @@ doc <- readRDS("./temp/released_with_addresses.rds") %>%
 monthly <- left_join(monthly, doc) %>% 
   mutate_at(vars(all_doc, small_res_doc), ~ ifelse(is.na(.), 0, .))
 
+months <- data.frame(reg_month = unique(monthly$reg_month)) %>% 
+  arrange(reg_month) %>% 
+  mutate(trend = row_number())
+
+monthly <- left_join(monthly, months)
+
+monthly$median_income <- monthly$median_income / 10000
 
 m1 <- glm(registrations ~ I(reg_month > "2018-01-01") * small_res_doc + reg_month +
               white + black + latino + asian +
@@ -106,10 +113,19 @@ m1 <- glm(registrations ~ I(reg_month > "2018-01-01") * small_res_doc + reg_mont
               median_income + some_college + unem +
             as.factor(US_Congressional_District) + reg_month, family = "poisson",
             data = monthly)
-m2 <- glmer.nb(registrations ~ I(reg_month > "2018-01-01") * small_res_doc + reg_month +
+
+m2 <- glm.nb(registrations ~ I(reg_month > "2018-01-01") * small_res_doc + trend +
                      white + black + latino + asian +
                      female + male + dem + rep + age +
                      median_income + some_college + unem +
-                     (1 | US_Congressional_District) + reg_month,
+                     as.factor(US_Congressional_District),
                    data = monthly)
+saveRDS(m2, "./temp/neg_bin.rds")
 
+
+#####
+
+monthly_ll <- monthly %>% 
+  group_by(reg_month) %>% 
+  summarize(regs = mean(registrations))
+ggplot(monthly_ll, aes(x = reg_month, y = regs)) + geom_line()
