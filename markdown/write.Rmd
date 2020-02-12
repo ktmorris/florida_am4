@@ -62,9 +62,9 @@ I begin by defining neighborhoods as precincts. Defining neighborhoods as precin
 
 Precinct-level data also allows us to tell the extent to which neighborhoods supported Amendment 4. The secret ballot, of course, prevents us from knowing how individuals voted; precinct-level data, therefore, offer the lowest-level picture of what sorts of communities were more or less likely to support Amendment 4.
 
-Unfortunately, the use of precinct-level data leaves us with a major drawback: when doing analysis at this level, bias-free turnout denominators are hard to come by. Because the Census Bureau does not produce population estimates for individual voting precincts, turnout cannot be calculated by dividing the number of ballots cast by the eligible population; turnout, rather, has to be constructed as a share of registered voters. If there is a relationship between the independent variable of interest and the registration rate of a neighborhood, this could bias our estimates. In other words, if turnout among *registered voters* is the same in two neighborhoods, but one neighborhood has a higher registration rate, that neighborhood has a higher true turnout rate --- but that fact cannot be uncovered using precinct-level data.
+Unfortunately, the use of precinct-level data leaves us with a major drawback: when doing analysis at this level, bias-free turnout denominators are hard to come by. Because the Census Bureau does not produce population estimates for individual voting precincts, turnout cannot be calculated by dividing the number of ballots cast by the eligible population; turnout, rather, has to be constructed as a share of registered voters. If there is a relationship between the independent variable of interest and the registration rate of a neighborhood, this could bias our estimates. It is not difficult to imagine how this could be the case in the study at hand. Political organizers working on behalf of Amendment 4's passage may have focused on registering eligible residents neighborhoods where disenfranchised individuals lived, expecting these newly registered voters to support the amendment. If these organizers registered many new voters but a relatively small share of the new voters actually turned out, the net effect might be higher turnout among eligible voters, but *lower* turnout among registered voters. 
 
-To sidestep this potential problem, I also define neighborhoods as Census block groups. The Census makes estimates of the citizen voting-age population available at this level, providing a better denominator for calculating turnout. In this case, however, I must use a geocoded voter file to determine turnout. Thus, because I aggregate the number of ballots cast in a block group from individual level data, I am unable to determine whether an individual actually participated in the contest for Amendment 4 or they rolled off. Similarly, I am unable to interrogate the relationship between block group characteristics and support for Amendment 4.
+To address this potential problem, I also define neighborhoods as Census block groups. The Census makes estimates of the citizen voting-age population available at this level, providing a better denominator for calculating turnout. In this case, however, I must use a geocoded voter file to determine turnout. Thus, because I aggregate the number of ballots cast in a block group from individual level data, I am unable to determine whether an individual actually participated in the contest for Amendment 4 or they rolled off. Similarly, I am unable to interrogate the relationship between block group characteristics and support for Amendment 4.
 
 After examining whether the presence of formerly incarcerated individuals was related with a *neighborhood's* turnout rate, I ask whether the individuals with the potentially closest relationship to the disenfranchised voters were more likely to turnout. For this analysis, I use release addresses provided to the DOC and voter file data to identify registered voters who live with formerly incarcerated individuals. Voters are considered "treated" if they live with a formerly incarcerated individual, and "untreated" otherwise. I then use a variety of individual- and neighborhood-level characteristics to match treated and untreated voters using a genetic algorithm [@Sekhon2011]. After matching these voters, I employ a difference-in-differences specification to determine whether treated voters participated at higher rates in the 2018 election.
 
@@ -104,9 +104,9 @@ As discussed above, the Florida Division of Elections makes precinct-level resul
 
 Identifying eligible registered voters who lived with formerly incarcerated individuals in the 2018 election requires matching on addresses. As discussed above, these addresses are often in different formats. To increase the quality of the matches, I standardize common street and address abbreviations as well as capitalization. "Boulevard," for instance, becomes "BLVD" in each instance in the DOC and voter file data. These standardizations are taken from Appendix C of the USPS Postal Addressing Standards [-@USPS2015]. Exact matching is required.
 
-# Results{-}
+# Neighborhood-Level Results{-}
 
-I begin by examining whether --- and to what extent --- neighborhoods with formerly incarcerated individuals differ from neighborhoods elsewhere in the state. A simple comparison of neighborhoods with and without formerly incarcerated individuals, however, proves unhelpful: `r round(readRDS("./temp/share_bgs_have_lost.rds") * 100, digits = 1)` percent of block groups in the state are home to someone who has been to prison, lending credence to the notion that the criminal justice system impacts nearly every neighborhood in the Sunshine State. There are, however, neighborhoods where formerly incarcerated individuals are concentrated. In Table \ref{tab:demos}, I weight the characteristics of each block group in the state by the number of formerly incarcerated individuals who live there. These are compared to the characteristics of all block groups in the state, weighted by total population.
+I begin by examining whether --- and to what extent --- neighborhoods with formerly incarcerated individuals differ from neighborhoods elsewhere in the state. A simple comparison of neighborhoods with and without formerly incarcerated individuals, however, proves unhelpful: `r round(readRDS("./temp/share_bgs_have_lost.rds") * 100, digits = 1)` percent of block groups in the state are home to someone who has been to prison, lending credence to the notion that the criminal justice system impacts nearly every neighborhood in the Sunshine State. There are, however, neighborhoods where formerly incarcerated individuals are concentrated. In Column 1 of Table \ref{tab:demos}, I take the statewide mean of block group characteristics, weighted by each block group's population. In Column 2, I re-weight the block groups by the number of formerly incarcerated residents.
 
 ```{r demos-chunk, echo = F, warning = F}
 t <- readRDS("./temp/demos_nhoods.rds")
@@ -124,7 +124,7 @@ note.latex <- "\\multicolumn{3}{l}{\\scriptsize{\\parbox{.5\\linewidth}{\\vspace
 j <- j %>% 
   mutate(n = row_number())
 
-lab <- "\\caption{\\label{tab:demos} Demographics of Neighborhoods}"
+lab <- "\\caption{\\label{tab:demos} Neighborhood Demographics}"
 insert1 <- "\\fontsize{10}{12}\\selectfont"
 
 j <- bind_rows(j, data.frame(V1 = c(note.latex, insert1), n = c(16.5, 1.1))) %>% 
@@ -142,28 +142,36 @@ write.table(j, "./temp/table_whatever2.tex", quote = F, col.names = F,
 
 Although nearly all parts of the state are impacted by the criminal justice system (and, more specifically, mass incarceration), Table \ref{tab:demos} makes clear that individuals return home to neighborhoods with lower incomes, higher levels of unemployment, and where a much larger share of the population is Black than other neighborhoods.
 
-I now test whether the presence of formerly incarerated individuals impacted whether and how neighborhoods voted. I start by exploring the relationship between the number of formerly incarcerated individuals living in a neighborhood and neighborhood support for Amendment 4. Unsurprisingly, as Table \ref{tab:support-reg} makes clear, neighborhoods with higher numbers of disenfranchised individuals supported Amendment 4 at higher rates. Table \ref{tab:support-reg} presents OLS estimates with robust standard errors clustered at the United States congressional district level.^[Where a precinct crosses district lines, it is assigned to the district that is home to the largest number of registered voters in the precinct.]
-\begin{singlespace}
-```{r support-chunk, echo = F, results = "hide", message = F, warning = F}
-load("./temp/support_reg.rdata")
+Having established that formerly incarcerated individuals are concentrated in lower-resourced neighborhoods, I investigate whether turnout in their neighborhoods was higher in 2018 thanks to the inclusion of Amendment 4 on the ballot. To test this relationship I run an OLS regression, where precinct-level turnout is the dependent variable. Turnout is defined by dividing the number of ballots cast for or against Amendment 4 by the number of actively registered voters in the precinct.^[Roughly 0.6 percent of precincts reported turnout of greater than 100 percent; these 35 precincts have been dropped from the analysis.] The number of formerly incarcerated residents^[As discussed above, this includes only formerly incarcerated residents who returned to home addresses reported by three or fewer other formerly incarcerated individuals.] as the primary independent variable.
 
-stargazer(m1,
+Table \ref{tab:to-precinct} presents the results of this regression. In addition to the number of formerly incarcerated residents, I control for the racial, gender, and partisan composition of the precinct, as well as turnout rates from the past few elections (calculated using the voter file). I also control for the average age of the precinct, as well as the median income, share with some collegiate education, and unemployment rate. Finally, fixed effects for congressional districts are included.^[Where precincts cross congressional boundaries, precincts are assigned to the congressional district in which most of their voters live.] Robust standard errors are clustered at the congressional district level.
+
+\begin{singlespace}
+```{r precinct-to-chunk, echo = F, results = "hide", message = F, warning = F}
+load("./temp/precinct_turnout.rdata")
+
+stargazer(m2,
           header = F,
           type = "latex", notes.align = "l",
-          covariate.labels = c("Formerly Incarcerated Residents", "Percent White", "Percent Black",
-                               "Percent Latino", "Percent Asian", "Percent Female", "Percent Democrats",
-                               "Average Age", "Average Income", "Percent With Some College",
+          covariate.labels = c("Formerly Incarcerated Residents",
+                               "Percent White", "Percent Black",
+                               "Percent Latino", "Percent Asian", "Percent Male", "Percent Democrats",
+                               "Percent Republicans",
+                               "Average Age", "Average Income (dollarsign10,000s)", "Percent With Some College",
                                "Percent Unemployed"),
           dep.var.labels.include = FALSE,
-          title = "\\label{tab:support-reg} Share Voting \"Yes\" on Amendment 4",
+          title = "\\label{tab:to-precinct} Turnout for Amendment 4",
           table.placement = "H",
           omit.stat = c("f", "ser"),
-          omit = c("US_Congressional_District", "female", "rep"),
+          omit = c("US_Congressional_District", "female",
+                   "General"),
           table.layout = "-cm#-t-a-s-n",
           out = "./temp/test.tex",
           out.header = F,
           notes = "TO REPLACE",
-          se = list(m1_ses))
+          se = list(m2_ses),
+          add.lines=list(c("Congressional District FEs" , "X"),
+                         c("Turnout in 2010 {--} 2016"  , "X")))
 
 j <- fread("./temp/test.tex", header = F, sep = "+")
 
@@ -175,24 +183,140 @@ j <- j %>%
          V1 = ifelse(grepl("\\\\#tab", V1), gsub("\\\\#", "", V1), V1)) %>% 
   filter(!grepl("Note:", V1))
 
-insert1 <- "\\fontsize{10}{12}\\selectfont"
+insert1 <- "\\small"
 
-j <- bind_rows(j, data.frame(V1 = c(insert1), n = c(7.5))) %>% 
+j <- bind_rows(j, data.frame(V1 = c(insert1), n = c(1.1))) %>% 
+  mutate(V1 = gsub("dollarsign", "\\\\$", V1)) %>% 
   arrange(n) %>% 
   select(-n)
 
-write.table(j, "./temp/table1.tex", quote = F, col.names = F,
+write.table(j, "./temp/precinct_to.tex", quote = F, col.names = F,
             row.names = F)
 ```
-\input{"../temp/table1.tex"}
+\input{"../temp/precinct_to.tex"}
 \end{singlespace}
 
-Okay now the marginal effects plot
+Table \ref{tab:to-precinct} indicates that there is a negative relationship between the number of formerly incarcerated residents in a precinct and the turnout in that precinct among registered voters. The coefficient, however, is small and difficult to interpret. Figure \ref{fig:marg1} shows the marginal effect of each additional disenfranchised resident on precinct-level turnout for Amendment 4. All other covariates are held at their means in this Figure \ref{fig:marg1}. Although the number of disenfranchised residents in a precinct reaches a maximum of 594, there are 300 or fewer disenfranchised residents in 99.2 percent of precincts. Predicted turnout in precincts with zero disenfranchised voters is just over 66 percent; in precincts with 300, predicted turnout was below 61 percent, implying a five point decrease over the effective range of observered values.
 
-```{r marg1, echo = FALSE, message = F, warning = F, fig.width = 5, fig.height = 5, fig.cap = "\\label{fig:marg1}Marginal Effect of Formerly Incarcerated Residents on Precinct Support for Amendment 4", fig.pos = "H", fig.align = "center"}
-j <- readRDS("./temp/marg_support_am4.rds")
-print(j)
+```{r marg1, echo = FALSE, message = F, warning = F, fig.width = 7.5, fig.height = 5, fig.cap = "\\label{fig:marg1}Marginal Effect of Each Formerly Incarcerated Residents on Precinct Turnout Among Registered Voters", fig.pos = "H", fig.align = "center"}
+load("./temp/marg_pct_to.rdata")
+print(p2)
 ```
+
+As discussed above, the use in Table \ref{tab:to-precinct} of registered voters as a denominator for turnout may be muddying what is actually occuring. Voters in the sorts of lower-income neighborhoods home to disproportionate shares of formerly incarcerated individuals are less likely to vote in general [CITE]. If excitement around Amendment 4 led 10 additional residents of a neighborhood to register, but only 1 of these new registrants actually participated, *overall* turnout was increased even while turnout among registered voters decreased (assuming that the precinct's overall turnout was, in this case, above 10 percent).
+
+To test whether this in fact happened, I begin by examining registrations increased more quickly in the run-up to the 2018 election in neighborhoods with more formerly incarcerated individuals. Using registration dates obtained from the registered voter file, I calculate the number of monthly registrations in each precinct in the state between January 1, 2010, and October 31, 2018. Although the effort to collect signatures to get Amendment 4 on the ballot took place over the course of years, the intiative officially received enough ballots on January 23^rd^, 2018 [@Bousquet2018]. I therefore use February, 2018, through October, 2018, as the "treatment" period. If registrations increased more quickly during this period in places with more formerly incarcerated individuals, this could explain the low turnout observed among registered voters in these neighborhoods.
+
+Table \ref{tab:neg-bin} presents the results of a regression testing whether this in fact occured. Because monthly registrations are counts, a standard OLS regression is inappropriate. Because tests indicate that overdispersion may be present in the data, I fit the model using a negative binomial specification. A dummy indicating the treatment months is indicated with the number of formerly incarcerated precinct residents. The same precinct-level controls are used as in Table \ref{tab:to-precinct}, with the inclusion of a time trend variable.
+
+\begin{singlespace}
+```{r neg-binom-chunk, echo = F, results = "hide", message = F, warning = F}
+neg_binom <- readRDS("./temp/neg_bin.rds")
+
+stargazer(neg_binom,
+          header = F,
+          type = "latex", notes.align = "l",
+          covariate.labels = c("D(February {--} October, 2018)",
+                               "Formerly Incarcerated Residents",
+                               "D(February {--} October, 2018) $\\times$ Formerly Incarcerated Residents",
+                               "Time Trend",
+                               "Percent White", "Percent Black",
+                               "Percent Latino", "Percent Asian", "Percent Male", "Percent Democrats",
+                               "Percent Republicans",
+                               "Average Age", "Average Income (dollarsign10,000s)", "Percent With Some College",
+                               "Percent Unemployed"),
+          order = c(1, 2, 42),
+          dep.var.labels.include = FALSE,
+          title = "\\label{tab:neg-bin} Turnout for Amendment 4",
+          table.placement = "H",
+          omit.stat = c("f", "ser"),
+          omit = c("US_Congressional_District", "female"),
+          table.layout = "-cm#-t-a-s-n",
+          out = "./temp/test.tex",
+          out.header = F,
+          notes = "TO REPLACE",
+          add.lines=list(c("Congressional District FEs" , "X")))
+
+j <- fread("./temp/test.tex", header = F, sep = "+")
+
+note.latex <- "\\multicolumn{2}{l}{\\scriptsize{\\parbox{.5\\linewidth}{\\vspace{2pt}$^{***}p<0.01$, $^{**}p<0.05$, $^*p<0.1$. \\\\Robust standard errors (clustered by congressional district) in parentheses.}}}"
+
+j <- j %>% 
+  mutate(n = row_number(),
+         V1 = ifelse(grepl("TO REPLACE", V1), note.latex, V1),
+         V1 = ifelse(grepl("\\\\#tab", V1), gsub("\\\\#", "", V1), V1)) %>% 
+  filter(!grepl("Note:", V1))
+
+insert1 <- "\\small"
+
+j <- bind_rows(j, data.frame(V1 = c(insert1), n = c(1.1))) %>% 
+  mutate(V1 = gsub("dollarsign", "\\\\$", V1)) %>% 
+  arrange(n) %>% 
+  select(-n)
+
+write.table(j, "./temp/table_neg_binom.tex", quote = F, col.names = F,
+            row.names = F)
+```
+\input{"../temp/table_neg_binom.tex"}
+\end{singlespace}
+
+The coefficient on D(February -- October, 2018) in Table \ref{tab:neg-bin} indicates monthly registrations were higher across the state in 2018 than in previous years. Although this is perhaps in part due to Amendment 4, the 2018 midterm elections saw higher turnout than any midterm in over a century [CITE]; there would likely have been a spike in registrations even in the absense of Amendment 4, given the competitive nature of the gubernatorial and United States senate races on the ballot in Florida that year.
+
+Table \ref{tab:neg-bin} also indicates that, over the whole period, monthly registrations were higher in precincts with more formerly incarcerated individuals. We cannot reject the null hypothesis, however, that Amendment 4 did not lead to more registrations in 2018 in neighborhoods with more formerly incarcerated residents. In other words, although registrations did increase over this period in communities with formerly incarcerated residents, this increase was not statistically distinguishable from the increase in registrations in other parts of the state. The depressed turnout in these neighborhoods in 2018, therefore, probably cannot be attributed to higher registration rates among voters with a lower propensity to vote.
+
+As a final test of the relationship between the presence of formerly incarcerated community members, Amendment 4, and turnout in 2018, I use turnout at the Census block group level. As discussed above, the Census Bureau provides estimates of the citizen voting age population (or CVAP) in each block group, which provides a denominator which is unbiased by uneven registration rates. In the block group analysis, I subtract the number of formerly incarcerated residents from the CVAP, because they were ineligible to participate in the election.
+
+Table \ref{tab:to-bg} fits the same suite of covariates from Table \ref{tab:to-precinct} on the block group level data. In this block group model, racial characteristics are taken from the ACS 5 year estimates ending in 2018, rather than from the registered voters in that block group. As before, robust standard errors are clustered by congressional district.
+
+\begin{singlespace}
+```{r bg-to-chunk, echo = F, results = "hide", message = F, warning = F}
+load("./temp/bg_turnout.rdata")
+
+stargazer(m1,
+          header = F,
+          type = "latex", notes.align = "l",
+          covariate.labels = c("Formerly Incarcerated Residents",
+                               "Percent Non-Hispanic White", "Percent Non-Hispanic Black",
+                               "Percent Latino", "Percent Asian", "Percent Male", "Percent Democrats",
+                               "Percent Republicans",
+                               "Average Age", "Average Income (dollarsign10,000s)", "Percent With Some College",
+                               "Percent Unemployed"),
+          dep.var.labels.include = FALSE,
+          title = "\\label{tab:to-bg} Turnout in 2018",
+          table.placement = "H",
+          omit.stat = c("f", "ser"),
+          omit = c("US_Congressional_District", "female",
+                   "to_16", "to_14", "to_12", "to_10"),
+          table.layout = "-cm#-t-a-s-n",
+          out = "./temp/test.tex",
+          out.header = F,
+          notes = "TO REPLACE",
+          se = list(m1_ses),
+          add.lines=list(c("Congressional District FEs" , "X"),
+                         c("Turnout in 2010 {--} 2016"  , "X")))
+
+j <- fread("./temp/test.tex", header = F, sep = "+")
+
+note.latex <- "\\multicolumn{2}{l}{\\scriptsize{\\parbox{.5\\linewidth}{\\vspace{2pt}$^{***}p<0.01$, $^{**}p<0.05$, $^*p<0.1$. \\\\Robust standard errors (clustered by congressional district) in parentheses.}}}"
+
+j <- j %>% 
+  mutate(n = row_number(),
+         V1 = ifelse(grepl("TO REPLACE", V1), note.latex, V1),
+         V1 = ifelse(grepl("\\\\#tab", V1), gsub("\\\\#", "", V1), V1)) %>% 
+  filter(!grepl("Note:", V1))
+
+insert1 <- "\\small"
+
+j <- bind_rows(j, data.frame(V1 = c(insert1), n = c(1.1))) %>% 
+  mutate(V1 = gsub("dollarsign", "\\\\$", V1)) %>% 
+  arrange(n) %>% 
+  select(-n)
+
+write.table(j, "./temp/bg_to.tex", quote = F, col.names = F,
+            row.names = F)
+```
+\input{"../temp/bg_to.tex"}
+\end{singlespace}
 
 \newpage
 # References {-}
