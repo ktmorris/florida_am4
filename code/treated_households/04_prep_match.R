@@ -61,4 +61,8 @@ fl_file_pre_match <- fl_file_pre_match %>%
             ~ . * 1) %>% 
   mutate(reg_date = as.integer(reg_date - as.Date("2000-01-01")))
 
+fl_file_pre_match <- left_join(fl_file_pre_match, select(fl_file, LALVOTERID, max_release,
+                                                         US_Congressional_District))
+
 saveRDS(fl_file_pre_match, "./temp/fl_file_pre_match.rds")
+

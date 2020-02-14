@@ -26,7 +26,8 @@ ids <- fl_roll %>%
   select(id, LALVOTERID)
 
 X <- fl_roll %>%
-  dplyr::select(-LALVOTERID, -treated, -starts_with("General"))
+  dplyr::select(-LALVOTERID, -treated, -starts_with("General"),
+                -max_release, -US_Congressional_District)
 
 
 genout <- readRDS("./temp/genout_t1.rds")

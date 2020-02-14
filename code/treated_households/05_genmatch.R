@@ -33,7 +33,7 @@ samp <- rbind(
 )
 
 match_data <- samp %>% 
-  select(-LALVOTERID, -treated)
+  select(-LALVOTERID, -treated, -max_release, -US_Congressional_District)
 
 genout <- GenMatch(Tr = samp$treated, X = match_data, replace = T, cluster = cl)
 saveRDS(genout, "./temp/genout_t1.rds")
