@@ -50,20 +50,133 @@ fl_history <- reshape2::melt(fl_history, id.vars = "LALVOTERID") %>%
 
 matches <- full_join(matches, fl_history, by = c("voter" = "LALVOTERID"))
 
-matches <- left_join(matches, fl_roll, by = c("voter" = "LALVOTERID"))
+matches <- left_join(matches, fl_roll, by = c("voter" = "LALVOTERID")) %>% 
+  select(-max_release)
+
+matches <- left_join(matches, select(fl_roll, LALVOTERID, max_release, match_reg_date = reg_date),
+                     by = c("match_group" = "LALVOTERID")) %>% 
+  filter((2018 - year(max_release)) >= 0)
+
+matches$interaction_term <- (matches$year == "2018") * matches$treated
+
+matches$interfull <- matches$interaction_term * (2018 - year(matches$max_release))
+matches$years_since <- (2018 - year(matches$max_release))
+matches$d18 <- (matches$year == "2018")*1
+matches$US_Congressional_District <- as.factor(matches$US_Congressional_District)
+
+matches2 <- filter(matches, max_release >= (match_reg_date + as.Date("2000-01-01")))
+
+matches3 <- filter(matches2, max_release < "2010-01-01")
 
 m1 <- glm(voted ~ I(year == "2018")*treated, data = matches,
-                  family = "binomial",
-                  weight = matches$weight)
+          family = "binomial",
+          weight = matches$weight)
 
 m2 <- glm(voted ~ I(year == "2018")*treated +
-                    white + black + latino + asian + female +
-                    male + reg_date + age + dem + rep +
-                    median_income + some_college, data = matches,
-                  family = "binomial",
-                  weight = matches$weight)
+            white + black + latino + asian + female +
+            male + reg_date + age + dem + rep +
+            median_income + some_college + US_Congressional_District,
+          data = matches,
+          family = "binomial",
+          weight = matches$weight)
 
-save(m1, m2, file = "./temp/full_match_reg.rdata")
+m3 <- glm(voted ~ d18*treated*years_since, data = filter(matches, years_since >= 0),
+          family = "binomial",
+          weight = matches$weight)
+
+names(m3[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m3[["coefficients"]]))
+names(m3[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m3[["coefficients"]]))
+
+m4 <- glm(voted ~ d18*treated*years_since +
+            white + black + latino + asian + female +
+            male + reg_date + age + dem + rep +
+            median_income + some_college + US_Congressional_District,
+          data = matches,
+          family = "binomial",
+          weight = matches$weight)
+
+names(m4[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m4[["coefficients"]]))
+names(m4[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m4[["coefficients"]]))
+
+m1b <- glm(voted ~ I(year == "2018")*treated, data = matches2,
+          family = "binomial",
+          weight = matches2$weight)
+
+m2b <- glm(voted ~ I(year == "2018")*treated +
+            white + black + latino + asian + female +
+            male + reg_date + age + dem + rep +
+            median_income + some_college + US_Congressional_District,
+           data = matches2,
+          family = "binomial",
+          weight = matches2$weight)
+
+m3b <- glm(voted ~ d18*treated*years_since, data = filter(matches2, years_since >= 0),
+          family = "binomial",
+          weight = matches2$weight)
+
+names(m3b[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m3b[["coefficients"]]))
+names(m3b[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m3b[["coefficients"]]))
+
+m4b <- glm(voted ~ d18*treated*years_since +
+            white + black + latino + asian + female +
+            male + reg_date + age + dem + rep +
+            median_income + some_college + US_Congressional_District,
+           data = matches2,
+          family = "binomial",
+          weight = matches2$weight)
+
+names(m4b[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m4b[["coefficients"]]))
+names(m4b[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m4b[["coefficients"]]))
+
+
+save(m1, m2, m3, m4,
+     m1b, m2b, m3b, m4b, file = "./temp/full_match_reg.rdata")
+##make regression table
+source("./code/misc/make_big_reg_table.R")
+####
+
+m1c <- glm(voted ~ I(year == "2018")*treated, data = matches3,
+           family = "binomial",
+           weight = matches3$weight)
+
+m2c <- glm(voted ~ I(year == "2018")*treated +
+             white + black + latino + asian + female +
+             male + reg_date + age + dem + rep +
+             median_income + some_college + US_Congressional_District,
+           data = matches3,
+           family = "binomial",
+           weight = matches3$weight)
+
+source("./code/misc/make_medium_reg_table.R")
+####
+
+marg <- ggpredict(model = m3b, c("years_since [all]", "treated [all]", "d18 [all]"))
+
+marg_end <- marg %>% 
+  filter(facet == 1) %>% 
+  mutate(group = ifelse(group == 1, "Treated", "Control"))
+
+ll <- matches %>% 
+  group_by(years_since) %>% 
+  tally()
+
+p <- ggplot() + 
+  geom_col(data = ll, aes(x = years_since, y = n/(2500*1000)), position="identity", linetype=1,
+           fill="gray60", alpha=0.5) +
+  geom_line(aes(x = x, y = predicted, linetype = group), data = marg_end) +
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group), alpha=0.25, fill = "black",
+              data = marg_end) +
+  xlab("Years Since Last Household Imprisonment") +
+  ylab("Predicted 2018 Turnout Among Registered Voters") + scale_x_continuous(labels = comma_format(accuracy = 1)) +
+  scale_y_continuous(labels = percent) +
+  labs(caption = "Notes: Distribution of years since latest imprisonment at bottom.") +
+  theme(plot.caption = element_text(hjust = 0)) +
+  theme_bw() + theme(plot.caption = element_text(hjust = 0),
+                     text = element_text(family = "LM Roman 10")) +
+  labs(linetype = "Treatment Group")
+
+saveRDS(p, "./temp/years_out.rds")
+
 
 c1 <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = matches,
                               family = "binomial",
@@ -84,17 +197,17 @@ black_voters <- filter(matches, match_group %in%
                          filter(fl_roll, black == 1)$LALVOTERID)
 
 c1_b <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = black_voters,
-                              family = "binomial",
-                              weight = black_voters$weight,
-                              cluster = black_voters$match_group)))
+                                family = "binomial",
+                                weight = black_voters$weight,
+                                cluster = black_voters$match_group)))
 
 c2_b <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
-                                white + black + latino + asian + female +
-                                male + reg_date + age + dem + rep +
-                                median_income + some_college, data = black_voters,
-                              family = "binomial",
-                              weight = black_voters$weight,
-                              cluster = black_voters$match_group)))
+                                  white + black + latino + asian + female +
+                                  male + reg_date + age + dem + rep +
+                                  median_income + some_college, data = black_voters,
+                                family = "binomial",
+                                weight = black_voters$weight,
+                                cluster = black_voters$match_group)))
 
 #### white
 
@@ -102,70 +215,70 @@ white_voters <- filter(matches, match_group %in%
                          filter(fl_roll, white == 1)$LALVOTERID)
 
 c1_w <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = white_voters,
-                              family = "binomial",
-                              weight = white_voters$weight,
-                              cluster = white_voters$match_group)))
+                                family = "binomial",
+                                weight = white_voters$weight,
+                                cluster = white_voters$match_group)))
 
 c2_w <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
-                                white + black + latino + asian + female +
-                                male + reg_date + age + dem + rep +
-                                median_income + some_college, data = white_voters,
-                              family = "binomial",
-                              weight = white_voters$weight,
-                              cluster = white_voters$match_group)))
+                                  white + black + latino + asian + female +
+                                  male + reg_date + age + dem + rep +
+                                  median_income + some_college, data = white_voters,
+                                family = "binomial",
+                                weight = white_voters$weight,
+                                cluster = white_voters$match_group)))
 
 #### latino
 
 latino_voters <- filter(matches, match_group %in%
-                         filter(fl_roll, latino == 1)$LALVOTERID)
+                          filter(fl_roll, latino == 1)$LALVOTERID)
 
 c1_l <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = latino_voters,
-                              family = "binomial",
-                              weight = latino_voters$weight,
-                              cluster = latino_voters$match_group)))
+                                family = "binomial",
+                                weight = latino_voters$weight,
+                                cluster = latino_voters$match_group)))
 
 c2_l <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
-                                white + black + latino + asian + female +
-                                male + reg_date + age + dem + rep +
-                                median_income + some_college, data = latino_voters,
-                              family = "binomial",
-                              weight = latino_voters$weight,
-                              cluster = latino_voters$match_group)))
+                                  white + black + latino + asian + female +
+                                  male + reg_date + age + dem + rep +
+                                  median_income + some_college, data = latino_voters,
+                                family = "binomial",
+                                weight = latino_voters$weight,
+                                cluster = latino_voters$match_group)))
 #### women
 
 female_voters <- filter(matches, match_group %in%
                           filter(fl_roll, female == 1)$LALVOTERID)
 
 c1_f <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = female_voters,
-                              family = "binomial",
-                              weight = female_voters$weight,
-                              cluster = female_voters$match_group)))
+                                family = "binomial",
+                                weight = female_voters$weight,
+                                cluster = female_voters$match_group)))
 
 c2_f <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
-                                white + black + latino + asian + female +
-                                male + reg_date + age + dem + rep +
-                                median_income + some_college, data = female_voters,
-                              family = "binomial",
-                              weight = female_voters$weight,
-                              cluster = female_voters$match_group)))
+                                  white + black + latino + asian + female +
+                                  male + reg_date + age + dem + rep +
+                                  median_income + some_college, data = female_voters,
+                                family = "binomial",
+                                weight = female_voters$weight,
+                                cluster = female_voters$match_group)))
 
 #### men
 
 male_voters <- filter(matches, match_group %in%
-                          filter(fl_roll, male == 1)$LALVOTERID)
+                        filter(fl_roll, male == 1)$LALVOTERID)
 
 c1_m <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = male_voters,
-                              family = "binomial",
-                              weight = male_voters$weight,
-                              cluster = male_voters$match_group)))
+                                family = "binomial",
+                                weight = male_voters$weight,
+                                cluster = male_voters$match_group)))
 
 c2_m <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated +
-                                white + black + latino + asian + female +
-                                male + reg_date + age + dem + rep +
-                                median_income + some_college, data = male_voters,
-                              family = "binomial",
-                              weight = male_voters$weight,
-                              cluster = male_voters$match_group)))
+                                  white + black + latino + asian + female +
+                                  male + reg_date + age + dem + rep +
+                                  median_income + some_college, data = male_voters,
+                                family = "binomial",
+                                weight = male_voters$weight,
+                                cluster = male_voters$match_group)))
 
 save(c1, c2, c1_b, c2_b, c1_w, c2_w, c1_l, c2_l,
      c1_f, c2_f, c1_m, c2_m, file = "./temp/confints.rdata")
@@ -214,8 +327,8 @@ matches <- left_join(matches, fl_roll, by = "id")
 means_prematch <- fl_roll %>% 
   group_by(treated) %>% 
   summarize_at(vars(white, black, latino, asian, female,
-                      male, reg_date, age, dem, rep,
-                      median_income, some_college), mean)
+                    male, reg_date, age, dem, rep,
+                    median_income, some_college), mean)
 
 means_postmatch <- matches %>% 
   group_by(treat) %>% 
@@ -228,22 +341,22 @@ rm(matches, matches1, matches2)
 qqs_post <- lapply(c("white", "black", "latino", "asian", "female",
                      "male", "reg_date", "age", "dem", "rep",
                      "median_income", "some_college"), function(var){
-  j <- select(fl_roll, var)
-  colnames(j) <- c("t")
-  
-  qqout  <- qqstats(j$t[mout$index.treated], j$t[mout$index.control])
-  return(qqout)
-})
+                       j <- select(fl_roll, var)
+                       colnames(j) <- c("t")
+                       
+                       qqout  <- qqstats(j$t[mout$index.treated], j$t[mout$index.control])
+                       return(qqout)
+                     })
 
 qqs_pre <- lapply(c("white", "black", "latino", "asian", "female",
                     "male", "reg_date", "age", "dem", "rep",
                     "median_income", "some_college"), function(var){
-  j <- select(fl_roll, var, treated)
-  colnames(j) <- c("t", "uncontested")
-  
-  qqout  <- qqstats(j$t[j$uncontested == T], j$t[j$uncontested == F])
-  return(qqout)
-})
+                      j <- select(fl_roll, var, treated)
+                      colnames(j) <- c("t", "uncontested")
+                      
+                      qqout  <- qqstats(j$t[j$uncontested == T], j$t[j$uncontested == F])
+                      return(qqout)
+                    })
 
 
 TrMean <- c()
