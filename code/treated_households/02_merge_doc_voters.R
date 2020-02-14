@@ -17,6 +17,10 @@ for(i in 1:nrow(address_cleaner)){
                                           released_with_addresses$address)
 }
 
+latest_release <- released_with_addresses %>% 
+  mutate(release_date = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
+  group_by(address) %>% 
+  summarize(max_release = max(release_date))
 
 ####
 
@@ -42,7 +46,8 @@ fl_file <- dbGetQuery(db, "select LALVOTERID,
                            Voters_BirthDate,
                            Voters_OfficialRegDate,
                            Parties_Description,
-                           EthnicGroups_EthnicGroup1Desc
+                           EthnicGroups_EthnicGroup1Desc,
+                           US_Congressional_District
                            from fl") %>% 
   mutate(address = paste(Residence_Addresses_HouseNumber,
                          Residence_Addresses_PrefixDirection,
@@ -77,6 +82,8 @@ for(i in 1:nrow(address_cleaner)){
 }
 
 fl_file$treated <- fl_file$address %in% released_with_addresses$address
+
+fl_file <- left_join(fl_file, latest_release, by = "address")
 
 saveRDS(fl_file, "./temp/fl_file_cleaned_addresses.rds")
 
