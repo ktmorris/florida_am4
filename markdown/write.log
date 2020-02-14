@@ -1,11 +1,11 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2020.2.10)  12 FEB 2020 18:19
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2020.2.14)  14 FEB 2020 12:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **write.tex
 (./write.tex
-LaTeX2e <2020-02-02> patch level 1
-L3 programming layer <2020-02-08>
+LaTeX2e <2020-02-02> patch level 2
+L3 programming layer <2020-02-11>
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2019/12/20 v1.4l Standard LaTeX document class
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/size12.clo
@@ -203,7 +203,7 @@ X
 \l__fontspec_tmpc_dim=\dimen146
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/fontenc.sty
-Package: fontenc 2020/01/25 v2.0m Standard LaTeX package
+Package: fontenc 2020/02/11 v2.0o Standard LaTeX package
 )
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/fontspec/fontspe
 c.cfg))) (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/fi
@@ -662,7 +662,7 @@ LaTeX Warning: Label `fig:dind' multiply defined.
 LaTeX Warning: Label `' multiply defined.
 
 
-LaTeX Warning: Label `fig:dind-groups' multiply defined.
+LaTeX Warning: Label `' multiply defined.
 
 )
 \openout1 = `write.aux'.
@@ -1103,18 +1103,14 @@ Overfull \vbox (14.02104pt too high) has occurred while \output is active []
 [18] [19] [20]
 File: write_files/figure-latex/dind-1.pdf Graphic file (type pdf)
 <use write_files/figure-latex/dind-1.pdf>
-[21] [22] (../temp/dind_reg.tex
-Overfull \hbox (335.45715pt too wide) in paragraph at lines 4--30
- [][] 
- []
-
-) [23]
-Overfull \vbox (8.93948pt too high) has occurred while \output is active []
-
-[24]
-File: write_files/figure-latex/dind-groups-1.pdf Graphic file (type pdf)
-<use write_files/figure-latex/dind-groups-1.pdf>
-[25]
+[21] [22] (../temp/dind_reg.tex) [23] (../temp/dind_reg_medium.tex
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 10.95pt on input line 5.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 10.95099pt on input line 5.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 10.94882pt on input line 5.
+) [24] [25]
 Underfull \hbox (badness 1454) in paragraph at lines 357--359
 \TU/lmr/m/n/12 to Felons.” \TU/lmr/m/it/12 Tampa Bay Times: Florida Politics\TU
 /lmr/m/n/12 , January 23, 2018. []$[][][][][] []
@@ -1162,11 +1158,11 @@ LaTeX Warning: There were multiply-defined labels.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 412.
  ) 
 Here is how much of TeX's memory you used:
- 18620 strings out of 481812
- 327732 string characters out of 5936198
- 755381 words of memory out of 5000000
- 35280 multiletter control sequences out of 15000+600000
- 541785 words of font info for 97 fonts, out of 8000000 for 9000
+ 18626 strings out of 481805
+ 327844 string characters out of 5936003
+ 767671 words of memory out of 5000000
+ 35288 multiletter control sequences out of 15000+600000
+ 542747 words of font info for 103 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  52i,15n,115p,1275b,496s stack positions out of 5000i,500n,10000p,200000b,80000s
 

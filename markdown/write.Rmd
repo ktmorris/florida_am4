@@ -417,57 +417,22 @@ p
 
 The trends presented in Figure \ref{fig:dind} offer preliminary corroboration of what I find at the neighborhood level --- namely, that proximal contact with formerly incarcerated individuals resulted in lower, not higher, turnout in the 2018 election even after controlling for (here, individual-level) historical turnout. Table \ref{tab:tab-dind} formalizes these trends into a logistic regression. The dependent variable takes the value 0 if the voter did not vote, and 1 if she did. A treatment dummy distinguishes treated from control voters. The treatment dummy is interacted with another dummy identifying the 2018 election. Robust standard errors are clustered at the level of the match [@Abadie2019], and each control observation is assigned one-fifth the weight of the treatment observations (to account for the five-to-one match). Model 1 presents the model output without the other controls used for matching; Model two includes these covariates.
 
+In Models 3 and 4 of Table \ref{tab:tab-dind} I consider the possibility that, as households become further removed from a member's incarceration, the negative effects of their incarceration on turnout dissipate. In these models, the dummies indicating treatment and the 2018 election are interacted with the number of years since the most recent completion of a term of incarceration for a household member. Matched control observations are assigned the value associated with their treated observation. Model 3 includes no other covariates, while Model 4 includes the matched variables.
+
+It is, of course, highly possible that formerly incarcerated individuals no longer live in the same household they reported when leaving prison; this is especially true for individuals released from prison early in the sample. To control for this possibility, Models 5 -- 8 include only the treated individuals (and their matches) whose registration dates are earlier than the latest prison release date of a household member. These are individuals, therefore, that we can be sure lived with an incarcerated individual.
+
 \begin{singlespace}
-```{r dind-reg-chunk, echo = F, results = "hide", message = F, warning = F}
-load("./temp/full_match_reg.rdata")
-
-stargazer(m1, m2,
-          header = F,
-          type = "latex", notes.align = "l",
-          covariate.labels = c("D(2018)", "D(Treated)", "D(2018) $\\times$ D(Treated)"),
-          dep.var.labels.include = FALSE,
-          title = "\\label{tab:tab-dind} General Election Turnout, 2010 {--} 2018",
-          table.placement = "H",
-          omit.stat = c("aic"),
-          table.layout = "-cm#-t-a-s-n",
-          out = "./temp/test.tex",
-          out.header = F,
-          omit = c("white", "black", "latino", "asian", "female", "male",
-                   "reg_date", "age", "dem", "rep", "median_income", "some_college"),
-          notes = "TO REPLACE",
-          se = list(coef(summary(m1,cluster = c("match_group")))[, 2],
-                    coef(summary(m2,cluster = c("match_group")))[, 2]),
-          add.lines=list(c("Includes covariates from matching" , "", "X")))
-
-j <- fread("./temp/test.tex", header = F, sep = "+")
-
-note.latex <- "\\multicolumn{3}{l}{\\scriptsize{\\parbox{.5\\linewidth}{\\vspace{2pt}$^{***}p<0.01$, $^{**}p<0.05$, $^*p<0.1$. \\\\Robust standard errors (clustered at level of match) in parentheses.}}}"
-
-j <- j %>% 
-  mutate(n = row_number(),
-         V1 = ifelse(grepl("TO REPLACE", V1), note.latex, V1),
-         V1 = ifelse(grepl("\\\\#tab", V1), gsub("\\\\#", "", V1), V1)) %>% 
-  filter(!grepl("Note:", V1))
-
-insert1 <- "\\small"
-
-j <- bind_rows(j, data.frame(V1 = c(insert1), n = c(1.1))) %>% 
-  mutate(V1 = gsub("dollarsign", "\\\\$", V1)) %>% 
-  arrange(n) %>% 
-  select(-n)
-
-write.table(j, "./temp/dind_reg.tex", quote = F, col.names = F,
-            row.names = F)
-```
 \input{"../temp/dind_reg.tex"}
 \end{singlespace}
 
-Break out by subgroup
+In each of the specifications presented in Table \ref{tab:tab-dind}, treated individuals were less likely to vote in 2018 after controlling for both their own vote history and the vote history of their matched counterparts. The models that incorporate information about how long their housemates had been out of prison indicate, however, that this effect is moderated by time: individuals who lived with housemates who had not been imprisoned in many years were more likely to vote in 2018 than other voters.
 
-```{r dind-groups, echo = FALSE, message = F, warning = F, fig.width = 7.5, fig.height = 5, fig.cap = "\\label{fig:dind-groups}Estimated Treatment Effect by Group", fig.pos = "H", fig.align = "center"}
-load("./temp/coef_plot.rdata")
-p
-```
+That the effect is moderated by time is unsurprising. Individuals whose household members went to and were released from prison between the 2016 and 2018 elections, for instance, received two treatments: they both were "negatively" treated by their proximal contact with the criminal justice system and potentially "positively" treated by the presence of Amendment 4. What *is* surprising, however, is that D(2018) is still associated with a negative treatment even for the households that were most removed from their proximal contact with the incarceration of a household member. Table \ref{tab:oldies} presents the results of Models 5 and 6 from Table \ref{tab:tab-dind}, but limits the pool to households where the most recent incarceration ended prior to 2010. This pool is restricted to individuals we are certain lived with formerly incarcerated individuals, and the negative shock of proximal contact for these individuals should be reflected in the base years of the difference-in-differences models. That D(2018) remains significant and negative for these individuals is puzzling.
+
+\begin{singlespace}
+\input{"../temp/dind_reg_medium.tex"}
+\end{singlespace}
+
 
 \newpage
 # References {-}
