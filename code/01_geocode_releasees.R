@@ -22,7 +22,18 @@ released_with_addresses <- released_with_addresses %>%
 
 saveRDS(nrow(released_with_addresses), "./temp/number_released_goodnumber.rds")
 
-lats_longs <- geocode(released_with_addresses$address, override_limit = T, output = "more")
+
+released_with_addresses$group <- ceiling((c(1:nrow(released_with_addresses)) /
+                                           nrow(released_with_addresses))*4)
+
+# lats_longs1 <- geocode(filter(released_with_addresses, group == 1)$address, override_limit = T, output = "more")
+# saveRDS(lats_longs1, "./temp/geocode_output1.rds")
+# lats_longs2 <- geocode(filter(released_with_addresses, group == 2)$address, override_limit = T, output = "more")
+# saveRDS(lats_longs2, "./temp/geocode_output2.rds")
+# lats_longs3 <- geocode(filter(released_with_addresses, group == 3)$address, override_limit = T, output = "more")
+# saveRDS(lats_longs3, "./temp/geocode_output3.rds")
+lats_longs4 <- geocode(filter(released_with_addresses, group == 4)$address, override_limit = T, output = "more")
+saveRDS(lats_longs4, "./temp/geocode_output4.rds")
 
 ### now keep only those in florida with good addresses, map to precincts
 released_with_addresses <- bind_cols(released_with_addresses, lats_longs) %>% 
@@ -51,6 +62,6 @@ bgs <- spTransform(bgs, "+init=epsg:4326")
 pings  <- SpatialPoints(released_with_addresses[c('lon','lat')], proj4string = bgs@proj4string)
 released_with_addresses$block_group <- over(pings, bgs)$GEOID
 
-saveRDS(released_with_addresses, "./temp/released_with_addresses.rds")
+saveRDS(released_with_addresses, "./temp/released_with_addressesb.rds")
 
-saveRDS(sum(released_with_addresses$loctype %in% c("range_interpolated", "rooftop")), "./temp/good_geocoded.rds")
+saveRDS(sum(released_with_addresses$loctype %in% c("range_interpolated", "rooftop")), "./temp/good_geocodedb.rds")
