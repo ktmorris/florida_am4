@@ -1,4 +1,5 @@
 library(butcher)
+library(tidycensus)
 library(extrafont)
 library(miceadds)
 library(Hmisc)
