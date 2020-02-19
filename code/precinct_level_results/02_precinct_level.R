@@ -192,7 +192,7 @@ ggplot() +
   xlab("Number of Formerly Incarcerated Residents") +
   ylab("Turnout") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
   scale_y_continuous(labels = percent) +
-  ggtitle("Marginal Effect of Disenfranchised Voters on Turnout for Amendment 4") +
+  ggtitle("Marginal Effect of Disenfranchised Voters on Support for Amendment 4") +
   labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
   geom_hline(yintercept = mean(results_demos$share_yes)) + theme_bw() +
   theme(plot.caption = element_text(hjust = 0))
@@ -218,20 +218,24 @@ save(m1, m1_ses, file = "./temp/support_reg.rdata")
 
 marg <- ggeffect(model = m1_rob, c("small_res_doc [all]"))
 
+cm1 <- mean(filter(results_demos, to <= 1)$share_yes)
+
 p1 <- ggplot() + 
   geom_histogram(aes(x = small_res_doc, y = ..count../2500), position="identity", linetype=1,
                  fill="gray60", data = results_demos, alpha=0.5, bins = 30) + 
-  geom_line(aes(x = x, y = predicted), data = marg) +
-  geom_line(aes(x = x, y = conf.low), linetype = 0, data = marg) +
-  geom_line(aes(x = x, y = conf.high), linetype = 0, data = marg) +
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), fill= "blue", alpha=0.25, data = marg) +
+  geom_line(aes(x = x, y = predicted), data = marg, color = "black") +
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), fill= "black", alpha=0.25, data = marg) +
   xlab("Number of Formerly Incarcerated Residents") +
   ylab("Support for Amendment 4") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
   scale_y_continuous(labels = percent) +
   labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
+  geom_hline(yintercept = cm1, linetype = 2) +
+  geom_text(aes(300, cm1, label = "Average Precinct Support for Amendment 4",
+                vjust = 1, family = "LM Roman 10", hjust = 1)) +
+  theme(plot.caption = element_text(hjust = 0)) +
   theme_bw() + theme(plot.caption = element_text(hjust = 0),
                      text = element_text(family = "LM Roman 10"))
-saveRDS(p1, "./temp/marg_support_am4.rds")
+save(p1, cm1, file = "./temp/marg_support_am4.rdata")
 
 #############
 m2 <- lm(to ~ small_res_doc + white + black + latino + asian +
@@ -273,7 +277,7 @@ m2b_ses <- data.frame(
 save(m2, m2_ses, m2b, m2b_ses, file = "./temp/precinct_turnout.rdata")
 
 marg <- ggeffect(model = m2_rob, "small_res_doc [all]")
-cm <- mean(filter(results_demos, to <= 1)$to)
+cm2 <- mean(filter(results_demos, to <= 1)$to)
 p2 <- ggplot() + 
   geom_histogram(aes(x = small_res_doc, y = ..count../2500), position="identity", linetype=1,
                  fill="gray60", data = results_demos, alpha=0.5, bins = 30) + 
@@ -283,14 +287,14 @@ p2 <- ggplot() +
   ylab("Turnout Among Registered Voters") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
   scale_y_continuous(labels = percent) +
   labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
-  geom_hline(yintercept = cm, linetype = 2) +
-  geom_text(aes(300, cm, label = "Average Precinct Turnout (Statewide)",
+  geom_hline(yintercept = cm2, linetype = 2) +
+  geom_text(aes(300, cm2, label = "Average Precinct Turnout",
                 vjust = -.5, family = "LM Roman 10", hjust = 1)) +
   theme(plot.caption = element_text(hjust = 0)) +
   theme_bw() + theme(plot.caption = element_text(hjust = 0),
                      text = element_text(family = "LM Roman 10"))
 
-save(p2, cm, file = "./temp/marg_pct_to.rdata")
+save(p2, cm2, file = "./temp/marg_pct_to.rdata")
 #############
 m3 <- lm(roll_off ~ small_res_doc + white + black + latino + asian +
            female + male + dem + rep + age +
@@ -314,20 +318,28 @@ save(m3, m3_ses, file = "./temp/precinct_rolloff.rdata")
 
 marg <- ggeffect(model = m3, "small_res_doc")
 
-ggplot() + 
-  geom_histogram(aes(x = small_res_doc, y = ..count../5000), position="identity", linetype=1,
-                 fill="gray60", data = results_demos, alpha=0.5, bins = 30) + 
-  geom_line(aes(x = x, y = predicted), data = marg) +
-  geom_line(aes(x = x, y = conf.low), linetype = 0, data = marg) +
-  geom_line(aes(x = x, y = conf.high), linetype = 0, data = marg) +
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), fill= "blue", alpha=0.25, data = marg) +
-  xlab("Number of Formerly Incarcerated Residents") +
-  ylab("Support for Amendment 4") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
-  scale_y_continuous(labels = percent) +
-  ggtitle("Marginal Effect of Disenfranchised Voters on Support for Amendment 4") +
-  labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
-  theme(plot.caption = element_text(hjust = 0))
+cm3 <- mean(filter(results_demos, to <= 1)$roll_off)
 
+p3 <- ggplot() + 
+  geom_histogram(aes(x = small_res_doc, y = ..count../50000), position="identity", linetype=1,
+                 fill="gray60", data = results_demos, alpha=0.5, bins = 30) + 
+  geom_line(aes(x = x, y = predicted), data = marg, color = "black") +
+  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), fill= "black", alpha=0.25, data = marg) +
+  xlab("Number of Formerly Incarcerated Residents") +
+  ylab("Precinct Amendment 4 Roll-Off") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
+  scale_y_continuous(labels = percent) +
+  labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
+  geom_hline(yintercept = cm3, linetype = 2) +
+  geom_text(aes(300, cm3, label = "Average Precinct Roll-Off",
+                vjust = -.5, family = "LM Roman 10", hjust = 1)) +
+  theme(plot.caption = element_text(hjust = 0)) +
+  theme_bw() + theme(plot.caption = element_text(hjust = 0),
+                     text = element_text(family = "LM Roman 10"))
+save(p3, cm3, file = "./temp/marg_rolloff.rdata")
+
+
+g <- grid.arrange(p1, p3, nrow = 1)
+save(g, file = "./temp/test.rdata")
 #############
 
 history <- dbConnect(SQLite(), "D:/national_file_history.db")
@@ -339,8 +351,7 @@ fl_file <- left_join(fl_file, fl_history, by = "LALVOTERID")
 
 bg_level <- fl_file %>% 
   group_by(GEOID) %>% 
-  summarize_at(vars(white, black, latino, asian,
-                    female, male, dem, rep, age),
+  summarize_at(vars(female, male, dem, rep, age),
                mean, na.rm = T)
 
 bg2 <- fl_file %>% 
@@ -403,16 +414,21 @@ bg_level <- inner_join(bg_level, readRDS("./temp/block_group_census_data.RDS"),
 
 bg_level$median_income <- bg_level$median_income / 10000
 
+
+bg_level <- rename(bg_level,
+                   white = nh_white,
+                   black = nh_black)
+
 m1 <- lm(to_18 ~ small_res_doc + 
-           nh_white + nh_black + latino.y + asian.y +
+           white + black + latino + asian +
            female + male + dem + rep + age +
            median_income + some_college + unem +
            to_16 + to_14 + to_12 + to_10 + 
            US_Congressional_District,
          data = filter(bg_level, to_18 <= 1))
 
-m1_rob <- lm_robust(to_18 ~ small_res_doc +
-                      nh_white + nh_black + latino.y + asian.y +
+m1_rob <- lm_robust(to_18 ~ small_res_doc + 
+                      white + black + latino + asian +
                       female + male + dem + rep + age +
                       median_income + some_college + unem +
                       to_16 + to_14 + to_12 + to_10 + 
