@@ -11,7 +11,6 @@ released_with_addresses <- readRDS("./temp/released_with_addresses.rds") %>%
 fl_file <- dbGetQuery(db, "select LALVOTERID, Voters_FirstName,
                            Voters_MiddleName, Voters_LastName,
                            Voters_BirthDate from fl") %>% 
-  fl_file <- fl_file %>% 
   rename(last_name = Voters_LastName,
          first_name = Voters_FirstName,
          middle_name = Voters_MiddleName) %>% 
