@@ -47,7 +47,8 @@ fl_file <- dbGetQuery(db, "select LALVOTERID,
                            Voters_OfficialRegDate,
                            Parties_Description,
                            EthnicGroups_EthnicGroup1Desc,
-                           US_Congressional_District
+                           US_Congressional_District,
+                           Voters_FIPS
                            from fl") %>% 
   mutate(address = paste(Residence_Addresses_HouseNumber,
                          Residence_Addresses_PrefixDirection,
