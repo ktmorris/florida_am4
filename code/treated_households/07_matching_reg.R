@@ -63,6 +63,7 @@ matches$interfull <- matches$interaction_term * (2018 - year(matches$max_release
 matches$years_since <- (2018 - year(matches$max_release))
 matches$d18 <- (matches$year == "2018")*1
 matches$US_Congressional_District <- as.factor(matches$US_Congressional_District)
+matches$pres <- matches$year %in% c("2012", "2016")
 
 matches2 <- filter(matches, max_release >= (match_reg_date + as.Date("2000-01-01")))
 
