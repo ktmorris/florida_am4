@@ -1,7 +1,7 @@
 ## this can be run locally or on NYU's HPC. Set option in next step
 ## option allowed because of how long GenMatch can take
 
-on_nyu <- T
+on_nyu <- F
 if(on_nyu){
   library(Matching)
   library(data.table)
@@ -27,13 +27,14 @@ ids <- fl_roll %>%
 
 X <- fl_roll %>%
   dplyr::select(-LALVOTERID, -treated, -starts_with("General"),
-                -max_release, -US_Congressional_District)
+                -max_release)
 
 
 genout <- readRDS("./temp/genout_t1.rds")
 
 mout <- Matchby(Tr = fl_roll$treated, X = X,
-                by = c(X$white,
+                by = c(X$US_Congressional_District,
+                       X$white,
                        X$black,
                        X$latino,
                        X$asian,
