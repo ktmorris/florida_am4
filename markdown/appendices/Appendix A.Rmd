@@ -1,0 +1,153 @@
+---
+output:
+  bookdown::pdf_document2:
+    toc: no
+    fig_caption: yes
+    latex_engine: xelatex
+    keep_tex: true
+bibliography: "am4.bib"
+link-citations: yes
+fontsize: 12pt
+header-includes:
+    - \usepackage{rotating}
+    - \usepackage{setspace}\doublespacing
+    - \newcommand{\beginsupplement}{\setcounter{table}{0}  \renewcommand{\thetable}{A\arabic{table}} \setcounter{figure}{0} \renewcommand{\thefigure}{A\arabic{figure}}}
+---
+\pagenumbering{gobble}
+\pagebreak
+```{r setup, echo = F, message = F, warning = F}
+knitr::opts_knit$set(root.dir = "..", dev = "cairo_pdf")
+library(systemfit)
+library(AER)
+library(sandwich)
+library(lmtest)
+library(scales)
+library(tidyverse)
+library(extrafont)
+library(kableExtra)
+library(data.table)
+library(stargazer)
+loadfonts()
+```
+\pagenumbering{arabic}
+\beginsupplement
+# Appendix A {-}
+
+The main analyses in this paper use all individuals released from state prison in Florida since October 1, 1997, who were convicted of felony offenses. The Florida Department of Corrections knows only the address reported by the formerly incarcerated individual when they left state custody; in the case of individuals who have not reoffended since the late 1990s, therefore, the addresses are more than twenty years old. This poses challenges for analyses that assume that the neighborhoods to which they moved back are still being "treated" by the presence of disenfranchised individuals. Some of these individuals certainly died; others will have moved to a different neighborhood, or out of the state entirely. This could lead to two types of error: I may be overstating the number of formerly incarcerated residents of some neighborhoods, while underestimating the number in others.
+
+To test whether this poses fatal flaws for the analysis, I here replicate the findings presented in the body of this paper using a subset of formerly incarcerated individuals. Rather than include all formerly incarcerated individuals, I include only individuals released from parole since January 1, 2015. This does not entirely obviate the problem: certainly, some of the individuals released between 2015 and 2018 could have died or moved away. A much smaller share of them, however, are likely to have done so in such a short period of time. The beginning of 2015 is a somewhat arbitrary date; I seek to balance a sufficient number of observations on the one hand, and a short enough window in which individuals could have died or moved on the other.
+
+Table \ref{tab:appendix-a} presents the results of these regressions looking at neighborhood turnout. Model 1 presents the precinct-level regression, where the only change from Table 2 in the main body of the report is the variable "Formerly Incarcerated Residents." Here, it is the number of formerly incarcerated residents released after 2014. Model 2 implements the same change as Model 1, but for block groups. Model 3 includes the changed definition of number of released residents, but also re-adjusts block group ACVAP to subtract only the number of individuals released since 2015 from the block group's CVAP.
+
+\begin{singlespace}
+```{r precinct-to-chunk, echo = F, results = "hide", message = F, warning = F}
+load("./temp/precinct_regs_appendix.rdata")
+m1a_ap <- m1_ap
+load("./temp/bg_regs_appendix.rdata")
+
+stargazer(m2_ap, m1_ap, m1b_ap,
+          header = F,
+          type = "latex", notes.align = "l",
+          column.separate = c(1, 2),
+          column.labels = c("Precinct-Level", "Block Group-Level"),
+          covariate.labels = c("Formerly Incarcerated Residents",
+                               "Percent White", "Percent Black",
+                               "Percent Latino", "Percent Asian", "Percent Male", "Percent Democrats",
+                               "Percent Republicans",
+                               "Average Age", "Average Income (dollarsign10,000s)", "Percent With Some College",
+                               "Percent Unemployed"),
+          dep.var.labels = c("", "", ""),
+          title = "\\label{tab:appendix-a} Neighborhood Turnout in 2018",
+          table.placement = "H",
+          omit.stat = c("f", "ser"),
+          omit = c("US_Congressional_District", "female",
+                   "General", "to_16", "to_14", "to_12", "to_10"),
+          table.layout = "-cdm#-t-a-s-n",
+          out = "./temp/test.tex",
+          out.header = F,
+          notes = "TO REPLACE",
+          se = list(coef(summary(m2_ap, cluster = c("US_Congressional_District")))[, 2],
+                    coef(summary(m1_ap, cluster = c("US_Congressional_District")))[, 2],
+                    coef(summary(m1b_ap, cluster = c("US_Congressional_District")))[, 2]),
+          add.lines=list(c("Congressional District FEs" , "X", "X", "X"),
+                         c("Turnout in 2010 {--} 2016"  , "X", "X", "X")))
+
+j <- fread("./temp/test.tex", header = F, sep = "+")
+
+note.latex <- "\\multicolumn{2}{l}{\\scriptsize{\\parbox{.5\\linewidth}{\\vspace{2pt}$^{***}p<0.01$, $^{**}p<0.05$, $^*p<0.1$. \\\\Robust standard errors (clustered by congressional district) in parentheses.}}}"
+
+j <- j %>% 
+  mutate(n = row_number(),
+         V1 = ifelse(grepl("TO REPLACE", V1), note.latex, V1),
+         V1 = ifelse(grepl("\\\\#tab", V1), gsub("\\\\#", "", V1), V1)) %>% 
+  filter(!grepl("Note:", V1))
+
+insert1 <- "\\resizebox{!}{.5\\textheight}{%"
+insert2 <- "}"
+
+j <- bind_rows(j, data.frame(V1 = c(insert1, insert2), n = c(3.1, nrow(j) + 1 - 0.01))) %>% 
+  mutate(V1 = gsub("dollarsign", "\\\\$", V1)) %>% 
+  arrange(n) %>% 
+  select(-n)
+
+write.table(j, "./temp/appendix_a.tex", quote = F, col.names = F,
+            row.names = F)
+```
+\input{"../temp/appendix_a.tex"}
+\end{singlespace}
+
+Like Table 2, Table \ref{tab:appendix-a} indicates that the presence of formerly incarcerated residents in a neighborhood is associated with substantially lower turnout. Although the size of the coefficient is much larger than in Table 2 in the body of the report, the observed range of values of formerly incarcerated residents is much smaller.
+
+Table \ref{tab:ap-a-2} demonstrates that precints with more residents who were released from prison after 2014 also were more likely to support Amendment 4, and were less likely to roll-off, corroborating the evidence presented in the body of this paper.
+
+\begin{singlespace}
+```{r precinct-other-chunk, echo = F, results = "hide", message = F, warning = F}
+load("./temp/precinct_regs_appendix.rdata")
+
+stargazer(m1_ap, m3_ap,
+          header = F,
+          type = "latex", notes.align = "l",
+          covariate.labels = c("Formerly Incarcerated Residents",
+                               "Percent White", "Percent Black",
+                               "Percent Latino", "Percent Asian", "Percent Male", "Percent Democrats",
+                               "Percent Republicans",
+                               "Average Age", "Average Income (dollarsign10,000s)", "Percent With Some College",
+                               "Percent Unemployed"),
+          dep.var.labels = c("Support for Am. 4", "Roll-Off"),
+          title = "\\label{tab:other-precincts} Precinct Engagement with Amendment 4",
+          table.placement = "H",
+          omit.stat = c("f", "ser"),
+          omit = c("US_Congressional_District", "female",
+                   "General"),
+          table.layout = "-cmd#-t-a-s-n",
+          out = "./temp/test.tex",
+          out.header = F,
+          notes = "TO REPLACE",
+          se = list(coef(summary(m1_ap, cluster = c("US_Congressional_District")))[, 2],
+                    coef(summary(m3_ap, cluster = c("US_Congressional_District")))[, 2]),
+          add.lines=list(c("Congressional District FEs" , "X", "X"),
+                         c("Turnout in 2010 {--} 2016"  , "X", "X")))
+
+j <- fread("./temp/test.tex", header = F, sep = "+")
+
+note.latex <- "\\multicolumn{3}{l}{\\scriptsize{\\parbox{.5\\linewidth}{\\vspace{2pt}$^{***}p<0.01$, $^{**}p<0.05$, $^*p<0.1$. \\\\Robust standard errors (clustered by congressional district) in parentheses.}}}"
+
+j <- j %>% 
+  mutate(n = row_number(),
+         V1 = ifelse(grepl("TO REPLACE", V1), note.latex, V1),
+         V1 = ifelse(grepl("\\\\#tab", V1), gsub("\\\\#", "", V1), V1)) %>% 
+  filter(!grepl("Note:", V1))
+
+insert1 <- "\\resizebox{!}{.5\\textheight}{%"
+insert2 <- "}"
+
+j <- bind_rows(j, data.frame(V1 = c(insert1, insert2), n = c(3.1, nrow(j) + 1 - 0.01))) %>% 
+  mutate(V1 = gsub("dollarsign", "\\\\$", V1)) %>% 
+  arrange(n) %>% 
+  select(-n)
+
+write.table(j, "./temp/precinct_other_appendix.tex", quote = F, col.names = F,
+            row.names = F)
+```
+\input{"../temp/precinct_other_appendix.tex"}
+\end{singlespace}

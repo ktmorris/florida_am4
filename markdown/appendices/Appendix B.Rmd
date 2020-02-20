@@ -1,0 +1,36 @@
+---
+output:
+  bookdown::pdf_document2:
+    toc: no
+    fig_caption: yes
+    latex_engine: xelatex
+    keep_tex: true
+bibliography: "am4.bib"
+link-citations: yes
+fontsize: 12pt
+header-includes:
+    - \usepackage{rotating}
+    - \usepackage{setspace}\doublespacing
+    - \newcommand{\beginsupplement}{\setcounter{table}{0}  \renewcommand{\thetable}{B\arabic{table}} \setcounter{figure}{0} \renewcommand{\thefigure}{B\arabic{figure}}}
+---
+\pagenumbering{gobble}
+\pagebreak
+```{r setup, echo = F, message = F, warning = F}
+knitr::opts_knit$set(root.dir = "..", dev = "cairo_pdf")
+library(systemfit)
+library(AER)
+library(sandwich)
+library(lmtest)
+library(scales)
+library(tidyverse)
+library(extrafont)
+library(kableExtra)
+library(data.table)
+library(stargazer)
+loadfonts()
+```
+\pagenumbering{arabic}
+\beginsupplement
+# Appendix B {-}
+
+As discussed in the body of this paper, I exclude individuals who reported moving to the same location as many other formerly incarcerated individuals from the neighborhood-level sections.
