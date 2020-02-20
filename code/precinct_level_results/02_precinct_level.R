@@ -167,8 +167,21 @@ doc <- readRDS("./temp/released_with_addresses.rds") %>%
   summarize(all_doc = n(),
             small_res_doc = sum(1 - big_release))
 
+doc_recent <- readRDS("./temp/released_with_addresses.rds") %>% 
+  mutate(county = substring(precinct, 1, 3),
+         precinct = str_pad(substring(precinct, 4), width = 10, side = "left", pad = "0"),
+         cp = paste0(county, precinct),
+         PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
+  filter(!is.na(cp),
+         PrisonReleaseDate >= "2015-01-01") %>% 
+  group_by(address1) %>% 
+  mutate(big_release = n() >= 5) %>% 
+  group_by(cp) %>% 
+  summarize(all_doc_recent = n(),
+            small_res_doc_recent = sum(1 - big_release))
 
-results_demos <- left_join(results_demos, doc) %>% 
+
+results_demos <- left_join(results_demos, full_join(doc, doc_recent)) %>% 
   mutate_at(vars(all_doc, small_res_doc), ~ ifelse(is.na(.), 0, .))
 
 results_demos$to <- results_demos$votes / results_demos$voter_count
@@ -340,6 +353,29 @@ save(p3, cm3, file = "./temp/marg_rolloff.rdata")
 
 g <- grid.arrange(p1, p3, nrow = 1)
 save(g, file = "./temp/test.rdata")
+################ for appendix
+m1_ap <- lm(share_yes ~ small_res_doc_recent + white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           General_2016_11_08 + General_2014_11_04 +
+           General_2012_11_06 + General_2010_11_02 +
+           US_Congressional_District, data = filter(results_demos, to <= 1))
+
+m2_ap <- lm(to ~ small_res_doc_recent + white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           General_2016_11_08 + General_2014_11_04 +
+           General_2012_11_06 + General_2010_11_02 +
+           US_Congressional_District, data = filter(results_demos, to <= 1))
+
+m3_ap <- lm(roll_off ~ small_res_doc_recent + white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           General_2016_11_08 + General_2014_11_04 +
+           General_2012_11_06 + General_2010_11_02 +
+           US_Congressional_District, data = filter(results_demos, to <= 1))
+
+save(m1_ap, m2_ap, m3_ap, file = "./temp/precinct_regs_appendix.rdata")
 #############
 
 history <- dbConnect(SQLite(), "D:/national_file_history.db")
@@ -385,7 +421,18 @@ doc_bg <- readRDS("./temp/released_with_addresses.rds") %>%
   summarize(all_doc = n(),
             small_res_doc = sum(1 - big_release))
 
-bg_level <- left_join(bg_level, doc_bg) %>% 
+doc_bg_recent <- readRDS("./temp/released_with_addresses.rds") %>% 
+  mutate(county = substring(precinct, 1, 3),
+         PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
+  filter(!is.na(block_group),
+         PrisonReleaseDate >= "2015-01-01") %>% 
+  group_by(address1) %>% 
+  mutate(big_release = n() >= 5) %>% 
+  group_by(GEOID = block_group) %>% 
+  summarize(all_doc_recent = n(),
+            small_res_doc_recent = sum(1 - big_release))
+
+bg_level <- left_join(bg_level, full_join(doc_bg, doc_bg_recent)) %>% 
   mutate_at(vars(all_doc, small_res_doc), ~ ifelse(is.na(.), 0, .))
 
 saveRDS(mean(bg_level$small_res_doc > 0), "./temp/share_bgs_have_lost.rds")
@@ -399,12 +446,18 @@ cvap <- fread("./raw_data/misc/CVAP_2014-2018_ACS_csv_files/BlockGr.csv") %>%
 bg_level <- inner_join(bg_level, cvap)
 
 bg_level$cvap <- bg_level$cvap - bg_level$all_doc
+bg_level$cvap2 <- bg_level$cvap - bg_level$all_doc_recent
 
 bg_level$to_18 <- bg_level$General_2018_11_06 / bg_level$cvap
 bg_level$to_16 <- bg_level$General_2016_11_08 / bg_level$cvap
 bg_level$to_14 <- bg_level$General_2014_11_04 / bg_level$cvap
 bg_level$to_12 <- bg_level$General_2012_11_06 / bg_level$cvap
 bg_level$to_10 <- bg_level$General_2010_11_02 / bg_level$cvap
+bg_level$to_18_2 <- bg_level$General_2018_11_06 / bg_level$cvap2
+bg_level$to_16_2 <- bg_level$General_2016_11_08 / bg_level$cvap2
+bg_level$to_14_2 <- bg_level$General_2014_11_04 / bg_level$cvap2
+bg_level$to_12_2 <- bg_level$General_2012_11_06 / bg_level$cvap2
+bg_level$to_10_2 <- bg_level$General_2010_11_02 / bg_level$cvap2
 bg_level$US_Congressional_District <- as.factor(bg_level$US_Congressional_District)
 
 bg_level <- filter(bg_level, !is.infinite(to_18))
@@ -457,7 +510,24 @@ p2 <- ggplot() +
                      text = element_text(family = "LM Roman 10"))
 
 save(p2, file = "./temp/marg_bg_to.rdata")
+######
+m1_ap <- lm(to_18 ~ small_res_doc_recent + 
+           white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           to_16 + to_14 + to_12 + to_10 + 
+           US_Congressional_District,
+         data = filter(bg_level, to_18 <= 1))
 
+m1b_ap <- lm(to_18_2 ~ small_res_doc_recent + 
+           white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           to_16_2 + to_14_2 + to_12_2 + to_10_2 + 
+           US_Congressional_District,
+         data = filter(bg_level, to_18 <= 1))
+
+save(m1_ap, m1b_ap, file = "./temp/bg_regs_appendix.rdata")
 ######
 
 bgs_new <- inner_join(readRDS("./temp/block_group_census_data.RDS"),
