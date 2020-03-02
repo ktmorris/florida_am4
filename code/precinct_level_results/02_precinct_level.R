@@ -165,7 +165,8 @@ doc <- readRDS("./temp/released_with_addresses.rds") %>%
   mutate(big_release = n() >= 5) %>% 
   group_by(cp) %>% 
   summarize(all_doc = n(),
-            small_res_doc = sum(1 - big_release))
+            small_res_doc = sum(1 - big_release),
+            big_release = sum(big_release))
 
 doc_recent <- readRDS("./temp/released_with_addresses.rds") %>% 
   mutate(county = substring(precinct, 1, 3),
@@ -175,10 +176,11 @@ doc_recent <- readRDS("./temp/released_with_addresses.rds") %>%
   filter(!is.na(cp),
          PrisonReleaseDate >= "2015-01-01") %>% 
   group_by(address1) %>% 
-  mutate(big_release = n() >= 5) %>% 
+  mutate(big_release_recent = n() >= 5) %>% 
   group_by(cp) %>% 
   summarize(all_doc_recent = n(),
-            small_res_doc_recent = sum(1 - big_release))
+            small_res_doc_recent = sum(1 - big_release_recent),
+            big_release_recent = sum(big_release_recent))
 
 
 results_demos <- left_join(results_demos, full_join(doc, doc_recent)) %>% 
@@ -251,7 +253,7 @@ p1 <- ggplot() +
 save(p1, cm1, file = "./temp/marg_support_am4.rdata")
 
 #############
-m2 <- lm(to ~ small_res_doc + white + black + latino + asian +
+m2b <- lm(to ~ small_res_doc + white + black + latino + asian +
                   female + male + dem + rep + age +
                   median_income + some_college + unem +
                   General_2016_11_08 + General_2014_11_04 +
