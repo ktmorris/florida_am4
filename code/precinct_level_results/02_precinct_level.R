@@ -154,6 +154,13 @@ results_demos <- inner_join(inner_join(results, results_to), precinct_level) %>%
   filter(!is.na(cp))
 
 #### doc data
+ads <- readRDS("./temp/released_with_addresses.rds") %>% 
+  mutate(county = substring(precinct, 1, 3),
+         precinct = str_pad(substring(precinct, 4), width = 10, side = "left", pad = "0"),
+         cp = paste0(county, precinct),
+         PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
+  group_by(address1) %>% 
+  tally()
 
 doc <- readRDS("./temp/released_with_addresses.rds") %>% 
   mutate(county = substring(precinct, 1, 3),
@@ -253,7 +260,7 @@ p1 <- ggplot() +
 save(p1, cm1, file = "./temp/marg_support_am4.rdata")
 
 #############
-m2b <- lm(to ~ small_res_doc + white + black + latino + asian +
+m2 <- lm(to ~ small_res_doc + white + black + latino + asian +
                   female + male + dem + rep + age +
                   median_income + some_college + unem +
                   General_2016_11_08 + General_2014_11_04 +
@@ -352,9 +359,6 @@ p3 <- ggplot() +
                      text = element_text(family = "LM Roman 10"))
 save(p3, cm3, file = "./temp/marg_rolloff.rdata")
 
-
-g <- grid.arrange(p1, p3, nrow = 1)
-save(g, file = "./temp/test.rdata")
 ################ for appendix
 m1_ap <- lm(share_yes ~ small_res_doc_recent + white + black + latino + asian +
            female + male + dem + rep + age +
@@ -377,7 +381,29 @@ m3_ap <- lm(roll_off ~ small_res_doc_recent + white + black + latino + asian +
            General_2012_11_06 + General_2010_11_02 +
            US_Congressional_District, data = filter(results_demos, to <= 1))
 
-save(m1_ap, m2_ap, m3_ap, file = "./temp/precinct_regs_appendix.rdata")
+m1b_ap <- lm(share_yes ~ all_doc + white + black + latino + asian +
+              female + male + dem + rep + age +
+              median_income + some_college + unem +
+              General_2016_11_08 + General_2014_11_04 +
+              General_2012_11_06 + General_2010_11_02 +
+              US_Congressional_District, data = filter(results_demos, to <= 1))
+
+m2b_ap <- lm(to ~ all_doc + white + black + latino + asian +
+              female + male + dem + rep + age +
+              median_income + some_college + unem +
+              General_2016_11_08 + General_2014_11_04 +
+              General_2012_11_06 + General_2010_11_02 +
+              US_Congressional_District, data = filter(results_demos, to <= 1))
+
+m3b_ap <- lm(roll_off ~ all_doc + white + black + latino + asian +
+              female + male + dem + rep + age +
+              median_income + some_college + unem +
+              General_2016_11_08 + General_2014_11_04 +
+              General_2012_11_06 + General_2010_11_02 +
+              US_Congressional_District, data = filter(results_demos, to <= 1))
+
+save(m1_ap, m2_ap, m3_ap,
+     m1b_ap, m2b_ap, m3b_ap, file = "./temp/precinct_regs_appendix.rdata")
 #############
 
 history <- dbConnect(SQLite(), "D:/national_file_history.db")
@@ -521,13 +547,13 @@ m1_ap <- lm(to_18 ~ small_res_doc_recent +
            US_Congressional_District,
          data = filter(bg_level, to_18 <= 1))
 
-m1b_ap <- lm(to_18_2 ~ small_res_doc_recent + 
-           white + black + latino + asian +
-           female + male + dem + rep + age +
-           median_income + some_college + unem +
-           to_16_2 + to_14_2 + to_12_2 + to_10_2 + 
-           US_Congressional_District,
-         data = filter(bg_level, to_18 <= 1))
+m1b_ap <- lm(to_18 ~ all_doc + 
+               white + black + latino + asian +
+               female + male + dem + rep + age +
+               median_income + some_college + unem +
+               to_16 + to_14 + to_12 + to_10 + 
+               US_Congressional_District,
+             data = filter(bg_level, to_18 <= 1))
 
 save(m1_ap, m1b_ap, file = "./temp/bg_regs_appendix.rdata")
 ######
