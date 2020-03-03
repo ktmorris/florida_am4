@@ -8,26 +8,18 @@ ids <- fl_roll %>%
 
 load("./temp/mout_t1.RData")
 
+matches <- data.table(match_group = c(mout$index.treated, unique(mout$index.treated)),
+                      control = c(mout$index.control, unique(mout$index.treated)),
+                      weight = c(mout$weights, rep(1, length(unique(mout$index.treated)))))
 
-matches <- data.table(treated = mout$index.treated,
-                      control = mout$index.control)
-
-matches <- left_join(matches, ids, by = c("treated" = "id")) %>% 
-  select(-treated) %>% 
+matches <- left_join(matches, ids, by = c("match_group" = "id")) %>% 
+  select(-match_group) %>% 
   rename(match_group = LALVOTERID)
 
 matches <- left_join(matches, ids, by = c("control" = "id")) %>% 
   select(-control) %>% 
   rename(voter = LALVOTERID)
 
-matches <- rbind(matches,
-                 data.table(match_group = matches$match_group,
-                            voter = matches$match_group))
-
-matches <- matches %>% 
-  group_by(match_group, voter) %>% 
-  summarize(weight = n()) %>% 
-  ungroup()
 ######
 
 history <- dbConnect(SQLite(), "D:/national_file_history.db")
@@ -74,61 +66,53 @@ matches2 <- filter(matches, max_release >= (match_reg_date + as.Date("2000-01-01
 
 matches3 <- filter(matches2, max_release < "2010-01-01")
 
-m1 <- glm(voted ~ I(year == "2018")*treated, data = matches,
-          family = "binomial",
+m1 <- lm(voted ~ I(year == "2018")*treated, data = matches,
           weight = matches$weight)
 
-m2 <- glm(voted ~ I(year == "2018")*treated +
+m2 <- lm(voted ~ I(year == "2018")*treated +
             white + black + latino + asian + female +
             male + reg_date + age + dem + rep +
             median_income + some_college + US_Congressional_District,
           data = matches,
-          family = "binomial",
           weight = matches$weight)
 
-m3 <- glm(voted ~ d18*treated*years_since, data = filter(matches, years_since >= 0),
-          family = "binomial",
+m3 <- lm(voted ~ d18*treated*years_since, data = filter(matches, years_since >= 0),
           weight = matches$weight)
 
 names(m3[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m3[["coefficients"]]))
 names(m3[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m3[["coefficients"]]))
 
-m4 <- glm(voted ~ d18*treated*years_since +
+m4 <- lm(voted ~ d18*treated*years_since +
             white + black + latino + asian + female +
             male + reg_date + age + dem + rep +
             median_income + some_college + US_Congressional_District,
           data = matches,
-          family = "binomial",
           weight = matches$weight)
 
 names(m4[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m4[["coefficients"]]))
 names(m4[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m4[["coefficients"]]))
 
-m1b <- glm(voted ~ I(year == "2018")*treated, data = matches2,
-          family = "binomial",
+m1b <- lm(voted ~ I(year == "2018")*treated, data = matches2,
           weight = matches2$weight)
 
-m2b <- glm(voted ~ I(year == "2018")*treated +
+m2b <- lm(voted ~ I(year == "2018")*treated +
             white + black + latino + asian + female +
             male + reg_date + age + dem + rep +
             median_income + some_college + US_Congressional_District,
            data = matches2,
-          family = "binomial",
           weight = matches2$weight)
 
-m3b <- glm(voted ~ d18*treated*years_since, data = filter(matches2, years_since >= 0),
-          family = "binomial",
+m3b <- lm(voted ~ d18*treated*years_since, data = filter(matches2, years_since >= 0),
           weight = matches2$weight)
 
 names(m3b[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m3b[["coefficients"]]))
 names(m3b[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m3b[["coefficients"]]))
 
-m4b <- glm(voted ~ d18*treated*years_since +
+m4b <- lm(voted ~ d18*treated*years_since +
             white + black + latino + asian + female +
             male + reg_date + age + dem + rep +
             median_income + some_college + US_Congressional_District,
            data = matches2,
-          family = "binomial",
           weight = matches2$weight)
 
 names(m4b[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m4b[["coefficients"]]))
@@ -141,16 +125,14 @@ save(m1, m2, m3, m4,
 source("./code/misc/make_big_reg_table.R")
 ####
 
-m1c <- glm(voted ~ I(year == "2018")*treated, data = matches3,
-           family = "binomial",
+m1c <- lm(voted ~ I(year == "2018")*treated, data = matches3,
            weight = matches3$weight)
 
-m2c <- glm(voted ~ I(year == "2018")*treated +
+m2c <- lm(voted ~ I(year == "2018")*treated +
              white + black + latino + asian + female +
              male + reg_date + age + dem + rep +
              median_income + some_college + US_Congressional_District,
            data = matches3,
-           family = "binomial",
            weight = matches3$weight)
 
 source("./code/misc/make_medium_reg_table.R")

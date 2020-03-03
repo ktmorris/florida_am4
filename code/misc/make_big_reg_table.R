@@ -1,3 +1,4 @@
+load("./temp/full_match_reg.rdata")
 stargazer::stargazer(m1, m2, m3, m4, m1b, m2b, m3b, m4b,
           column.labels = c("All Matched Observations", "Registration Date prior to Discharge"),
           column.separate = c(4, 4),
@@ -11,7 +12,7 @@ stargazer::stargazer(m1, m2, m3, m4, m1b, m2b, m3b, m4b,
           dep.var.labels.include = FALSE,
           title = "\\label{tab:tab-dind} General Election Turnout, 2010 {--} 2018",
           table.placement = "H",
-          omit.stat = c("aic"),
+          omit.stat = c("f", "ser"),
           table.layout = "-cm#-t-a-s-n",
           out = "./temp/bigreg.tex",
           out.header = F,
