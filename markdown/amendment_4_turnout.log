@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2020.3.3)  3 MAR 2020 12:25
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/W32TeX) (preloaded format=xelatex 2020.3.3)  22 APR 2020 12:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1083,15 +1083,15 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 8.3991pt on input line 115.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 5.99936pt on input line 115.
-[1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] (../temp/table_whatever
-2.tex
+[1] [2] [3] [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14] (../temp/table_wha
+tever2.tex
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.0pt on input line 18.
+(Font)              scaled to size 8.0pt on input line 20.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.00073pt on input line 18.
+(Font)              scaled to size 8.00073pt on input line 20.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 7.99915pt on input line 18.
-) [14] [15] (../temp/precinct_to.tex) [16]
+(Font)              scaled to size 7.99915pt on input line 20.
+) [15] (../temp/precinct_to.tex) [16]
 Overfull \vbox (16.54732pt too high) has occurred while \output is active []
 
 [17]
@@ -1126,53 +1126,53 @@ Overfull \vbox (16.8883pt too high) has occurred while \output is active []
 Overfull \vbox (17.8603pt too high) has occurred while \output is active []
 
 [36] [37] [38]
-Underfull \hbox (badness 1286) in paragraph at lines 442--444
+Underfull \hbox (badness 1286) in paragraph at lines 447--449
 [][]\TU/lmr/m/n/12 Crisp, Elizabeth. 2019. “Thousands of Felons in Louisiana Wi
 ll Regain Voting
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 442--444
+Underfull \hbox (badness 10000) in paragraph at lines 447--449
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][] [] [][][] [] [][][][][]
  [] [][][][][] [] [][][][] [] [][][][][][][][] [] [][][][][][][] [] [][][][][][
 ][][] [][] [][][][] [][]
  []
 
 [39] [40]
-Underfull \hbox (badness 10000) in paragraph at lines 499--501
+Underfull \hbox (badness 10000) in paragraph at lines 504--506
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][][][] [] [][][] [] [][]
 [][][] [] [][][][] [] [][] [] [][] [] [][][][][][][][] [][] [][][][] [][] [][][
 ][][] [][] [][] [][] [][][][][][] [][]
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 514--516
+[41]
+Underfull \hbox (badness 10000) in paragraph at lines 519--521
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][][] [] [][][] [] [][][]
  [][] [][][][] [] [][][][][][][][] [][] [][][][][][][] [] [][][][][][] [][] [][
 ][][][][] [][] [][][][][][][][][][][] [][]
  []
 
-[41]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 539.
 [42]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 539.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 550.
+[43]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 550.
 (./amendment_4_turnout.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 539.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 539.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 550.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 550.
 Package rerunfilecheck Info: File `amendment_4_turnout.out' has not changed.
-(rerunfilecheck)             Checksum: F4476B60467C41A92103EC64C1EDF690;2744.
+(rerunfilecheck)             Checksum: 69E5FEE745CAE39DD38A7434F0AA1E85;2819.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 539.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 550.
  ) 
 Here is how much of TeX's memory you used:
  18651 strings out of 481790
- 329264 string characters out of 5935543
- 768798 words of memory out of 5000000
+ 329279 string characters out of 5935543
+ 769266 words of memory out of 5000000
  35325 multiletter control sequences out of 15000+600000
  542747 words of font info for 103 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  52i,15n,115p,1700b,496s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on amendment_4_turnout.pdf (43 pages).
+Output written on amendment_4_turnout.pdf (44 pages).

@@ -66,7 +66,10 @@ fl_file <- dbGetQuery(db, "select LALVOTERID,
          address = gsub(" apt  ,", ",", address),
          address = gsub("\\s+", " ", address),
          address = gsub(" ,", ",", address),
-         address = tolower(gsub("[[:punct:]]|", "", address))) %>% 
+         address = tolower(gsub("[[:punct:]]|", "", address)),
+         reg_date = lubridate::make_date(year = substring(Voters_OfficialRegDate, 7),
+                                         month = substring(Voters_OfficialRegDate, 1, 2),
+                                         day = substring(Voters_OfficialRegDate, 4, 5))) %>% 
   select(-Residence_Addresses_AddressLine,
          -Residence_Addresses_HouseNumber,
          -Residence_Addresses_PrefixDirection,

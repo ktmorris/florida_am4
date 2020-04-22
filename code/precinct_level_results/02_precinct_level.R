@@ -465,7 +465,7 @@ bg_level <- left_join(bg_level, full_join(doc_bg, doc_bg_recent)) %>%
 
 saveRDS(mean(bg_level$small_res_doc > 0), "./temp/share_bgs_have_lost.rds")
 
-cvap <- fread("./raw_data/misc/CVAP_2014-2018_ACS_csv_files/BlockGr.csv") %>% 
+cvap <- fread("../regular_data/CVAP_2014-2018_ACS_csv_files/BlockGr.csv") %>% 
   mutate(GEOID = substring(geoid, 8)) %>% 
   filter(substring(GEOID, 1, 2) == "12",
          lntitle == "Total") %>% 
@@ -562,6 +562,15 @@ bgs_new <- inner_join(readRDS("./temp/block_group_census_data.RDS"),
                       select(bg_level, GEOID, small_res_doc)) %>% 
   ungroup()
 
+pov <- get_acs(geography = "block group", variables = c("C17002_008", "C17002_002"),
+               summary_var = "C17002_001", year = 2018, state = "FL", output = "wide") %>% 
+  group_by(GEOID) %>% 
+  mutate(share_below_2 = 1 - (C17002_008E / summary_est),
+         share_below_50 = C17002_002E / summary_est) %>% 
+  select(GEOID, share_below_2, share_below_50)
+
+bgs_new <- left_join(bgs_new, pov)
+
 bgs_new <- rbind(
   bgs_new %>% 
     mutate(group = "former_inc",
@@ -574,7 +583,8 @@ bgs_new <- rbind(
 ######
 
 tot <- rbindlist(lapply(c("median_income", "median_age", "unem", "some_college",
-                          "nh_white", "nh_black", "latino"), function(m){
+                          "nh_white", "nh_black", "latino", "share_below_2", 
+                          "share_below_50"), function(m){
   ints <- rbindlist(lapply(unique(bgs_new$group), function(r){
     r <- as.character(r)
     t <- bgs_new %>% 
@@ -597,16 +607,18 @@ tot <- rbindlist(lapply(c("median_income", "median_age", "unem", "some_college",
 ll <- bgs_new %>% 
   group_by(group) %>% 
   summarize_at(vars("median_income", "median_age", "unem", "some_college",
-                    "nh_white", "nh_black", "latino"),
+                    "nh_white", "nh_black", "latino", "share_below_2",
+                    "share_below_50"),
                ~ weighted.mean(., weight, na.rm = T)) %>% 
   mutate(median_income = dollar(median_income, accuracy = 1),
          median_age = round(median_age, digits = 1)) %>% 
-  mutate_at(vars(unem, some_college,
-                 nh_white, nh_black, latino), ~ percent(., accuracy = 0.1))
+  mutate_at(vars(unem, some_college, share_below_2,
+                 nh_white, nh_black, latino,
+                 share_below_50), ~ percent(., accuracy = 0.1))
 
 ll <- transpose(ll)
 ll$var <- c("measure", "median_income", "median_age", "unem", "some_college",
-            "nh_white", "nh_black", "latino")
+            "nh_white", "nh_black", "latino", "share_below_2", "share_below_50")
 
 colnames(ll) <- ll[1,]
 ll <- ll[2:nrow(ll),]
@@ -614,11 +626,12 @@ ll <- ll[2:nrow(ll),]
 ll <- left_join(ll, tot)
 
 ll$measure <- c( "Median Income", "Median Age", "% Unemployed", "% with Some College",
-                 "% Non-Hispanic White", "% Non-Hispanic Black", "% Latino")
+                 "% Non-Hispanic White", "% Non-Hispanic Black", "% Latino", "% Below 200% of Poverty Level",
+                 "% Below 50% of Poverty Level")
 ll <- ll %>% 
   mutate(measure = ifelse(sig, paste0(measure, "*"), measure)) %>% 
   select(measure, overall, former_inc)
 
-colnames(ll) <- c("Measure", "Average Neighborhood", "Average Neighborhood for Formerly Incarcerated")
+colnames(ll) <- c("Measure", "Average Neighborhood", "Average Neighborhood\\\\for Formerly Incarcerated")
 
 saveRDS(ll, "./temp/demos_nhoods.rds")
