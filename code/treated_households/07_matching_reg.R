@@ -63,107 +63,91 @@ matches$US_Congressional_District <- as.factor(matches$US_Congressional_District
 matches$pres <- matches$year %in% c("2012", "2016")
 
 matches2 <- filter(matches, max_release >= (match_reg_date + as.Date("2000-01-01")))
+cleanup(c("matches", "matches2", "fl_ll"))
+##################################
+save(matches, matches2, fl_ll, file = "temp/pre_reg.rdata")
 
-matches3 <- filter(matches2, max_release < "2010-01-01")
+## I HAVE TO RUN THIS ON THE HPC BECAUSE OF RAM CONSTRAINTS
 
-m1 <- lm(voted ~ I(year == "2018")*treated, data = matches,
-          weight = matches$weight)
+f1 <- voted ~ d18*treated
+f2 <- voted ~ d18*treated +
+  white + black + latino + asian + female +
+  male + reg_date + age + dem + rep +
+  median_income + some_college + US_Congressional_District
+f3 <- voted ~ d18*treated*years_since
+f4 <- voted ~ d18*treated*years_since +
+         white + black + latino + asian + female +
+         male + reg_date + age + dem + rep +
+         median_income + some_college + US_Congressional_District
+       
+models1 <- lapply(c(f1, f2, f3, f4), function(f){
+  m <- lm(f, data = matches,
+           weight = matches$weight)
+})
 
-m2 <- lm(voted ~ I(year == "2018")*treated +
-            white + black + latino + asian + female +
-            male + reg_date + age + dem + rep +
-            median_income + some_college + US_Congressional_District,
-          data = matches,
-          weight = matches$weight)
-
-m3 <- lm(voted ~ d18*treated*years_since, data = filter(matches, years_since >= 0),
-          weight = matches$weight)
-
-names(m3[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m3[["coefficients"]]))
-names(m3[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m3[["coefficients"]]))
-
-m4 <- lm(voted ~ d18*treated*years_since +
-            white + black + latino + asian + female +
-            male + reg_date + age + dem + rep +
-            median_income + some_college + US_Congressional_District,
-          data = matches,
-          weight = matches$weight)
-
-names(m4[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m4[["coefficients"]]))
-names(m4[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m4[["coefficients"]]))
-
-m1b <- lm(voted ~ I(year == "2018")*treated, data = matches2,
+models2 <- lapply(c(f1, f2, f3, f4), function(f){
+  m <- lm(f, data = matches2,
           weight = matches2$weight)
+})
 
-m2b <- lm(voted ~ I(year == "2018")*treated +
-            white + black + latino + asian + female +
-            male + reg_date + age + dem + rep +
-            median_income + some_college + US_Congressional_District,
-           data = matches2,
-          weight = matches2$weight)
+ses_cl <- list(
+  summary(lm.cluster(formula = f1, data = matches, weights = matches$weight, cluster = matches$match_group))[ , 2],
+  summary(lm.cluster(formula = f2, data = matches, weights = matches$weight, cluster = matches$match_group))[ , 2],
+  summary(lm.cluster(formula = f3, data = matches, weights = matches$weight, cluster = matches$match_group))[ , 2],
+  summary(lm.cluster(formula = f4, data = matches, weights = matches$weight, cluster = matches$match_group))[ , 2],
+  summary(lm.cluster(formula = f1, data = matches2, weights = matches2$weight, cluster = matches2$match_group))[ , 2],
+  summary(lm.cluster(formula = f2, data = matches2, weights = matches2$weight, cluster = matches2$match_group))[ , 2],
+  summary(lm.cluster(formula = f3, data = matches2, weights = matches2$weight, cluster = matches2$match_group))[ , 2],
+  summary(lm.cluster(formula = f4, data = matches2, weights = matches2$weight, cluster = matches2$match_group))[ , 2]
+)
 
-m3b <- lm(voted ~ d18*treated*years_since, data = filter(matches2, years_since >= 0),
-          weight = matches2$weight)
-
-names(m3b[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m3b[["coefficients"]]))
-names(m3b[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m3b[["coefficients"]]))
-
-m4b <- lm(voted ~ d18*treated*years_since +
-            white + black + latino + asian + female +
-            male + reg_date + age + dem + rep +
-            median_income + some_college + US_Congressional_District,
-           data = matches2,
-          weight = matches2$weight)
-
-names(m4b[["coefficients"]]) <- gsub("interaction_term", "I(year == \"2018\")TRUE:treated", names(m4b[["coefficients"]]))
-names(m4b[["coefficients"]]) <- gsub("d18", "I(year == \"2018\")TRUE", names(m4b[["coefficients"]]))
-
-
-save(m1, m2, m3, m4,
-     m1b, m2b, m3b, m4b, file = "./temp/full_match_reg.rdata")
+save(models1, models2, ses_cl, file = "./temp/full_match_reg.rdata")
 ##make regression table
 source("./code/misc/make_big_reg_table.R")
 ####
-
-m1c <- lm(voted ~ I(year == "2018")*treated, data = matches3,
+matches3 <- filter(matches2, max_release < "2010-01-01")
+m1c <- lm(f1, data = matches3,
            weight = matches3$weight)
 
-m2c <- lm(voted ~ I(year == "2018")*treated +
-             white + black + latino + asian + female +
-             male + reg_date + age + dem + rep +
-             median_income + some_college + US_Congressional_District,
+m1c_ses <- summary(lm.cluster(formula = f1, data = matches3,
+                              weights = matches3$weight, cluster = matches3$match_group))[ , 2]
+
+m2c <- lm(f2,
            data = matches3,
            weight = matches3$weight)
 
+m2c_ses <- summary(lm.cluster(formula = f2, data = matches3,
+                              weights = matches3$weight, cluster = matches3$match_group))[ , 2]
+
 source("./code/misc/make_medium_reg_table.R")
 ####
-
-marg <- ggpredict(model = m3b, c("years_since [all]", "treated [all]", "d18 [all]"))
-
-marg_end <- marg %>% 
-  filter(facet == 1) %>% 
-  mutate(group = ifelse(group == 1, "Treated", "Control"))
-
-ll <- matches %>% 
-  group_by(years_since) %>% 
-  tally()
-
-p <- ggplot() + 
-  geom_col(data = ll, aes(x = years_since, y = n/(2500*1000)), position="identity", linetype=1,
-           fill="gray60", alpha=0.5) +
-  geom_line(aes(x = x, y = predicted, linetype = group), data = marg_end) +
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group), alpha=0.25, fill = "black",
-              data = marg_end) +
-  xlab("Years Since Last Household Imprisonment") +
-  ylab("Predicted 2018 Turnout Among Registered Voters") + scale_x_continuous(labels = comma_format(accuracy = 1)) +
-  scale_y_continuous(labels = percent) +
-  labs(caption = "Notes: Distribution of years since latest imprisonment at bottom.") +
-  theme(plot.caption = element_text(hjust = 0)) +
-  theme_bw() + theme(plot.caption = element_text(hjust = 0),
-                     text = element_text(family = "LM Roman 10")) +
-  labs(linetype = "Treatment Group")
-
-saveRDS(p, "./temp/years_out.rds")
+# 
+# marg <- ggpredict(model = m3b, c("years_since [all]", "treated [all]", "d18 [all]"))
+# 
+# marg_end <- marg %>% 
+#   filter(facet == 1) %>% 
+#   mutate(group = ifelse(group == 1, "Treated", "Control"))
+# 
+# ll <- matches %>% 
+#   group_by(years_since) %>% 
+#   tally()
+# 
+# p <- ggplot() + 
+#   geom_col(data = ll, aes(x = years_since, y = n/(2500*1000)), position="identity", linetype=1,
+#            fill="gray60", alpha=0.5) +
+#   geom_line(aes(x = x, y = predicted, linetype = group), data = marg_end) +
+#   geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high, group = group), alpha=0.25, fill = "black",
+#               data = marg_end) +
+#   xlab("Years Since Last Household Imprisonment") +
+#   ylab("Predicted 2018 Turnout Among Registered Voters") + scale_x_continuous(labels = comma_format(accuracy = 1)) +
+#   scale_y_continuous(labels = percent) +
+#   labs(caption = "Notes: Distribution of years since latest imprisonment at bottom.") +
+#   theme(plot.caption = element_text(hjust = 0)) +
+#   theme_bw() + theme(plot.caption = element_text(hjust = 0),
+#                      text = element_text(family = "LM Roman 10")) +
+#   labs(linetype = "Treatment Group")
+# 
+# saveRDS(p, "./temp/years_out.rds")
 
 # 
 # c1 <- exp(confint(glm.cluster(voted ~ I(year == "2018")*treated, data = matches,
