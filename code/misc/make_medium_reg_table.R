@@ -14,8 +14,7 @@ stargazer::stargazer(m1c, m2c,
                               "reg_date", "age", "dem", "rep", "median_income", "some_college",
                               "US_Congressional_District"),
                      notes = "TO REPLACE",
-                     se = list(coef(summary(m1c,cluster = c("match_group")))[, 2],
-                               coef(summary(m2c,cluster = c("match_group")))[, 2]),
+                     se = list(m1c_ses, m2c_ses),
                      add.lines=list(c("Includes covariates from matching" , "", "X"),
                                     c("Congressional District fixed effects" , "", "X")))
 
