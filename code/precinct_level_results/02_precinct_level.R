@@ -166,12 +166,15 @@ doc <- readRDS("./temp/released_with_addresses.rds") %>%
   mutate(county = substring(precinct, 1, 3),
          precinct = str_pad(substring(precinct, 4), width = 10, side = "left", pad = "0"),
          cp = paste0(county, precinct),
-         PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
+         PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y"),
+         years_since = 2018 - year(PrisonReleaseDate)) %>% 
   filter(!is.na(cp)) %>% 
   group_by(address1) %>% 
-  mutate(big_release = n() >= 5) %>% 
+  mutate(big_release = n() >= 5,
+         years_since = ifelse(big_release, NA, years_since)) %>% 
   group_by(cp) %>% 
-  summarize(all_doc = n(),
+  summarize(years_since = mean(years_since, na.rm = T),
+            all_doc = n(),
             small_res_doc = sum(1 - big_release),
             big_release = sum(big_release))
 
@@ -179,7 +182,8 @@ doc_recent <- readRDS("./temp/released_with_addresses.rds") %>%
   mutate(county = substring(precinct, 1, 3),
          precinct = str_pad(substring(precinct, 4), width = 10, side = "left", pad = "0"),
          cp = paste0(county, precinct),
-         PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
+         PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y"),
+         years_since = 2018 - year(PrisonReleaseDate)) %>% 
   filter(!is.na(cp),
          PrisonReleaseDate >= "2015-01-01") %>% 
   group_by(address1) %>% 
@@ -219,24 +223,36 @@ ggplot() +
   geom_hline(yintercept = mean(results_demos$share_yes)) + theme_bw() +
   theme(plot.caption = element_text(hjust = 0))
 ###########
-m1 <- lm(share_yes ~ small_res_doc + white + black + latino + asian +
-           female + male + dem + rep + age +
-           median_income + some_college + unem +
-           General_2016_11_08 + General_2014_11_04 +
-           General_2012_11_06 + General_2010_11_02 +
-           US_Congressional_District, data = filter(results_demos, to <= 1))
+f1 <- share_yes ~ small_res_doc + white + black + latino + asian +
+  female + male + dem + rep + age +
+  median_income + some_college + unem +
+  General_2016_11_08 + General_2014_11_04 +
+  General_2012_11_06 + General_2010_11_02 +
+  US_Congressional_District
 
-m1_rob <- lm_robust(share_yes ~ small_res_doc + white + black + latino + asian +
-                      female + male + dem + rep + age +
-                      median_income + some_college + unem +
-                      General_2016_11_08 + General_2014_11_04 +
-                      General_2012_11_06 + General_2010_11_02 +
-                      US_Congressional_District, data = filter(results_demos, to <= 1),
+f1b <- share_yes ~ small_res_doc + years_since + white + black + latino + asian +
+  female + male + dem + rep + age +
+  median_income + some_college + unem +
+  General_2016_11_08 + General_2014_11_04 +
+  General_2012_11_06 + General_2010_11_02 +
+  US_Congressional_District
+
+m1 <- lm(f1, data = filter(results_demos, to <= 1))
+
+m1_rob <- lm_robust(f1, data = filter(results_demos, to <= 1),
                     clusters = US_Congressional_District)
 m1_ses <- data.frame(
   summary(m1_rob)$coefficients)[, 2]
 
-save(m1, m1_ses, file = "./temp/support_reg.rdata")
+
+m1b <- lm((f1b), data = filter(results_demos, to <= 1))
+
+m1b_rob <- lm_robust(f1b, data = filter(results_demos, to <= 1),
+                    clusters = US_Congressional_District)
+m1b_ses <- data.frame(
+  summary(m1b_rob)$coefficients)[, 2]
+
+save(m1, m1_ses, m1b, m1b_ses, file = "./temp/support_reg.rdata")
 
 marg <- ggeffect(model = m1_rob, c("small_res_doc [all]"))
 
@@ -260,39 +276,32 @@ p1 <- ggplot() +
 save(p1, cm1, file = "./temp/marg_support_am4.rdata")
 
 #############
-m2 <- lm(to ~ small_res_doc + white + black + latino + asian +
-                  female + male + dem + rep + age +
-                  median_income + some_college + unem +
-                  General_2016_11_08 + General_2014_11_04 +
-                  General_2012_11_06 + General_2010_11_02 +
-                  US_Congressional_District, data = filter(results_demos, to <= 1))
+f2 <- to ~ small_res_doc + white + black + latino + asian +
+  female + male + dem + rep + age +
+  median_income + some_college + unem +
+  General_2016_11_08 + General_2014_11_04 +
+  General_2012_11_06 + General_2010_11_02 +
+  US_Congressional_District
 
-m2_rob <- lm_robust(to ~ small_res_doc + white + black + latino + asian +
-                  female + male + dem + rep + age +
-                  median_income + some_college + unem +
-                  General_2016_11_08 + General_2014_11_04 +
-                  General_2012_11_06 + General_2010_11_02 +
-                  US_Congressional_District, data = filter(results_demos, to <= 1),
-                  clusters = US_Congressional_District)
+f2b <- to ~ small_res_doc + years_since + white + black + latino + asian +
+  female + male + dem + rep + age +
+  median_income + some_college + unem +
+  General_2016_11_08 + General_2014_11_04 +
+  General_2012_11_06 + General_2010_11_02 +
+  US_Congressional_District
 
+m2 <- lm(f2, data = filter(results_demos, to <= 1))
+
+m2_rob <- lm_robust(f2, data = filter(results_demos, to <= 1),
+                    clusters = US_Congressional_District)
 m2_ses <- data.frame(
   summary(m2_rob)$coefficients)[, 2]
 
-m2b <- lm(to ~ small_res_doc + I(small_res_doc^2) + I(small_res_doc^3) + white + black + latino + asian +
-           female + male + dem + rep + age +
-           median_income + some_college + unem +
-           General_2016_11_08 + General_2014_11_04 +
-           General_2012_11_06 + General_2010_11_02 +
-           US_Congressional_District, data = filter(results_demos, to <= 1))
 
-m2b_rob <- lm_robust(to ~ small_res_doc + I(small_res_doc^2) + I(small_res_doc^3) + white + black + latino + asian +
-                      female + male + dem + rep + age +
-                      median_income + some_college + unem +
-                      General_2016_11_08 + General_2014_11_04 +
-                      General_2012_11_06 + General_2010_11_02 +
-                      US_Congressional_District, data = filter(results_demos, to <= 1),
-                    clusters = US_Congressional_District)
+m2b <- lm((f2b), data = filter(results_demos, to <= 1))
 
+m2b_rob <- lm_robust(f2b, data = filter(results_demos, to <= 1),
+                     clusters = US_Congressional_District)
 m2b_ses <- data.frame(
   summary(m2b_rob)$coefficients)[, 2]
 
@@ -318,25 +327,36 @@ p2 <- ggplot() +
 
 save(p2, cm2, file = "./temp/marg_pct_to.rdata")
 #############
-m3 <- lm(roll_off ~ small_res_doc + white + black + latino + asian +
-           female + male + dem + rep + age +
-           median_income + some_college + unem +
-           General_2016_11_08 + General_2014_11_04 +
-           General_2012_11_06 + General_2010_11_02 +
-           US_Congressional_District, data = filter(results_demos, to <= 1))
+f3 <- roll_off ~ small_res_doc + white + black + latino + asian +
+  female + male + dem + rep + age +
+  median_income + some_college + unem +
+  General_2016_11_08 + General_2014_11_04 +
+  General_2012_11_06 + General_2010_11_02 +
+  US_Congressional_District
 
-m3_rob <- lm_robust(roll_off ~ small_res_doc + white + black + latino + asian +
-                      female + male + dem + rep + age +
-                      median_income + some_college + unem +
-                      General_2016_11_08 + General_2014_11_04 +
-                      General_2012_11_06 + General_2010_11_02 +
-                      US_Congressional_District, data = filter(results_demos, to <= 1),
+f3b <- roll_off ~ small_res_doc + years_since + white + black + latino + asian +
+  female + male + dem + rep + age +
+  median_income + some_college + unem +
+  General_2016_11_08 + General_2014_11_04 +
+  General_2012_11_06 + General_2010_11_02 +
+  US_Congressional_District
+
+m3 <- lm(f3, data = filter(results_demos, to <= 1))
+
+m3_rob <- lm_robust(f3, data = filter(results_demos, to <= 1),
                     clusters = US_Congressional_District)
-
 m3_ses <- data.frame(
   summary(m3_rob)$coefficients)[, 2]
 
-save(m3, m3_ses, file = "./temp/precinct_rolloff.rdata")
+
+m3b <- lm((f3b), data = filter(results_demos, to <= 1))
+
+m3b_rob <- lm_robust(f3b, data = filter(results_demos, to <= 1),
+                     clusters = US_Congressional_District)
+m3b_ses <- data.frame(
+  summary(m3b_rob)$coefficients)[, 2]
+
+save(m3, m3_ses, m3b, m3b_ses, file = "./temp/precinct_rolloff.rdata")
 
 marg <- ggeffect(model = m3, "small_res_doc")
 
@@ -444,9 +464,11 @@ doc_bg <- readRDS("./temp/released_with_addresses.rds") %>%
          PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
   filter(!is.na(block_group)) %>% 
   group_by(address1) %>% 
-  mutate(big_release = n() >= 5) %>% 
+  mutate(big_release = n() >= 5,
+         years_since = ifelse(big_release, NA, 2018 - year(PrisonReleaseDate))) %>% 
   group_by(GEOID = block_group) %>% 
-  summarize(all_doc = n(),
+  summarize(years_since = mean(years_since, na.rm = T),
+            all_doc = n(),
             small_res_doc = sum(1 - big_release))
 
 doc_bg_recent <- readRDS("./temp/released_with_addresses.rds") %>% 
@@ -521,7 +543,28 @@ m1_rob <- lm_robust(to_18 ~ small_res_doc +
 m1_ses <- data.frame(
   summary(m1_rob)$coefficients)[, 2]
 
-save(m1, m1_ses, file = "./temp/bg_turnout.rdata")
+m1b <- lm(to_18 ~ small_res_doc + years_since +
+           white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           to_16 + to_14 + to_12 + to_10 + 
+           US_Congressional_District,
+         data = filter(bg_level, to_18 <= 1))
+
+m1b_rob <- lm_robust(to_18 ~ small_res_doc + years_since +
+                      white + black + latino + asian +
+                      female + male + dem + rep + age +
+                      median_income + some_college + unem +
+                      to_16 + to_14 + to_12 + to_10 + 
+                      US_Congressional_District,
+                    data = filter(bg_level, to_18 <= 1),
+                    clusters = US_Congressional_District)
+
+
+m1b_ses <- data.frame(
+  summary(m1b_rob)$coefficients)[, 2]
+
+save(m1, m1_ses, m1b, m1b_ses, file = "./temp/bg_turnout.rdata")
 
 marg <- ggpredict(model = m1_rob, c("small_res_doc [all]"))
 p2 <- ggplot() + 
