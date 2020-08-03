@@ -1,21 +1,25 @@
+# 
+# address_cleaner <- fread("./raw_data/misc/address_cleaning.csv") %>% 
+#   mutate(search = paste0(" ", search, " "),
+#          replace = paste0(" ", replace, " "))
+# 
+# ######
+# 
+# released_with_addresses <- readRDS("./temp/released_with_addresses.rds") %>% 
+#   mutate(address = gsub(" apt  ,", ",", address1),
+#          address = gsub("\\s+", " ", address),
+#          address = gsub(" ,", ",", address),
+#          address = tolower(gsub("[[:punct:]]|", "", address)))
+# 
+# for(i in 1:nrow(address_cleaner)){
+#   released_with_addresses$address <- gsub(address_cleaner$search[i],
+#                                           address_cleaner$replace[i],
+#                                           released_with_addresses$address)
+# }
+# 
+# saveRDS(released_with_addresses, "./temp/released_with_addresses_clean.rds")
 
-address_cleaner <- fread("./raw_data/misc/address_cleaning.csv") %>% 
-  mutate(search = paste0(" ", search, " "),
-         replace = paste0(" ", replace, " "))
-
-######
-
-released_with_addresses <- readRDS("./temp/released_with_addresses.rds") %>% 
-  mutate(address = gsub(" apt  ,", ",", address1),
-         address = gsub("\\s+", " ", address),
-         address = gsub(" ,", ",", address),
-         address = tolower(gsub("[[:punct:]]|", "", address)))
-
-for(i in 1:nrow(address_cleaner)){
-  released_with_addresses$address <- gsub(address_cleaner$search[i],
-                                          address_cleaner$replace[i],
-                                          released_with_addresses$address)
-}
+released_with_addresses <- readRDS("./temp/released_with_addresses_clean.rds")
 
 latest_release <- released_with_addresses %>% 
   mutate(release_date = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
