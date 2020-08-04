@@ -52,7 +52,7 @@ matches <- left_join(matches, fl_roll, by = c("voter" = "LALVOTERID")) %>%
 
 matches <- left_join(matches, select(fl_roll, LALVOTERID, max_release, match_reg_date = reg_date),
                      by = c("match_group" = "LALVOTERID")) %>% 
-  filter((2018 - year(max_release)) >= 0)
+  filter(max_release <= "2018-11-06")
 
 matches$interaction_term <- (matches$year == "2018") * matches$treated
 
