@@ -118,7 +118,7 @@ one_per$ad <- with(one_per, paste(street, city, state, zip))
 
 addresses <- readRDS("temp/probation_addresses.rds")
 
-one_per <- left_join(one_per, select(addresses, ad, lat, lon, loctype))
+one_per <- left_join(one_per, select(addresses, ad, lat, lon, loctype, address))
 
 one_per <- filter(one_per, !is.na(lat), !is.na(lon),
                                   loctype %in% c("range_interpolated", "rooftop"))
