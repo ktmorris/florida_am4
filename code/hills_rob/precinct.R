@@ -143,7 +143,8 @@ doc <- readRDS("./temp/released_with_addresses.rds") %>%
          precinct = str_pad(substring(precinct, 4), width = 10, side = "left", pad = "0"),
          cp = paste0(county, precinct),
          PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
-  filter(!is.na(cp)) %>% 
+  filter(!is.na(cp),
+         PrisonReleaseDate <= "2018-11-06") %>% 
   group_by(address1) %>% 
   mutate(big_release = n() >= 5) %>% 
   group_by(cp) %>% 
@@ -157,7 +158,8 @@ doc_recent <- readRDS("./temp/released_with_addresses.rds") %>%
          cp = paste0(county, precinct),
          PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
   filter(!is.na(cp),
-         PrisonReleaseDate >= "2015-01-01") %>% 
+         PrisonReleaseDate >= "2015-01-01",
+         PrisonReleaseDate <= "2018-11-06") %>% 
   group_by(address1) %>% 
   mutate(big_release_recent = n() >= 5) %>% 
   group_by(cp) %>% 
@@ -188,15 +190,47 @@ results_demos$roll_off <- 1- (results_demos$votes / results_demos$highest_votes)
 results_demos$US_Congressional_District <- as.factor(results_demos$US_Congressional_District)
 results_demos$median_income <- results_demos$median_income / 10000
 
+######################
+
+lm_eqn <- function(df){
+  # browser()
+  m <- lm(probationers ~ small_res_doc, filter(results_demos, to <= 1))
+  a <- coef(m)[1]
+  a <- ifelse(sign(a) >= 0, 
+              paste0(" + ", format(a, digits = 4)), 
+              paste0(" - ", format(-a, digits = 4))  )
+  eq1 <- substitute( paste( italic(y) == b, italic(x), a ), 
+                     list(a = a, 
+                          b = format(coef(m)[2], digits = 4)))
+  
+  c( as.character(as.expression(eq1)), as.character(as.expression(eq2)))
+}
+
+eq2 <- as.character(as.expression(substitute(paste(italic(R)^2 == r2), 
+                  list(r2 = format(summary(lm(probationers ~ small_res_doc,
+                                              filter(results_demos, to <= 1)))$r.squared, digits = 3)))))
+
+corr <- ggplot(filter(results_demos, to <= 1), aes(x = small_res_doc, y = probationers)) +
+  geom_point(shape = 1, size = 3) +
+  lims(x = c(0, 200), y = c(0, 400)) +
+  geom_smooth(method = "lm", se = F, color = "black") +
+  theme_bw() +
+  theme(text = element_text(family = "LM Roman 10")) +
+  labs(x = "Formerly Incarcerated Residents",
+       y = "Residents Sentenced to Felony Probation") +
+  geom_text(x = 195, y = 300, label = eq2, parse = TRUE, check_overlap = TRUE,
+            family = "LM Roman 10")
+
+saveRDS(corr, "temp/correlation_plot.rds")
 ###########
-m1 <- lm(share_yes ~ tot_disenf + white + black + latino + asian +
+m1 <- lm(share_yes ~ small_res_doc + white + black + latino + asian +
            female + male + dem + rep + age +
            median_income + some_college + unem +
            General_2016_11_08 + General_2014_11_04 +
            General_2012_11_06 + General_2010_11_02 +
            US_Congressional_District, data = filter(results_demos, to <= 1))
 
-m1_rob <- lm_robust(share_yes ~ tot_disenf + white + black + latino + asian +
+m1_rob <- lm_robust(share_yes ~ small_res_doc + white + black + latino + asian +
                       female + male + dem + rep + age +
                       median_income + some_college + unem +
                       General_2016_11_08 + General_2014_11_04 +
@@ -206,56 +240,34 @@ m1_rob <- lm_robust(share_yes ~ tot_disenf + white + black + latino + asian +
 m1_ses <- data.frame(
   summary(m1_rob)$coefficients)[, 2]
 
-save(m1, m1_ses, file = "./temp/support_reg_hills.rdata")
-
-marg <- ggeffect(model = m1_rob, c("tot_disenf [all]"))
-
-cm1 <- mean(filter(results_demos, to <= 1)$share_yes)
-
-p1 <- ggplot() + 
-  geom_histogram(aes(x = tot_disenf, y = ..count../250), position="identity", linetype=1,
-                 fill="gray60", data = results_demos, alpha=0.5, bins = 30) + 
-  geom_line(aes(x = x, y = predicted), data = marg, color = "black") +
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), fill= "black", alpha=0.25, data = marg) +
-  xlab("Number of Residents with Felony Convictions") +
-  ylab("Support for Amendment 4") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
-  scale_y_continuous(labels = percent) +
-  labs(caption = "Notes: Distribution of number of residents with felony convictions shown at bottom.") +
-  geom_hline(yintercept = cm1, linetype = 2) +
-  geom_text(aes(300, cm1, label = "Average Precinct Support for Amendment 4",
-                vjust = 1, family = "LM Roman 10", hjust = 1)) +
-  theme(plot.caption = element_text(hjust = 0)) +
-  theme_bw() + theme(plot.caption = element_text(hjust = 0),
-                     text = element_text(family = "LM Roman 10"))
-save(p1, cm1, file = "./temp/marg_support_am4_hills.rdata")
-
-#############
-m2 <- lm(to ~ tot_disenf + white + black + latino + asian +
+m1b <- lm(share_yes ~ tot_disenf + white + black + latino + asian +
            female + male + dem + rep + age +
            median_income + some_college + unem +
            General_2016_11_08 + General_2014_11_04 +
            General_2012_11_06 + General_2010_11_02 +
            US_Congressional_District, data = filter(results_demos, to <= 1))
 
-m2_rob <- lm_robust(to ~ tot_disenf + white + black + latino + asian +
+m1b_rob <- lm_robust(share_yes ~ tot_disenf + white + black + latino + asian +
                       female + male + dem + rep + age +
                       median_income + some_college + unem +
                       General_2016_11_08 + General_2014_11_04 +
                       General_2012_11_06 + General_2010_11_02 +
                       US_Congressional_District, data = filter(results_demos, to <= 1),
                     clusters = US_Congressional_District)
+m1b_ses <- data.frame(
+  summary(m1b_rob)$coefficients)[, 2]
 
-m2_ses <- data.frame(
-  summary(m2_rob)$coefficients)[, 2]
+save(m1, m1_ses, m1b, m1b_ses, file = "./temp/support_reg_hills.rdata")
 
-m2b <- lm(to ~ tot_disenf + I(tot_disenf^2) + I(tot_disenf^3) + white + black + latino + asian +
+#############
+m2 <- lm(to ~ small_res_doc + white + black + latino + asian +
             female + male + dem + rep + age +
             median_income + some_college + unem +
             General_2016_11_08 + General_2014_11_04 +
             General_2012_11_06 + General_2010_11_02 +
             US_Congressional_District, data = filter(results_demos, to <= 1))
 
-m2b_rob <- lm_robust(to ~ tot_disenf + I(tot_disenf^2) + I(tot_disenf^3) + white + black + latino + asian +
+m2_rob <- lm_robust(to ~ small_res_doc + white + black + latino + asian +
                        female + male + dem + rep + age +
                        median_income + some_college + unem +
                        General_2016_11_08 + General_2014_11_04 +
@@ -263,39 +275,39 @@ m2b_rob <- lm_robust(to ~ tot_disenf + I(tot_disenf^2) + I(tot_disenf^3) + white
                        US_Congressional_District, data = filter(results_demos, to <= 1),
                      clusters = US_Congressional_District)
 
-m2b_ses <- data.frame(
-  summary(m2b_rob)$coefficients)[, 2]
+m2_ses <- data.frame(
+  summary(m2_rob)$coefficients)[, 2]
 
-save(m2, m2_ses, m2b, m2b_ses, file = "./temp/precinct_turnout_hills.rdata")
-
-marg <- ggeffect(model = m2_rob, "tot_disenf [all]")
-cm2 <- mean(filter(results_demos, to <= 1)$to)
-p2 <- ggplot() + 
-  geom_histogram(aes(x = tot_disenf, y = ..count../250), position="identity", linetype=1,
-                 fill="gray60", data = results_demos, alpha=0.5, bins = 30) + 
-  geom_line(aes(x = x, y = predicted), data = marg, color = "black") +
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), fill= "black", alpha=0.25, data = marg) +
-  xlab("Number of Residents with Felony Convictions") +
-  ylab("Turnout Among Registered Voters") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
-  scale_y_continuous(labels = percent) +
-  labs(caption = "Notes: Distribution of number of residents with felony convictions shown at bottom.") +
-  geom_hline(yintercept = cm2, linetype = 2) +
-  geom_text(aes(300, cm2, label = "Average Precinct Turnout",
-                vjust = -.5, family = "LM Roman 10", hjust = 1)) +
-  theme(plot.caption = element_text(hjust = 0)) +
-  theme_bw() + theme(plot.caption = element_text(hjust = 0),
-                     text = element_text(family = "LM Roman 10"))
-
-save(p2, cm2, file = "./temp/marg_pct_to_hills.rdata")
-#############
-m3 <- lm(roll_off ~ tot_disenf + white + black + latino + asian +
+m2b <- lm(to ~ tot_disenf + white + black + latino + asian +
            female + male + dem + rep + age +
            median_income + some_college + unem +
            General_2016_11_08 + General_2014_11_04 +
            General_2012_11_06 + General_2010_11_02 +
            US_Congressional_District, data = filter(results_demos, to <= 1))
 
-m3_rob <- lm_robust(roll_off ~ tot_disenf + white + black + latino + asian +
+m2b_rob <- lm_robust(to ~ tot_disenf + white + black + latino + asian +
+                      female + male + dem + rep + age +
+                      median_income + some_college + unem +
+                      General_2016_11_08 + General_2014_11_04 +
+                      General_2012_11_06 + General_2010_11_02 +
+                      US_Congressional_District, data = filter(results_demos, to <= 1),
+                    clusters = US_Congressional_District)
+
+m2b_ses <- data.frame(
+  summary(m2b_rob)$coefficients)[, 2]
+
+
+save(m2, m2_ses, m2b, m2b_ses, file = "./temp/precinct_turnout_hills.rdata")
+
+#############
+m3 <- lm(roll_off ~ small_res_doc + white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           General_2016_11_08 + General_2014_11_04 +
+           General_2012_11_06 + General_2010_11_02 +
+           US_Congressional_District, data = filter(results_demos, to <= 1))
+
+m3_rob <- lm_robust(roll_off ~ small_res_doc + white + black + latino + asian +
                       female + male + dem + rep + age +
                       median_income + some_college + unem +
                       General_2016_11_08 + General_2014_11_04 +
@@ -306,25 +318,174 @@ m3_rob <- lm_robust(roll_off ~ tot_disenf + white + black + latino + asian +
 m3_ses <- data.frame(
   summary(m3_rob)$coefficients)[, 2]
 
-save(m3, m3_ses, file = "./temp/precinct_rolloff_hills.rdata")
+m3b <- lm(roll_off ~ tot_disenf + white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           General_2016_11_08 + General_2014_11_04 +
+           General_2012_11_06 + General_2010_11_02 +
+           US_Congressional_District, data = filter(results_demos, to <= 1))
 
-marg <- ggeffect(model = m3, "tot_disenf")
+m3b_rob <- lm_robust(roll_off ~ tot_disenf + white + black + latino + asian +
+                      female + male + dem + rep + age +
+                      median_income + some_college + unem +
+                      General_2016_11_08 + General_2014_11_04 +
+                      General_2012_11_06 + General_2010_11_02 +
+                      US_Congressional_District, data = filter(results_demos, to <= 1),
+                    clusters = US_Congressional_District)
 
-cm3 <- mean(filter(results_demos, to <= 1)$roll_off)
+m3b_ses <- data.frame(
+  summary(m3b_rob)$coefficients)[, 2]
 
-p3 <- ggplot() + 
-  geom_histogram(aes(x = tot_disenf, y = ..count../5000), position="identity", linetype=1,
-                 fill="gray60", data = results_demos, alpha=0.5, bins = 30) + 
-  geom_line(aes(x = x, y = predicted), data = marg, color = "black") +
-  geom_ribbon(aes(x = x, ymin = conf.low, ymax = conf.high), fill= "black", alpha=0.25, data = marg) +
-  xlab("Number of Residents with Felony Convictions") +
-  ylab("Precinct Amendment 4 Roll-Off") + scale_x_continuous(labels = comma, limits = c(0, 300)) +
-  scale_y_continuous(labels = percent) +
-  labs(caption = "Notes: Distribution of number of residents with felony convictions shown at bottom.") +
-  geom_hline(yintercept = cm3, linetype = 2) +
-  geom_text(aes(300, cm3, label = "Average Precinct Roll-Off",
-                vjust = -.5, family = "LM Roman 10", hjust = 1)) +
-  theme(plot.caption = element_text(hjust = 0)) +
-  theme_bw() + theme(plot.caption = element_text(hjust = 0),
-                     text = element_text(family = "LM Roman 10"))
-save(p3, cm3, file = "./temp/marg_rolloff_hills.rdata")
+save(m3, m3_ses, m3b, m3b_ses, file = "./temp/precinct_rolloff_hills.rdata")
+
+
+#############
+
+history <- dbConnect(SQLite(), "D:/national_file_history.db")
+fl_history <- dbGetQuery(history, "select LALVOTERID,
+                                   General_2018_11_06
+                                   from fl_history_18")
+
+fl_file <- left_join(fl_file, fl_history, by = "LALVOTERID")
+
+bg_level <- fl_file %>% 
+  group_by(GEOID) %>% 
+  summarize_at(vars(female, male, dem, rep, age),
+               mean, na.rm = T)
+
+bg2 <- fl_file %>% 
+  group_by(GEOID) %>% 
+  summarize_at(vars(General_2018_11_06,
+                    General_2016_11_08,
+                    General_2014_11_04,
+                    General_2012_11_06,
+                    General_2010_11_02),
+               ~ sum(. == "Y"))
+
+cd <- fl_file %>% 
+  group_by(GEOID, US_Congressional_District) %>% 
+  summarize(voter_count = n()) %>% 
+  group_by(GEOID) %>% 
+  filter(voter_count == max(voter_count)) %>% 
+  group_by(GEOID) %>% 
+  filter(row_number() == 1) %>% 
+  select(-voter_count)
+
+bg_level <- inner_join(bg_level, inner_join(bg2, cd))
+rm(bg2, cd)
+
+doc_bg <- readRDS("./temp/released_with_addresses.rds") %>% 
+  mutate(county = substring(precinct, 1, 3),
+         PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
+  filter(!is.na(block_group),
+         PrisonReleaseDate <= "2018-11-06") %>% 
+  group_by(address1) %>% 
+  mutate(big_release = n() >= 5,
+         years_since = ifelse(big_release, NA, 2018 - year(PrisonReleaseDate))) %>% 
+  group_by(GEOID = block_group) %>% 
+  summarize(years_since = mean(years_since, na.rm = T),
+            all_doc = n(),
+            small_res_doc = sum(1 - big_release))
+
+doc_bg_recent <- readRDS("./temp/released_with_addresses.rds") %>% 
+  mutate(county = substring(precinct, 1, 3),
+         PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
+  filter(!is.na(block_group),
+         PrisonReleaseDate >= "2015-01-01",
+         PrisonReleaseDate <= "2018-11-06") %>% 
+  group_by(address1) %>% 
+  mutate(big_release = n() >= 5) %>% 
+  group_by(GEOID = block_group) %>% 
+  summarize(all_doc_recent = n(),
+            small_res_doc_recent = sum(1 - big_release))
+
+bg_level <- left_join(bg_level, full_join(doc_bg, doc_bg_recent)) %>% 
+  mutate_at(vars(all_doc, small_res_doc), ~ ifelse(is.na(.), 0, .))
+######################################
+probation <- readRDS("./temp/hills_with_ads.rds") %>% 
+  group_by(GEOID = block_group) %>% 
+  summarize(probationers = n())
+
+
+bg_level <- left_join(bg_level, probation) %>% 
+  mutate(probationers = ifelse(is.na(probationers), 0, probationers),
+         tot_disenf = probationers + small_res_doc)
+######################################
+cvap <- fread("../regular_data/CVAP_2014-2018_ACS_csv_files/BlockGr.csv") %>% 
+  mutate(GEOID = substring(geoid, 8)) %>% 
+  filter(substring(GEOID, 1, 2) == "12",
+         lntitle == "Total") %>% 
+  select(GEOID, cvap = cvap_est)
+
+bg_level <- inner_join(bg_level, cvap)
+
+bg_level$cvap <- bg_level$cvap - bg_level$all_doc - bg_level$probationers
+bg_level$cvap2 <- bg_level$cvap - bg_level$all_doc_recent
+
+bg_level$to_18 <- bg_level$General_2018_11_06 / bg_level$cvap
+bg_level$to_16 <- bg_level$General_2016_11_08 / bg_level$cvap
+bg_level$to_14 <- bg_level$General_2014_11_04 / bg_level$cvap
+bg_level$to_12 <- bg_level$General_2012_11_06 / bg_level$cvap
+bg_level$to_10 <- bg_level$General_2010_11_02 / bg_level$cvap
+bg_level$to_18_2 <- bg_level$General_2018_11_06 / bg_level$cvap2
+bg_level$to_16_2 <- bg_level$General_2016_11_08 / bg_level$cvap2
+bg_level$to_14_2 <- bg_level$General_2014_11_04 / bg_level$cvap2
+bg_level$to_12_2 <- bg_level$General_2012_11_06 / bg_level$cvap2
+bg_level$to_10_2 <- bg_level$General_2010_11_02 / bg_level$cvap2
+bg_level$US_Congressional_District <- as.factor(bg_level$US_Congressional_District)
+
+bg_level <- filter(bg_level, !is.infinite(to_18))
+
+bg_level <- inner_join(bg_level, readRDS("./temp/block_group_census_data.RDS"),
+                       by = "GEOID")
+
+bg_level$median_income <- bg_level$median_income / 10000
+
+
+bg_level <- rename(bg_level,
+                   white = nh_white,
+                   black = nh_black)
+
+m1bg <- lm(to_18 ~ small_res_doc +
+           white + black + latino + asian +
+           female + male + dem + rep + age +
+           median_income + some_college + unem +
+           to_16 + to_14 + to_12 + to_10 + 
+           US_Congressional_District,
+         data = filter(bg_level, to_18 <= 1))
+
+m1bg_rob <- lm_robust(to_18 ~ small_res_doc + 
+                      white + black + latino + asian +
+                      female + male + dem + rep + age +
+                      median_income + some_college + unem +
+                      to_16 + to_14 + to_12 + to_10 + 
+                      US_Congressional_District,
+                    data = filter(bg_level, to_18 <= 1),
+                    clusters = US_Congressional_District)
+
+
+m1bg_ses <- data.frame(
+  summary(m1bg_rob)$coefficients)[, 2]
+
+m1bbg <- lm(to_18 ~ tot_disenf +
+            white + black + latino + asian +
+            female + male + dem + rep + age +
+            median_income + some_college + unem +
+            to_16 + to_14 + to_12 + to_10 + 
+            US_Congressional_District,
+          data = filter(bg_level, to_18 <= 1))
+
+m1bbg_rob <- lm_robust(to_18 ~ tot_disenf +
+                       white + black + latino + asian +
+                       female + male + dem + rep + age +
+                       median_income + some_college + unem +
+                       to_16 + to_14 + to_12 + to_10 + 
+                       US_Congressional_District,
+                     data = filter(bg_level, to_18 <= 1),
+                     clusters = US_Congressional_District)
+
+
+m1bbg_ses <- data.frame(
+  summary(m1bbg_rob)$coefficients)[, 2]
+
+save(m1bg, m1bg_ses, m1bbg, m1bbg_ses, file = "./temp/bg_turnout_hills.rdata")
