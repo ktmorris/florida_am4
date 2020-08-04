@@ -168,7 +168,8 @@ doc <- readRDS("./temp/released_with_addresses.rds") %>%
          cp = paste0(county, precinct),
          PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y"),
          years_since = 2018 - year(PrisonReleaseDate)) %>% 
-  filter(!is.na(cp)) %>% 
+  filter(!is.na(cp),
+         PrisonReleaseDate <= "2018-11-06") %>% 
   group_by(address1) %>% 
   mutate(big_release = n() >= 5,
          years_since = ifelse(big_release, NA, years_since)) %>% 
@@ -185,7 +186,8 @@ doc_recent <- readRDS("./temp/released_with_addresses.rds") %>%
          PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y"),
          years_since = 2018 - year(PrisonReleaseDate)) %>% 
   filter(!is.na(cp),
-         PrisonReleaseDate >= "2015-01-01") %>% 
+         PrisonReleaseDate >= "2015-01-01",
+         PrisonReleaseDate <= "2018-11-06") %>% 
   group_by(address1) %>% 
   mutate(big_release_recent = n() >= 5) %>% 
   group_by(cp) %>% 
@@ -298,7 +300,7 @@ m2_ses <- data.frame(
   summary(m2_rob)$coefficients)[, 2]
 
 
-m2b <- lm((f2b), data = filter(results_demos, to <= 1))
+m2b <- lm(f2b, data = filter(results_demos, to <= 1))
 
 m2b_rob <- lm_robust(f2b, data = filter(results_demos, to <= 1),
                      clusters = US_Congressional_District)
@@ -462,7 +464,8 @@ rm(bg2, cd)
 doc_bg <- readRDS("./temp/released_with_addresses.rds") %>% 
   mutate(county = substring(precinct, 1, 3),
          PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
-  filter(!is.na(block_group)) %>% 
+  filter(!is.na(block_group),
+         PrisonReleaseDate <= "2018-11-06") %>% 
   group_by(address1) %>% 
   mutate(big_release = n() >= 5,
          years_since = ifelse(big_release, NA, 2018 - year(PrisonReleaseDate))) %>% 
@@ -475,7 +478,8 @@ doc_bg_recent <- readRDS("./temp/released_with_addresses.rds") %>%
   mutate(county = substring(precinct, 1, 3),
          PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
   filter(!is.na(block_group),
-         PrisonReleaseDate >= "2015-01-01") %>% 
+         PrisonReleaseDate >= "2015-01-01",
+         PrisonReleaseDate <= "2018-11-06") %>% 
   group_by(address1) %>% 
   mutate(big_release = n() >= 5) %>% 
   group_by(GEOID = block_group) %>% 
