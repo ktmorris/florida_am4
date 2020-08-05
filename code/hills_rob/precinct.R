@@ -190,35 +190,25 @@ results_demos$roll_off <- 1- (results_demos$votes / results_demos$highest_votes)
 results_demos$US_Congressional_District <- as.factor(results_demos$US_Congressional_District)
 results_demos$median_income <- results_demos$median_income / 10000
 
+
+results_demos$prob_voter <- results_demos$probationers / results_demos$voter_count
+results_demos$inc_voter <- results_demos$small_res_doc / results_demos$voter_count
 ######################
 
-lm_eqn <- function(df){
-  # browser()
-  m <- lm(probationers ~ small_res_doc, filter(results_demos, to <= 1))
-  a <- coef(m)[1]
-  a <- ifelse(sign(a) >= 0, 
-              paste0(" + ", format(a, digits = 4)), 
-              paste0(" - ", format(-a, digits = 4))  )
-  eq1 <- substitute( paste( italic(y) == b, italic(x), a ), 
-                     list(a = a, 
-                          b = format(coef(m)[2], digits = 4)))
-  
-  c( as.character(as.expression(eq1)), as.character(as.expression(eq2)))
-}
 
 eq2 <- as.character(as.expression(substitute(paste(italic(R)^2 == r2), 
-                  list(r2 = format(summary(lm(probationers ~ small_res_doc,
+                  list(r2 = format(summary(lm(prob_voter ~ inc_voter - 1,
                                               filter(results_demos, to <= 1)))$r.squared, digits = 3)))))
 
-corr <- ggplot(filter(results_demos, to <= 1), aes(x = small_res_doc, y = probationers)) +
+corr <- ggplot(filter(results_demos, to <= 1), aes(x = inc_voter, y = prob_voter)) +
   geom_point(shape = 1, size = 3) +
-  lims(x = c(0, 200), y = c(0, 400)) +
-  geom_smooth(method = "lm", se = F, color = "black") +
+  lims(x = c(0, 0.1), y = c(0, 0.2)) +
+  geom_smooth(method = "lm", se = F, color = "black", formula = y ~ x - 1) +
   theme_bw() +
   theme(text = element_text(family = "LM Roman 10")) +
-  labs(x = "Formerly Incarcerated Residents",
-       y = "Residents Sentenced to Felony Probation") +
-  geom_text(x = 195, y = 300, label = eq2, parse = TRUE, check_overlap = TRUE,
+  labs(x = "Formerly Incarcerated Residents per Voter",
+       y = "Residents Sentenced to Felony Probation per Voter") +
+  geom_text(x = .0975, y = 0.15, label = eq2, parse = TRUE, check_overlap = TRUE,
             family = "LM Roman 10")
 
 saveRDS(corr, "temp/correlation_plot.rds")
