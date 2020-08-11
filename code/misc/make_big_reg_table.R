@@ -1,5 +1,5 @@
 stargazer::stargazer(models1, models2,
-          column.labels = c("All Matched Observations", "Registration Date prior to Discharge"),
+          column.labels = c("All Matched Observations", "Registration Date prior to Release Date"),
           column.separate = c(4, 4),
           header = F,
           type = "text", notes.align = "l",
