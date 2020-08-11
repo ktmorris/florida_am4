@@ -117,11 +117,27 @@ one_per$ad <- with(one_per, paste(street, city, state, zip))
 # saveRDS(ads, "temp/probation_addresses.rds")
 
 addresses <- readRDS("temp/probation_addresses.rds")
-
 one_per <- left_join(one_per, select(addresses, ad, lat, lon, loctype, address))
 
 one_per <- filter(one_per, !is.na(lat), !is.na(lon),
-                                  loctype %in% c("range_interpolated", "rooftop"))
+                  loctype %in% c("range_interpolated", "rooftop"))
+
+
+############################## formerly inc
+inc <- readRDS("./temp/released_with_addresses.rds") %>% 
+  rename(last_name = LastName, first_name = FirstName, middle_name = MiddleName) %>% 
+  mutate_at(vars(last_name, first_name, middle_name),
+            ~ gsub("[[:punct:]]| ", "", ifelse(. == "", NA, toupper(.)))) %>% 
+  mutate(date_of_birth = substring(BirthDate, 1, 10)) %>% 
+  filter(substring(block_group, 1, nchar("12057")) == "12057") %>% 
+  group_by(date_of_birth, last_name, first_name, middle_name) %>% 
+  filter(row_number() == 1) %>% 
+  select(date_of_birth, address = address1, last_name, first_name, middle_name)
+
+one_per <- anti_join(one_per, inc)
+
+##############################
+
 
 precincts <- readOGR("./raw_data/shapefiles/fl_2016_FEST",
                      "fl_2016")

@@ -61,6 +61,7 @@ matches2 <- filter(matches, max_release >= (match_reg_date + as.Date("2000-01-01
 cleanup(c("matches"))
 ##################################
 save(matches, file = "temp/pre_reg_hills.rdata")
+load("temp/pre_reg_hills.rdata")
 
 matches_hills <- matches
 ####################################### keep only hillsborough
@@ -68,6 +69,13 @@ load("temp/pre_reg.rdata")
 rm(matches2)
 
 matches <- filter(matches, match_group %in% matches_hills$voter)
+# t <- select(readRDS("./temp/hills_file_cleaned_addresses.rds"), LALVOTERID, prob)
+# matches$prob <- matches$voter %in% filter(t, prob)$LALVOTERID
+# h <- matches %>% filter(treated == 0) %>% summarize(t = weighted.mean(prob, weight))
+# h
+# 
+# i <- matches %>% filter(treated == 1) %>% summarize(t = weighted.mean(voter %in% pp$LALVOTERID, weight))
+# i
 
 ######################
 ## I HAVE TO RUN THIS ON THE HPC BECAUSE OF RAM CONSTRAINTS

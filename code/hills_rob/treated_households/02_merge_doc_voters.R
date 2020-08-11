@@ -36,6 +36,10 @@ released_with_addresses <- readRDS("./temp/released_with_addresses_clean.rds") %
   mutate(release_date = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
   select(release_date, address)
 
+prob_only <- filter(probationers, !(address %in% released_with_addresses$address))$address
+
+saveRDS(prob_only, "temp/probation_only_ads_hills.rds")
+
 latest_release <- rbind(released_with_addresses, probationers) %>% 
   group_by(address) %>% 
   summarize(max_release = max(release_date))
@@ -106,5 +110,7 @@ for(i in 1:nrow(address_cleaner)){
 fl_file$treated <- fl_file$address %in% latest_release$address
 
 fl_file <- left_join(fl_file, latest_release, by = "address")
+
+fl_file$prob <- fl_file$address %in% prob_only
 
 saveRDS(fl_file, "./temp/hills_file_cleaned_addresses.rds")
