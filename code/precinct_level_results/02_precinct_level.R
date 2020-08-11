@@ -36,6 +36,7 @@ rm(fl_race)
 ### historical turnout from vf
 history <- dbConnect(SQLite(), "D:/national_file_history.db")
 fl_history <- dbGetQuery(history, "select LALVOTERID,
+                                   General_2018_11_06,
                                    General_2016_11_08,
                                    General_2014_11_04,
                                    General_2012_11_06,
@@ -204,7 +205,13 @@ results_demos$highest_to <- results_demos$highest_votes / results_demos$voter_co
 results_demos$roll_off <- 1- (results_demos$votes / results_demos$highest_votes)
 results_demos$US_Congressional_District <- as.factor(results_demos$US_Congressional_District)
 results_demos$median_income <- results_demos$median_income / 10000
+
+saveRDS(results_demos, "temp/results_demos_ll.rds")
 ###########
+
+results_demos <- readRDS("temp/results_demos_ll.rds")
+
+weighted.mean(filter(results_demos, to <= 1)$share_yes, filter(results_demos, to <= 1)$small_res_doc, na.rm = T)
 
 m0 <- lm_robust(share_yes ~ small_res_doc, data = results_demos)
 
@@ -270,8 +277,8 @@ p1 <- ggplot() +
   scale_y_continuous(labels = percent) +
   labs(caption = "Notes: Distribution of number of formerly incarcerated residents shown at bottom.") +
   geom_hline(yintercept = cm1, linetype = 2) +
-  geom_text(aes(300, cm1, label = "Average Precinct Support for Amendment 4",
-                vjust = 1, family = "LM Roman 10", hjust = 1)) +
+  geom_text(aes(300, cm1-0.03, label = "Average Precinct Support for Amendment 4",
+                family = "LM Roman 10", hjust = 1)) +
   theme(plot.caption = element_text(hjust = 0)) +
   theme_bw() + theme(plot.caption = element_text(hjust = 0),
                      text = element_text(family = "LM Roman 10"))
@@ -360,7 +367,7 @@ m3b_ses <- data.frame(
 
 save(m3, m3_ses, m3b, m3b_ses, file = "./temp/precinct_rolloff.rdata")
 
-marg <- ggeffect(model = m3, "small_res_doc")
+marg <- ggeffect(model = m3_rob, "small_res_doc [all]")
 
 cm3 <- mean(filter(results_demos, to <= 1)$roll_off)
 
@@ -427,13 +434,6 @@ m3b_ap <- lm(roll_off ~ all_doc + white + black + latino + asian +
 save(m1_ap, m2_ap, m3_ap,
      m1b_ap, m2b_ap, m3b_ap, file = "./temp/precinct_regs_appendix.rdata")
 #############
-
-history <- dbConnect(SQLite(), "D:/national_file_history.db")
-fl_history <- dbGetQuery(history, "select LALVOTERID,
-                                   General_2018_11_06
-                                   from fl_history_18")
-
-fl_file <- left_join(fl_file, fl_history, by = "LALVOTERID")
 
 bg_level <- fl_file %>% 
   group_by(GEOID) %>% 
@@ -526,6 +526,8 @@ bg_level <- rename(bg_level,
                    white = nh_white,
                    black = nh_black)
 
+saveRDS(bg_level, "temp/bg_level_reg_data.rds")
+
 m1 <- lm(to_18 ~ small_res_doc + 
            white + black + latino + asian +
            female + male + dem + rep + age +
@@ -606,22 +608,14 @@ save(m1_ap, m1b_ap, file = "./temp/bg_regs_appendix.rdata")
 ######
 
 bgs_new <- inner_join(readRDS("./temp/block_group_census_data.RDS"),
-                      select(bg_level, GEOID, small_res_doc)) %>% 
+                      select(bg_level, GEOID, all_doc)) %>% 
   ungroup()
 
-pov <- get_acs(geography = "block group", variables = c("C17002_008", "C17002_002"),
-               summary_var = "C17002_001", year = 2018, state = "FL", output = "wide") %>% 
-  group_by(GEOID) %>% 
-  mutate(share_below_2 = 1 - (C17002_008E / summary_est),
-         share_below_50 = C17002_002E / summary_est) %>% 
-  select(GEOID, share_below_2, share_below_50)
-
-bgs_new <- left_join(bgs_new, pov)
 
 bgs_new <- rbind(
   bgs_new %>% 
     mutate(group = "former_inc",
-           weight = small_res_doc),
+           weight = all_doc),
   bgs_new %>% 
     mutate(group = "overall",
            weight = population)
@@ -630,8 +624,7 @@ bgs_new <- rbind(
 ######
 
 tot <- rbindlist(lapply(c("median_income", "median_age", "unem", "some_college",
-                          "nh_white", "nh_black", "latino", "share_below_2", 
-                          "share_below_50"), function(m){
+                          "nh_white", "nh_black", "latino"), function(m){
   ints <- rbindlist(lapply(unique(bgs_new$group), function(r){
     r <- as.character(r)
     t <- bgs_new %>% 
@@ -654,18 +647,21 @@ tot <- rbindlist(lapply(c("median_income", "median_age", "unem", "some_college",
 ll <- bgs_new %>% 
   group_by(group) %>% 
   summarize_at(vars("median_income", "median_age", "unem", "some_college",
-                    "nh_white", "nh_black", "latino", "share_below_2",
-                    "share_below_50"),
-               ~ weighted.mean(., weight, na.rm = T)) %>% 
+                    "nh_white", "nh_black", "latino"),
+               ~ weighted.mean(., weight, na.rm = T))
+
+ll2 <- group_by(bgs_new, group) %>% summarize(count = sum(weight))
+
+ll <- left_join(ll, ll2) %>% 
   mutate(median_income = dollar(median_income, accuracy = 1),
-         median_age = round(median_age, digits = 1)) %>% 
-  mutate_at(vars(unem, some_college, share_below_2,
-                 nh_white, nh_black, latino,
-                 share_below_50), ~ percent(., accuracy = 0.1))
+         median_age = round(median_age, digits = 1),
+         count = comma(count)) %>% 
+  mutate_at(vars(unem, some_college,
+                 nh_white, nh_black, latino), ~ percent(., accuracy = 0.1))
 
 ll <- transpose(ll)
 ll$var <- c("measure", "median_income", "median_age", "unem", "some_college",
-            "nh_white", "nh_black", "latino", "share_below_2", "share_below_50")
+            "nh_white", "nh_black", "latino", "count")
 
 colnames(ll) <- ll[1,]
 ll <- ll[2:nrow(ll),]
@@ -673,10 +669,9 @@ ll <- ll[2:nrow(ll),]
 ll <- left_join(ll, tot)
 
 ll$measure <- c( "Median Income", "Median Age", "% Unemployed", "% with Some College",
-                 "% Non-Hispanic White", "% Non-Hispanic Black", "% Latino", "% Below 200% of Poverty Level",
-                 "% Below 50% of Poverty Level")
+                 "% Non-Hispanic White", "% Non-Hispanic Black", "% Latino", "Count")
 ll <- ll %>% 
-  mutate(measure = ifelse(sig, paste0(measure, "*"), measure)) %>% 
+  mutate(measure = ifelse(sig & !is.na(sig), paste0(measure, "*"), measure)) %>% 
   select(measure, overall, former_inc)
 
 colnames(ll) <- c("Measure", "Average Neighborhood", "Average Neighborhood\\\\for Formerly Incarcerated")
