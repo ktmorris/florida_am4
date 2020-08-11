@@ -109,7 +109,11 @@ df <- data.frame("TrMean" = TrMean,
          change_eqqmed = 1 - abs(PostQQmed / PreQQmed),
          change_eqqmean = 1 - abs(PostQQmean / PreQQmean),
          change_eqqmax = 1 - abs(PostQQmax / PreQQmax)) %>%
-  mutate_at(vars(TrMean, PreMean, TrMean2, PostMean), funs(comma(round(., 2), accuracy = .01))) %>%
+  mutate_at(vars(TrMean, PreMean, TrMean2, PostMean), ~ ifelse(names %in% c("asian", "black", "dem",
+                                                                            "female", "latino", "male",
+                                                                            "rep", "some_college", "white"),
+                                                               round(., 3),
+                                                               comma(round(., 2), accuracy = .01))) %>%
   mutate_at(vars(change_mean, change_eqqmed, change_eqqmean, change_eqqmax), funs(round(. * 100, 2))) %>% 
   filter(names != "voted_primary")
 
