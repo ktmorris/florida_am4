@@ -1,17 +1,4 @@
-
-## get real race gender from file
-db2 <- dbConnect(SQLite(), "D:/rolls.db")
-
-fl_race <- dbGetQuery(db2, "select Race, Voter_ID, Gender from fl_roll_201902")
-dbDisconnect(db2)
-rm(db2)
-
-#####
-
 fl_file <- readRDS("./temp/fl_file_cleaned_addresses.rds") %>% 
-  filter(!(LALVOTERID %in% readRDS("./temp/matched_doc_file.rds")$LALVOTERID))
-
-fl_file <- left_join(fl_file, fl_race, by = c("Voters_StateVoterID" = "Voter_ID")) %>% 
   mutate(Gender = ifelse(is.na(Gender), Voters_Gender, Gender),
          Race = ifelse(is.na(Race) & EthnicGroups_EthnicGroup1Desc == "East and South Asian",
                        2, Race),
@@ -26,7 +13,7 @@ fl_file <- left_join(fl_file, fl_race, by = c("Voters_StateVoterID" = "Voter_ID"
                         str_pad(Residence_Addresses_CensusTract, width = 6, side = "left", pad = "0"),
                         Residence_Addresses_CensusBlockGroup)) %>% 
   select(-EthnicGroups_EthnicGroup1Desc, -Voters_Gender)
-rm(fl_race)
+
 
 ## downloading census data works better county-by-county
 ## commenting out because it takes so long
@@ -49,7 +36,7 @@ fl_file_pre_match <- fl_file %>%
          dem = Parties_Description == "Democratic",
          rep = Parties_Description == "Republican",
          reg_date = as.Date(Voters_OfficialRegDate, "%m/%d/%Y")) %>% 
-  select(LALVOTERID, treated, white, black, latino, asian, female, male,
+  select(voter_id_anon, treated, white, black, latino, asian, female, male,
          reg_date, age = Voters_Age, dem, rep, median_income,
          some_college)
 
@@ -61,7 +48,7 @@ fl_file_pre_match <- fl_file_pre_match %>%
             ~ . * 1) %>% 
   mutate(reg_date = as.integer(reg_date - as.Date("2000-01-01")))
 
-fl_file_pre_match <- left_join(fl_file_pre_match, select(fl_file, LALVOTERID, max_release,
+fl_file_pre_match <- left_join(fl_file_pre_match, select(fl_file, voter_id_anon, max_release,
                                                          US_Congressional_District))
 
 saveRDS(fl_file_pre_match, "./temp/fl_file_pre_match.rds")

@@ -30,7 +30,7 @@ samp <- fl_file_pre_match %>%
   sample_frac(0.05)
 
 match_data <- samp %>% 
-  select(-LALVOTERID, -treated, -max_release)
+  select(-voter_id_anon, -treated, -max_release)
 
 genout <- GenMatch(Tr = samp$treated, X = match_data, replace = T, cluster = cl,
                    exact = c(rep(T, 6), F, F, T, T, F, F, T), pop.size = 1000)

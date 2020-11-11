@@ -23,10 +23,10 @@ fl_roll <- readRDS("./temp/fl_file_pre_match.rds")
 
 ids <- fl_roll %>% 
   mutate(id = row_number()) %>% 
-  select(id, LALVOTERID)
+  select(id, voter_id_anon)
 
 X <- fl_roll %>%
-  dplyr::select(-LALVOTERID, -treated, -starts_with("General"),
+  dplyr::select(-voter_id_anon, -treated, -starts_with("General"),
                 -max_release)
 
 

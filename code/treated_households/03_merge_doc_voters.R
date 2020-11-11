@@ -30,7 +30,6 @@ latest_release <- released_with_addresses %>%
 
 fl_file <- dbGetQuery(db, "select LALVOTERID, 
                            Voters_StateVoterID,
-                           Voters_LastName,
                            Residence_Addresses_AddressLine,
                            Residence_Addresses_HouseNumber,
                            Residence_Addresses_PrefixDirection,
@@ -93,18 +92,30 @@ fl_file$treated <- fl_file$address %in% released_with_addresses$address
 
 fl_file <- left_join(fl_file, latest_release, by = "address")
 
+fl_file <- fl_file %>% 
+  filter(!(LALVOTERID %in% readRDS("./temp/matched_doc_file.rds")$LALVOTERID))
+
+#### MERGE WITH OTHER VF DATA
+
+db2 <- dbConnect(SQLite(), "D:/rolls.db")
+
+fl_race <- dbGetQuery(db2, "select Race, Voter_ID, Gender from fl_roll_201902")
+dbDisconnect(db2)
+rm(db2)
+
+fl_file <- left_join(fl_file, fl_race, by = c("Voters_StateVoterID" = "Voter_ID"))
+
+## ANONYMIZE
+
+scrambled_ids <- data.table(LALVOTERID = unique(fl_file$LALVOTERID),
+                            voter_id_anon = paste0("V", c(1:length(unique(fl_file$LALVOTERID)))))
+
+saveRDS(scrambled_ids, "temp/id_lookup_anon.rds")
+
+fl_file <- left_join(fl_file, scrambled_ids) %>% 
+  select(-LALVOTERID, -address,
+         -Residence_Addresses_Latitude,
+         -Residence_Addresses_Longitude,
+         -Voters_LastName, -Voters_StateVoterID)
+
 saveRDS(fl_file, "./temp/fl_file_cleaned_addresses.rds")
-
-###############
-
-tt <- fl_file %>% 
-  mutate(reg_date = lubridate::make_date(year = substring(Voters_OfficialRegDate, 7),
-                                         month = substring(Voters_OfficialRegDate, 1, 2),
-                                         day = substring(Voters_OfficialRegDate, 4, 5)),
-         reg_month = lubridate::make_date(year = substring(Voters_OfficialRegDate, 7),
-                                          month = substring(Voters_OfficialRegDate, 1, 2),
-                                          day = 1)) %>% 
-  group_by(treated, reg_month) %>% 
-  tally() %>% 
-  group_by(treated) %>% 
-  mutate(s = n / sum(n))
