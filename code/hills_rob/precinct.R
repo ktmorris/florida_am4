@@ -37,6 +37,7 @@ rm(fl_race)
 ### historical turnout from vf
 history <- dbConnect(SQLite(), "D:/national_file_history.db")
 fl_history <- dbGetQuery(history, "select LALVOTERID,
+                                   General_2018_11_06,
                                    General_2016_11_08,
                                    General_2014_11_04,
                                    General_2012_11_06,
@@ -193,6 +194,8 @@ results_demos$median_income <- results_demos$median_income / 10000
 
 results_demos$prob_voter <- results_demos$probationers / results_demos$voter_count
 results_demos$inc_voter <- results_demos$small_res_doc / results_demos$voter_count
+
+saveRDS(results_demos, "temp/results_demos_hills_pre_reg.rds")
 ######################
 
 
@@ -202,13 +205,13 @@ eq2 <- as.character(as.expression(substitute(paste(italic(R)^2 == r2),
 
 corr <- ggplot(filter(results_demos, to <= 1), aes(x = inc_voter, y = prob_voter)) +
   geom_point(shape = 1, size = 3) +
-  lims(x = c(0, 0.1), y = c(0, 0.2)) +
+  coord_cartesian(xlim = c(0, 0.1), ylim = c(0, 0.2)) +
   geom_smooth(method = "lm", se = F, color = "black", formula = y ~ x - 1) +
   theme_bw() +
   theme(text = element_text(family = "LM Roman 10")) +
   labs(x = "Formerly Incarcerated Residents per Voter",
        y = "Residents Sentenced to Felony Probation per Voter") +
-  geom_text(x = .0975, y = 0.15, label = eq2, parse = TRUE, check_overlap = TRUE,
+  annotate(x = .0975, y = 0.15, label = eq2, parse = TRUE,
             family = "LM Roman 10")
 
 saveRDS(corr, "temp/correlation_plot.rds")
@@ -331,13 +334,6 @@ save(m3, m3_ses, m3b, m3b_ses, file = "./temp/precinct_rolloff_hills.rdata")
 
 #############
 
-history <- dbConnect(SQLite(), "D:/national_file_history.db")
-fl_history <- dbGetQuery(history, "select LALVOTERID,
-                                   General_2018_11_06
-                                   from fl_history_18")
-
-fl_file <- left_join(fl_file, fl_history, by = "LALVOTERID")
-
 bg_level <- fl_file %>% 
   group_by(GEOID) %>% 
   summarize_at(vars(female, male, dem, rep, age),
@@ -435,6 +431,33 @@ bg_level$median_income <- bg_level$median_income / 10000
 bg_level <- rename(bg_level,
                    white = nh_white,
                    black = nh_black)
+
+
+bg_level$prob_voter <- bg_level$probationers / bg_level$population
+bg_level$inc_voter <- bg_level$small_res_doc / bg_level$population
+
+bg_level <- filter(bg_level, cvap > 0)
+
+saveRDS(bg_level, "temp/bg_level_hills_prereg.rds")
+##################################
+
+
+eq2 <- as.character(as.expression(substitute(paste(italic(R)^2 == r2), 
+                                             list(r2 = format(summary(lm(prob_voter ~ inc_voter - 1,
+                                                                         filter(bg_level, to_18 <= 1)))$r.squared, digits = 3)))))
+
+corr <- ggplot(filter(bg_level, to_18 <= 1), aes(x = inc_voter, y = prob_voter)) +
+  geom_point(shape = 1, size = 3) +
+  coord_cartesian(xlim = c(0, 0.075), ylim = c(0, 0.1)) +
+  geom_smooth(method = "lm", se = F, color = "black", formula = y ~ x - 1) +
+  theme_bw() +
+  theme(text = element_text(family = "LM Roman 10")) +
+  labs(x = "Formerly Incarcerated Residents per Capita",
+       y = "Residents Sentenced to Felony Probation per Capita") +
+  annotate("text", x = 0.065, y = 0.1, label = eq2, parse = T, family = "LM Roman 10")
+
+saveRDS(corr, "temp/correlation_plot_bg.rds")
+######################################################
 
 m1bg <- lm(to_18 ~ small_res_doc +
            white + black + latino + asian +
