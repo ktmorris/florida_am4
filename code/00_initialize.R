@@ -1,3 +1,6 @@
+## THIS FILE LOADS THE NECESSARY PACKAGES AND CONNECTS TO
+## A SQL DATABASE HOLDING THE VOTER FILE DATA
+
 library(butcher)
 library(tidycensus)
 library(extrafont)
@@ -40,6 +43,3 @@ cleanup <- function(...){
   save2 <- c(save, ...)
   rm(list=ls(envir = .GlobalEnv)[! ls(envir = .GlobalEnv) %in% save2], envir = .GlobalEnv)
 }
-
-options("RStata.StataVersion" = 15)
-options("RStata.StataPath" = "\"C:\\Program Files (x86)\\Stata15\\StataSE-64\"")
