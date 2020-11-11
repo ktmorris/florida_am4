@@ -3,11 +3,11 @@ stargazer::stargazer(models1, models2,
           column.separate = c(4, 4),
           header = F,
           type = "text", notes.align = "l",
-          covariate.labels = c("D(2018)", "D(Treated)", "Years Since Latest Incarceration",
-                               "D(2018) $\\times$ D(Treated)",
-                               "D(2018) $\\times$ Years Since",
-                               "D(Treated) $\\times$ Years Since",
-                               "D(2018) $\\times$ D(Treated) $\\times$ Years Since"),
+          covariate.labels = c("2018", "Treated", "Years Since Latest Incarceration",
+                               "2018 $\\times$ Treated",
+                               "2018 $\\times$ Years Since",
+                               "Treated $\\times$ Years Since",
+                               "2018 $\\times$ Treated $\\times$ Years Since"),
           dep.var.labels.include = FALSE,
           title = "\\label{tab:tab-dind} General Election Turnout, 2010 {--} 2018",
           table.placement = "H",
@@ -44,3 +44,4 @@ j <- bind_rows(j, data.frame(V1 = c(insert1, insert2), n = c(3.1, nrow(j) + 1 - 
 
 write.table(j, "./temp/dind_reg.tex", quote = F, col.names = F,
             row.names = F)
+
