@@ -58,6 +58,11 @@
 
 hills_prob <- readRDS("temp/hills_prob_raw.rds")
 
+codes <- fread("raw_data/hills_prob/codes.csv")
+
+hills_prob <- left_join(hills_prob, codes) %>% 
+  filter(guilty == "y")
+
 one_per <- hills_prob %>% 
   mutate(disposition_date = as.Date(disposition_date, "%m/%d/%Y")) %>% 
   filter(disposition_date <= "2018-11-06") %>% 
@@ -67,10 +72,6 @@ one_per <- hills_prob %>%
   ungroup()
 
 #######################
-codes <- fread("raw_data/hills_prob/codes.csv")
-
-one_per <- left_join(one_per, codes) %>% 
-  filter(guilty == "y")
 
 one_per <- one_per %>% 
   filter(disposition_date >= "1997-10-01")
@@ -78,12 +79,12 @@ one_per <- one_per %>%
 one_per$ad <- with(one_per, paste(street, city, state, zip))
 
 # #####################
-# addresses <- one_per %>% 
-#   group_by(ad) %>% 
+# addresses2 <- one_per %>%
+#   group_by(ad) %>%
 #   filter(row_number() == 1,
 #          !(grepl("UNKNOWN|AT LARGE|XXXX", ad)),
-#          grepl("[0-9]", substring(ad, 1, 1))) %>% 
-#   select(ad) %>% 
+#          grepl("[0-9]", substring(ad, 1, 1))) %>%
+#   select(ad) %>%
 #   ungroup()
 # 
 # addresses <- mutate(addresses, group = floor(row_number() / 1000))
@@ -113,7 +114,8 @@ one_per$ad <- with(one_per, paste(street, city, state, zip))
 # k <- filter(ads, !is.na(lon))
 # 
 # ads <- bind_rows(j, k)
-# 
+
+
 # saveRDS(ads, "temp/probation_addresses.rds")
 
 addresses <- readRDS("temp/probation_addresses.rds")

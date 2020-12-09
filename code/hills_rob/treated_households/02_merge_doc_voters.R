@@ -4,11 +4,11 @@
 #          replace = paste0(" ", replace, " "))
 # 
 # ######
-# probationers <- readRDS("./temp/hills_with_ads.rds") %>%
-#   mutate(address = gsub(" apt  ,", ",", address),
-#          address = gsub("\\s+", " ", address),
-#          address = gsub(" ,", ",", address),
-#          address = tolower(gsub("[[:punct:]]|", "", address)))
+probationers <- readRDS("./temp/hills_with_ads.rds") %>%
+  mutate(address = gsub(" apt  ,", ",", address),
+         address = gsub("\\s+", " ", address),
+         address = gsub(" ,", ",", address),
+         address = tolower(gsub("[[:punct:]]|", "", address)))
 # 
 # released_with_addresses <- readRDS("./temp/released_with_addresses.rds") %>%
 #   mutate(address = gsub(" apt  ,", ",", address1),

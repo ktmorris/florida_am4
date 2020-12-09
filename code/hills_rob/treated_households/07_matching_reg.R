@@ -58,15 +58,21 @@ matches$US_Congressional_District <- as.factor(matches$US_Congressional_District
 matches$pres <- matches$year %in% c("2012", "2016")
 
 matches2 <- filter(matches, max_release >= (match_reg_date + as.Date("2000-01-01")))
-cleanup(c("matches"))
+cleanup(c("matches", "matches2"))
 ##################################
-save(matches, file = "temp/pre_reg_hills.rdata")
+save(matches, matches2, file = "temp/pre_reg_hills.rdata")
 load("temp/pre_reg_hills.rdata")
 
 matches_hills <- matches
 ####################################### keep only hillsborough
 load("temp/pre_reg.rdata")
 rm(matches2)
+
+scrambled_ids <- readRDS("temp/id_lookup_anon.rds")
+
+matches <- left_join(matches, scrambled_ids, by = c("match_group" = "voter_id_anon")) %>% 
+  select(-match_group) %>% 
+  rename(match_group = LALVOTERID)
 
 matches <- filter(matches, match_group %in% matches_hills$voter)
 # t <- select(readRDS("./temp/hills_file_cleaned_addresses.rds"), LALVOTERID, prob)

@@ -1,9 +1,9 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2020.12.2)  7 DEC 2020 14:25
+This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2020.12.2)  8 DEC 2020 20:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**amendment_4_turnout.tex
-(./amendment_4_turnout.tex
+**amendment_4_turnout_blind.tex
+(./amendment_4_turnout_blind.tex
 LaTeX2e <2020-10-01> patch level 2
 L3 programming layer <2020-10-27> xparse <2020-03-03>
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
@@ -663,7 +663,7 @@ Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
 \TeXr@lab=\toks34
 )
 \cslhangindent=\skip67
-(./amendment_4_turnout.aux
+(./amendment_4_turnout_blind.aux
 
 LaTeX Warning: Label `fig:marg1' multiply defined.
 
@@ -698,42 +698,42 @@ LaTeX Warning: Label `' multiply defined.
 LaTeX Warning: Label `' multiply defined.
 
 )
-\openout1 = `amendment_4_turnout.aux'.
+\openout1 = `amendment_4_turnout_blind.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 101.
-LaTeX Font Info:    ... okay on input line 101.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 101.
-LaTeX Font Info:    ... okay on input line 101.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 101.
-LaTeX Font Info:    ... okay on input line 101.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 101.
-LaTeX Font Info:    ... okay on input line 101.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 101.
-LaTeX Font Info:    ... okay on input line 101.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 101.
-LaTeX Font Info:    ... okay on input line 101.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 101.
-LaTeX Font Info:    ... okay on input line 101.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 101.
-LaTeX Font Info:    ... okay on input line 101.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 101.
-LaTeX Font Info:    ... okay on input line 101.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 101.
-LaTeX Font Info:    ... okay on input line 101.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 100.
+LaTeX Font Info:    ... okay on input line 100.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 100.
+LaTeX Font Info:    ... okay on input line 100.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 100.
+LaTeX Font Info:    ... okay on input line 100.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 100.
+LaTeX Font Info:    ... okay on input line 100.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 100.
+LaTeX Font Info:    ... okay on input line 100.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 100.
+LaTeX Font Info:    ... okay on input line 100.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 100.
+LaTeX Font Info:    ... okay on input line 100.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 100.
+LaTeX Font Info:    ... okay on input line 100.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 100.
+LaTeX Font Info:    ... okay on input line 100.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 100.
+LaTeX Font Info:    ... okay on input line 100.
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
-(Font)                  OT1/lmr/m/n --> TU/lmr/m/n on input line 101.
+(Font)                  OT1/lmr/m/n --> TU/lmr/m/n on input line 100.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/lmr/m/it --> TU/lmr/m/it on input line 101.
+(Font)                  OT1/lmr/m/it --> TU/lmr/m/it on input line 100.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/lmr/bx/n --> TU/lmr/bx/n on input line 101.
+(Font)                  OT1/lmr/bx/n --> TU/lmr/bx/n on input line 100.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 101.
+(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 100.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/lmss/bx/n --> TU/lmss/bx/n on input line 101.
+(Font)                  OT1/lmss/bx/n --> TU/lmss/bx/n on input line 100.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 101.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 100.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/bx/n on input line 101.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/bx/n on input line 100.
 
 Package fontspec Info: latinmodern-math scale = 0.9999970497384594.
 
@@ -762,7 +762,7 @@ pt=math;language=dflt;"
 (fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(0)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 101.
+(Font)              scaled to size 12.0pt on input line 100.
 
 Package fontspec Info: latinmodern-math scale = 0.9999970497384594.
 
@@ -801,18 +801,18 @@ pt=math;language=dflt;"
 (fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 101.
+(Font)              scaled to size 12.0pt on input line 100.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 101.
+(Font)              `operators' in the math version `normal' on input line 100.
 
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input
- line 101.
+ line 100.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 101.
+(Font)              `operators' in the math version `bold' on input line 100.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
 (Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on inpu
-t line 101.
+t line 100.
 
 Package fontspec Info: latinmodern-math scale = 0.9999970497384594.
 
@@ -899,15 +899,15 @@ t=math;language=dflt;"
 (fontspec)             \fontdimen 21\font =0pt\relax 
 
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `normal' on input line 101.
+(Font)              `symbols' in the math version `normal' on input line 100.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
 (Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on inpu
-t line 101.
+t line 100.
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `bold' on input line 101.
+(Font)              `symbols' in the math version `bold' on input line 100.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
 (Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on inpu
-t line 101.
+t line 100.
 
 Package fontspec Info: latinmodern-math scale = 0.9999970497384594.
 
@@ -977,17 +977,17 @@ pt=math;language=dflt;"
 
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
 (Font)              `largesymbols' in the math version `normal' on input line 1
-01.
+00.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
 (Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on inpu
-t line 101.
+t line 100.
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `bold' on input line 101
+(Font)              `largesymbols' in the math version `bold' on input line 100
 .
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
 (Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on inpu
-t line 101.
-Package hyperref Info: Link coloring OFF on input line 101.
+t line 100.
+Package hyperref Info: Link coloring OFF on input line 100.
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/hyperref/nameref
 .sty
@@ -1003,12 +1003,12 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count319
 )
-LaTeX Info: Redefining \ref on input line 101.
-LaTeX Info: Redefining \pageref on input line 101.
-LaTeX Info: Redefining \nameref on input line 101.
-(./amendment_4_turnout.out) (./amendment_4_turnout.out)
+LaTeX Info: Redefining \ref on input line 100.
+LaTeX Info: Redefining \pageref on input line 100.
+LaTeX Info: Redefining \nameref on input line 100.
+(./amendment_4_turnout_blind.out) (./amendment_4_turnout_blind.out)
 \@outlinefile=\write3
-\openout3 = `amendment_4_turnout.out'.
+\openout3 = `amendment_4_turnout_blind.out'.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1045,78 +1045,71 @@ LaTeX Info: Redefining \nameref on input line 101.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 20.74pt on input line 103.
+(Font)              scaled to size 14.4pt on input line 102.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 14.4pt on input line 103.
+(Font)              scaled to size 10.0pt on input line 102.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 7.0pt on input line 102.
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-03.
+02.
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 20.7419pt on input line 103.
+(Font)              scaled to size 14.4013pt on input line 102.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 14.4013pt on input line 103.
+(Font)              scaled to size 10.00092pt on input line 102.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 12.0011pt on input line 103.
+(Font)              scaled to size 7.00064pt on input line 102.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 20.73778pt on input line 103.
+(Font)              scaled to size 14.39845pt on input line 102.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 14.39845pt on input line 103.
+(Font)              scaled to size 9.99893pt on input line 102.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 11.99872pt on input line 103.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 103
+(Font)              scaled to size 6.99925pt on input line 102.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 102
 .
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 103
+LaTeX Font Info:    Trying to load font information for U+msb on input line 102
 .
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 10.0pt on input line 103.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 103.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.00092pt on input line 103.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.00064pt on input line 103.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 9.99893pt on input line 103.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.99925pt on input line 103.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 5.0pt on input line 103.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 5.00046pt on input line 103.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 4.99947pt on input line 103.
-[1
+) [1
 
 ]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.4pt on input line 117.
+(Font)              scaled to size 8.4pt on input line 116.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 6.0pt on input line 117.
+(Font)              scaled to size 6.0pt on input line 116.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.40076pt on input line 117.
+(Font)              scaled to size 12.0011pt on input line 116.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 6.00055pt on input line 117.
+(Font)              scaled to size 8.40076pt on input line 116.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 6.00055pt on input line 116.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 8.3991pt on input line 117.
+(Font)              scaled to size 11.99872pt on input line 116.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 5.99936pt on input line 117.
+(Font)              scaled to size 8.3991pt on input line 116.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 5.99936pt on input line 116.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 5.0pt on input line 118.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 5.00046pt on input line 118.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 4.99947pt on input line 118.
 [1] [2] [3] [4] [5] [6] [7] (../temp/table_hypos.tex
 Overfull \hbox (39.58498pt too wide) in paragraph at lines 6--21
  [][] 
  []
 
 ) [8] [9] [10]
-Underfull \hbox (badness 10000) in paragraph at lines 189--189
+Underfull \hbox (badness 10000) in paragraph at lines 188--188
 [][]\TU/lmr/m/n/10 See []$[][][][] [] [] [] [][][] [] [][][][][] [] [][] [] [][
 ] [] [][][][][][][] [] [][][][][][][][] [][] [][][][][][] [] [][][][][][][][] [
 ][] [][][][][][][] [] [][][][][][][] [] [][][][][][][][] [][] [][][][][][][] []
@@ -1130,107 +1123,107 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
 (Font)              scaled to size 8.00073pt on input line 20.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 7.99915pt on input line 20.
-) [14] (../temp/precinct_to.tex) [15]
+) [14] [15] (../temp/precinct_to.tex) [16]
 Overfull \vbox (16.8529pt too high) has occurred while \output is active []
 
-[16]
-File: amendment_4_turnout_files/figure-latex/marg1-1.pdf Graphic file (type pdf
-)
-<use amendment_4_turnout_files/figure-latex/marg1-1.pdf>
-[17] (../temp/precinct_other.tex) [18]
+[17]
+File: amendment_4_turnout_blind_files/figure-latex/marg1-1.pdf Graphic file (ty
+pe pdf)
+<use amendment_4_turnout_blind_files/figure-latex/marg1-1.pdf>
+[18] (../temp/precinct_other.tex) [19]
 Overfull \vbox (17.0929pt too high) has occurred while \output is active []
 
-[19]
-File: amendment_4_turnout_files/figure-latex/marg-alt-1.pdf Graphic file (type 
-pdf)
-<use amendment_4_turnout_files/figure-latex/marg-alt-1.pdf>
-File: amendment_4_turnout_files/figure-latex/marg-alt2-1.pdf Graphic file (type
- pdf)
-<use amendment_4_turnout_files/figure-latex/marg-alt2-1.pdf>
-[20] [21] [22]
-File: amendment_4_turnout_files/figure-latex/dind-1.pdf Graphic file (type pdf)
-
-<use amendment_4_turnout_files/figure-latex/dind-1.pdf>
-[23] [24] (../temp/dind_reg.tex) [25] [26] (../temp/dind_reg_medium.tex
+[20]
+File: amendment_4_turnout_blind_files/figure-latex/marg-alt-1.pdf Graphic file 
+(type pdf)
+<use amendment_4_turnout_blind_files/figure-latex/marg-alt-1.pdf>
+File: amendment_4_turnout_blind_files/figure-latex/marg-alt2-1.pdf Graphic file
+ (type pdf)
+<use amendment_4_turnout_blind_files/figure-latex/marg-alt2-1.pdf>
+[21] [22] [23]
+File: amendment_4_turnout_blind_files/figure-latex/dind-1.pdf Graphic file (typ
+e pdf)
+<use amendment_4_turnout_blind_files/figure-latex/dind-1.pdf>
+[24] [25] (../temp/dind_reg.tex) [26] [27] (../temp/dind_reg_medium.tex
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
 (Font)              scaled to size 10.95pt on input line 5.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
 (Font)              scaled to size 10.95099pt on input line 5.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 10.94882pt on input line 5.
-) [27] [28] [29] [30] [31] [32]
-Underfull \hbox (badness 10000) in paragraph at lines 411--413
+) [28] [29] [30] [31] [32]
+Underfull \hbox (badness 10000) in paragraph at lines 403--405
 []$[][][][] [] [] [] [][][][][] [] [][][][][][][] [] [][][] [] [][][] [] [][][]
 [][] [] [][][] [] [][][][] [] [] [] [][][][][][] [] [][][][][][][][][] [] [][][
 ] [] [][][][][] [] [][][][] []
  []
 
 
-Underfull \hbox (badness 3199) in paragraph at lines 423--425
+Underfull \hbox (badness 3199) in paragraph at lines 415--417
 \TU/lmr/m/n/12 ing.” \TU/lmr/m/it/12 Orlando Sentinel\TU/lmr/m/n/12 , August 7,
  2020. []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][][][][] [] [][][
 ] []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 423--425
+Underfull \hbox (badness 10000) in paragraph at lines 415--417
 [][][][][][][] [] [][][][][] [][] [][][][][][][][][][] [] [][] [][] [][] [][] [
 ][][][][][][][] [][] [][][][][][][][][] [][] [] [][] [][] [][] [] [][] [][][][]
 [][][] [][] [][][][][][][][] [][]
  []
 
 [33] [34]
-Underfull \hbox (badness 10000) in paragraph at lines 474--476
+Underfull \hbox (badness 10000) in paragraph at lines 463--465
 [] [] [][][] [] [][][][][][][][][][][][][][][] [] [][][] [] [][][][][][][] [] [
 ][][][][][][][][][] [] [][] [][] [][] [][] [][][][][][][] [][] [][][][][][][][]
  [][] [][][][][][][][][][][][] [][]
  []
 
-[35]
-Underfull \hbox (badness 10000) in paragraph at lines 477--479
+
+Underfull \hbox (badness 10000) in paragraph at lines 466--468
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][][] [] [][][] [] [][][]
 [] [] [][][][][][][][] [] [][][][][][][] [][] [][][][][] [][] [][][][][][] [][]
  [][][][][][] [][] [][][] [][] [][][] [][]
  []
 
-
-Underfull \hbox (badness 1028) in paragraph at lines 483--485
+[35]
+Underfull \hbox (badness 1028) in paragraph at lines 472--474
 [][]\TU/lmr/m/n/12 Schlakman, Mar. 2018. “Some Facts and Figures You Might Not 
 Know About
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 483--485
+Underfull \hbox (badness 10000) in paragraph at lines 472--474
 [] [] [][][] [] [][][][][][][][] [] [][][] [] [][][][][][][] [] [][][][][][][] 
 [] [][][][][][] [][] [][][][] [][] [][][][][] [][] [][][] [][] [][][][][][][] [
 ][] [][][] [][] [][][][][] [][]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 495--497
+Underfull \hbox (badness 10000) in paragraph at lines 484--486
 []$[][][][][] [] [] [] [][][][][] [] [][][] [] [][][][] [][] [][][] [][] [][][]
 [][][][][] [] [][][][] [] [][] [] [][][][][][][] [][] [][][][][][][][][][][] []
 [] [][][][][] [][] [][][][][][] [][] [][][][][][] [][]
  []
 
-[36]
-Underfull \hbox (badness 10000) in paragraph at lines 501--503
+
+Underfull \hbox (badness 10000) in paragraph at lines 490--492
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][] [] [][][] [] [][][][][][][] [
 ] [][][][][][][][][][] [] [][][][][] [][] [][][][][][][][][][] [][] [][][] [][]
  [][] [][] [][][][][][][][][] [][]
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 504--506
+[36]
+Underfull \hbox (badness 10000) in paragraph at lines 493--495
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][][][] [] [][][] [] [][]
 [][][] [] [][][][] [] [][] [] [][] [] [][][][][][][][] [][] [][][][] [][] [][][
 ][][] [][] [][] [][] [][][][][][] [][]
  []
 
 [37] [38]
-File: amendment_4_turnout_files/figure-latex/corrplot-1.pdf Graphic file (type 
-pdf)
-<use amendment_4_turnout_files/figure-latex/corrplot-1.pdf>
+File: amendment_4_turnout_blind_files/figure-latex/corrplot-1.pdf Graphic file 
+(type pdf)
+<use amendment_4_turnout_blind_files/figure-latex/corrplot-1.pdf>
 [1] (../temp/hills_hood.tex) [2] [3] (../temp/dind_reg_hills.tex) [4] [5] (../t
 emp/ap_a_1.tex) [6]
 Overfull \vbox (16.8883pt too high) has occurred while \output is active []
@@ -1238,20 +1231,21 @@ Overfull \vbox (16.8883pt too high) has occurred while \output is active []
 [7] (../temp/ap_a_2.tex) [8]
 Overfull \vbox (17.8603pt too high) has occurred while \output is active []
 
-[9] [10] (./amendment_4_turnout.aux)
-Package rerunfilecheck Info: File `amendment_4_turnout.out' has not changed.
-(rerunfilecheck)             Checksum: F39D9AC4403A492724433B5268E4D7DC;2292.
+[9] [10] (./amendment_4_turnout_blind.aux)
+Package rerunfilecheck Info: File `amendment_4_turnout_blind.out' has not chang
+ed.
+(rerunfilecheck)             Checksum: 56D4148067ED968ED8A0A820DC224D61;2485.
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 18527 strings out of 479393
- 324399 string characters out of 5877794
- 821750 words of memory out of 5000000
- 37575 multiletter control sequences out of 15000+600000
- 545513 words of font info for 110 fonts, out of 8000000 for 9000
+ 18519 strings out of 479393
+ 324390 string characters out of 5877794
+ 821419 words of memory out of 5000000
+ 37570 multiletter control sequences out of 15000+600000
+ 544552 words of font info for 104 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 94i,15n,118p,2180b,504s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 94i,15n,118p,2403b,463s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on amendment_4_turnout.pdf (49 pages).
+Output written on amendment_4_turnout_blind.pdf (49 pages).
