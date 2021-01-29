@@ -40,6 +40,7 @@ ses_cl <- list(
 save(models1, models2, ses_cl, file = "./temp/full_match_reg.rdata")
 ##make regression table
 source("./code/misc/make_big_reg_table.R")
+source("./code/misc/coef_plot.R")
 ####
 matches3 <- filter(matches2, max_release < "2010-01-01")
 m1c <- lm(f1, data = matches3,

@@ -1,0 +1,130 @@
+---
+title: "Turnout and Amendment 4"
+subtitle: "Mobilizing Eligible Voters Close to Formerly Incarcerated Floridians"
+shorttitle: "Other"
+author: Kevin Morris
+abstract: kevin.morris@nyu.edu
+institute: Brennan Center for Justice
+date: Annual Meeting of the Southern Political Science Association, 2021
+output:
+  beamer_presentation:
+    latex_engine: xelatex
+    theme: "Berlin"
+    keep_tex: true
+classoption: "aspectratio=169"
+bibliography: "../markdown/am4.bib"
+---
+```{r setup, echo = F, message = F, warning = F}
+knitr::opts_knit$set(dev = "cairo_pdf")
+library(systemfit)
+library(AER)
+library(sandwich)
+library(lmtest)
+library(scales)
+library(tidyverse)
+library(extrafont)
+library(kableExtra)
+library(data.table)
+library(stargazer)
+loadfonts()
+```
+
+## Introduction
+
+>* The carceral state as a site of political socialization.
+
+>* Overview of the Second Chances Florida campaign in support of Amendment 4.
+
+>* Electoral behavior of neighborhoods home to formerly incarcerated individuals.
+
+>* Turnout among household members of the formerly incarcerated.
+
+>* Post-passage legislation and litigation.
+
+## Literature and Theory
+
+>* Work from Amy Lerman and Wesla Weaver [-@Weaver2010; -@Lerman2014] explores the effects of the carceral state, arguing that criminal justice contact teaches individuals that government is something that is "done to" them, not something they are invited to participate in.
+
+>* Importantly, this socialization extends also to non-convicted family members [@Comfort2008; @Lee2014; @Kirk2016].
+
+## Literature and Theory
+
+>* Proximal contact with the criminal justice system probably reduces turnout even for eligible voters [e.g. @Burch2013; @Morris2020; but see @White2019a].
+
+>* **Research Question:** Can a contest of particular salience to these eligible voters --- such as Amendment 4 --- recoup their turnout?
+
+## Key Elements of Amendment 4 Campaign
+
+>* Used a framework of injustice, which @Walker2020 and others indicate can be mobilizing.
+
+>* Gillum spoke openly about the disenfranchisement of his brother; this potential descriptive representation could also have been mobilizing [e.g. @Merolla2013].
+
+## Data and Methods
+
+>* Primarily using the Florida registered voter file and the Offender Based Information System (OBIS)
+
+>* Geocoded OBIS records show the neighborhoods home to formerly incarcerated individuals.
+
+>* By matching (cleaned) addresses in the voter file and OBIS I identify registered voters who live with formerly incarcerated individuals. These individuals are genetically matched to untreated voters, and I run a difference-in-differences model.
+
+## Neighborhood Turnout
+
+```{r marg1, echo = FALSE, message = F, warning = F, fig.pos = "H", fig.align = "center", out.width="90%", out.height="85%"}
+knitr::include_graphics(c("../temp/p2.png"))
+```
+
+## Support for Amendment 4
+
+```{r marg2, echo = FALSE, message = F, warning = F, fig.pos = "H", fig.align = "center", out.width="90%", out.height="85%"}
+knitr::include_graphics(c("../temp/p1.png"))
+```
+
+## Roll-Off
+
+```{r marg3, echo = FALSE, message = F, warning = F, fig.pos = "H", fig.align = "center", out.width="90%", out.height="85%"}
+knitr::include_graphics(c("../temp/p3.png"))
+```
+
+## Individual Level Results
+
+```{r, echo=FALSE,fig.show='hold',fig.align='center', out.width="85%", out.height="85%"}
+knitr::include_graphics(c("../temp/comp_bars.png"))
+```
+
+## Post-Match Difference-in-Differences
+
+```{r did, echo = FALSE, message = F, warning = F, fig.pos = "H", fig.align = "center", out.width="90%", out.height="90%"}
+knitr::include_graphics(c("../temp/p.png"))
+```
+
+## Regression Results
+
+```{r, echo=FALSE,fig.show='hold',fig.align='center', out.width="85%", out.height="85%"}
+knitr::include_graphics(c("../temp/coef1.png"))
+```
+
+## Regression Results
+
+```{r, echo=FALSE,fig.show='hold',fig.align='center', out.width="85%", out.height="85%"}
+knitr::include_graphics(c("../temp/coef2.png"))
+```
+
+## Regression Results
+
+```{r, echo=FALSE,fig.show='hold',fig.align='center', out.width="85%", out.height="85%"}
+knitr::include_graphics(c("../temp/coef3.png"))
+```
+
+## SB 7066 and Litigation
+
+>* In the months following the passage of Amendment 4, the Florida legislature re-defined what it means to "complete one's sentence."
+
+>* The state is incapable of knowing who has paid off their LFOs --- and, therefore, is eligible to vote.
+
+>* It remains to be seen how restrictive legislation will shape these individuals' participation, but it is likely to re-inforce the negative political socialization associated with the carceral state.
+
+## Thanks!
+
+kevin.morris@nyu.edu
+
+## References {.allowframebreaks}
