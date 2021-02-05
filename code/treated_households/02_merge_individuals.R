@@ -20,7 +20,8 @@ fl_file <- dbGetQuery(db, "select LALVOTERID, Voters_FirstName,
   select(-Voters_BirthDate)
   
 ## match
-merge_list <- match_rolls_to_doc(released_with_addresses, DCNumber, fl_file, LALVOTERID)
+source("code/helpers/match.R")
+merge_list <- match_rolls_to_doc(released_with_addresses, "DCNumber", fl_file, "LALVOTERID")
 
 small <- merge_list[[1]] %>% 
   select(LALVOTERID, DCNumber) %>% 
