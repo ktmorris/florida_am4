@@ -14,14 +14,11 @@ library(ggeffects)
 library(rgdal)
 library(MatchIt)
 library(Matching)
-library(kevostools)
 library(ggmap)
 library(RSQLite)
 library(tidyverse)
 library(data.table)
 
-
-db <- dbConnect(SQLite(), "D:/national_file.db")
 
 weighted.ttest.ci <- function(x, weights, conf.level = 0.95) {
   nx <- length(x)
@@ -43,3 +40,6 @@ cleanup <- function(...){
   save2 <- c(save, ...)
   rm(list=ls(envir = .GlobalEnv)[! ls(envir = .GlobalEnv) %in% save2], envir = .GlobalEnv)
 }
+
+
+db <- dbConnect(SQLite(), "D:/national_file.db")
