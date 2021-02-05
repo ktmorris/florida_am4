@@ -15,12 +15,7 @@ fl_file <- readRDS("./temp/fl_file_cleaned_addresses.rds") %>%
   select(-EthnicGroups_EthnicGroup1Desc, -Voters_Gender)
 
 
-## downloading census data works better county-by-county
-## commenting out because it takes so long
-# census_data <- rbindlist(lapply(filter(fips_codes, state == "FL")$county_code, function(c){
-#   get_basic_census_stats(geo = "block group", year = 2018, state = "FL", county = c)
-# }))
-# saveRDS(census_data, "./temp/block_group_census_data.RDS")
+## downloaded in nhood analyses which should be run first. see "precinct_level_results/03_prep_nhood_reg_data.R"
 
 census_data <- readRDS("./temp/block_group_census_data.RDS")
 
