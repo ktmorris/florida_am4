@@ -33,14 +33,14 @@ released_with_addresses$group <- ceiling((c(1:nrow(released_with_addresses)) /
                                            nrow(released_with_addresses))*4)
 
 # these take a long time and are expensive to run so commenting out
-lats_longs1 <- geocode(filter(released_with_addresses, group == 1)$address, override_limit = T, output = "more")
-saveRDS(lats_longs1, "./temp/geocode_output1.rds")
-lats_longs2 <- geocode(filter(released_with_addresses, group == 2)$address, override_limit = T, output = "more")
-saveRDS(lats_longs2, "./temp/geocode_output2.rds")
-lats_longs3 <- geocode(filter(released_with_addresses, group == 3)$address, override_limit = T, output = "more")
-saveRDS(lats_longs3, "./temp/geocode_output3.rds")
-lats_longs4 <- geocode(filter(released_with_addresses, group == 4)$address, override_limit = T, output = "more")
-saveRDS(lats_longs4, "./temp/geocode_output4.rds")
+# lats_longs1 <- geocode(filter(released_with_addresses, group == 1)$address, override_limit = T, output = "more")
+# saveRDS(lats_longs1, "./temp/geocode_output1.rds")
+# lats_longs2 <- geocode(filter(released_with_addresses, group == 2)$address, override_limit = T, output = "more")
+# saveRDS(lats_longs2, "./temp/geocode_output2.rds")
+# lats_longs3 <- geocode(filter(released_with_addresses, group == 3)$address, override_limit = T, output = "more")
+# saveRDS(lats_longs3, "./temp/geocode_output3.rds")
+# lats_longs4 <- geocode(filter(released_with_addresses, group == 4)$address, override_limit = T, output = "more")
+# saveRDS(lats_longs4, "./temp/geocode_output4.rds")
 
 lats_longs <- bind_rows(
   readRDS("./temp/geocode_output1.rds"),
@@ -50,8 +50,9 @@ lats_longs <- bind_rows(
 )
 
 ### now keep only those in florida with good addresses, map to precincts
-released_with_addresses <- bind_cols(released_with_addresses, lats_longs) %>% 
-  filter(grepl(", fl ", address1))
+released_with_addresses <- bind_cols(released_with_addresses,
+                                     rename(lats_longs, ggl_address = address)) %>% 
+  filter(grepl(", fl ", ggl_address))
 
 drop_geocode <- n_to_geo - nrow(released_with_addresses)
 ngood_geo <- nrow(released_with_addresses)
@@ -70,7 +71,7 @@ precincts@data$full_id <- paste0(precincts@data$county, precincts@data$pct)
 
 precincts <- spTransform(precincts, "+init=epsg:4326")
 
-pings  <- SpatialPoints(released_with_addresses[c('lon','lat')], proj4string = precincts@proj4string)
+pings  <- SpatialPoints(released_with_addresses[,c('lon','lat')], proj4string = precincts@proj4string)
 released_with_addresses$precinct <- over(pings, precincts)$full_id
 
 #### now map to census block groups
@@ -81,7 +82,7 @@ bgs <- readOGR("./raw_data/shapefiles/tl_2018_12_bg",
 bgs <- spTransform(bgs, "+init=epsg:4326")
 
 
-pings  <- SpatialPoints(released_with_addresses[c('lon','lat')], proj4string = bgs@proj4string)
+pings  <- SpatialPoints(released_with_addresses[,c('lon','lat')], proj4string = bgs@proj4string)
 released_with_addresses$block_group <- over(pings, bgs)$GEOID
 
 saveRDS(released_with_addresses, "./temp/released_with_addresses.rds")
@@ -98,7 +99,7 @@ doc <- readRDS("./temp/released_with_addresses.rds") %>%
          years_since = 2018 - year(PrisonReleaseDate)) %>% 
   filter(!is.na(cp),
          PrisonReleaseDate <= "2018-11-06") %>% 
-  group_by(address1) %>% 
+  group_by(ggl_address) %>% 
   mutate(big_release = n() >= 5,
          years_since = ifelse(big_release, NA, years_since)) %>% 
   group_by(cp) %>% 
@@ -117,7 +118,7 @@ doc_recent <- readRDS("./temp/released_with_addresses.rds") %>%
   filter(!is.na(cp),
          PrisonReleaseDate >= "2015-01-01",
          PrisonReleaseDate <= "2018-11-06") %>% 
-  group_by(address1) %>% 
+  group_by(ggl_address) %>% 
   mutate(big_release_recent = n() >= 5) %>% 
   group_by(cp) %>% 
   summarize(all_doc_recent = n(),
@@ -132,7 +133,7 @@ doc_bg <- readRDS("./temp/released_with_addresses.rds") %>%
          PrisonReleaseDate = as.Date(substring(PrisonReleaseDate, 1, 10), "%m/%d/%Y")) %>% 
   filter(!is.na(block_group),
          PrisonReleaseDate <= "2018-11-06") %>% 
-  group_by(address1) %>% 
+  group_by(ggl_address) %>% 
   mutate(big_release = n() >= 5,
          years_since = ifelse(big_release, NA, 2018 - year(PrisonReleaseDate))) %>% 
   group_by(GEOID = block_group) %>% 
@@ -148,7 +149,7 @@ doc_bg_recent <- readRDS("./temp/released_with_addresses.rds") %>%
   filter(!is.na(block_group),
          PrisonReleaseDate >= "2015-01-01",
          PrisonReleaseDate <= "2018-11-06") %>% 
-  group_by(address1) %>% 
+  group_by(ggl_address) %>% 
   mutate(big_release = n() >= 5) %>% 
   group_by(GEOID = block_group) %>% 
   summarize(all_doc_recent = n(),
