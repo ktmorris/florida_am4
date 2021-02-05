@@ -1,8 +1,13 @@
 
-## downloading census data works better county-by-county
-## commenting out because it takes so long
+# downloading census data works better county-by-county
+# commenting out because it takes so long
+# source("code/helpers/get_basic_census.R")
 # census_data <- rbindlist(lapply(filter(fips_codes, state == "FL")$county_code, function(c){
-#   get_basic_census_stats(geo = "block group", year = 2018, state = "FL", county = c)
+#   inc <- census_income(geo = "block group", year = 2018, state = "FL", county = c)
+#   some_college <- census_education(geo = "block group", year = 2018, state = "FL", county = c)
+#   unem <- census_unemployment(geo = "block group", year = 2018, state = "FL", county = c)
+#   
+#   return(full_join(inc, full_join(some_college, unem)))
 # }))
 # saveRDS(census_data, "./temp/block_group_census_data.RDS")
 
