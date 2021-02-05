@@ -1,23 +1,23 @@
-# 
-# address_cleaner <- fread("./raw_data/misc/address_cleaning.csv") %>% 
-#   mutate(search = paste0(" ", search, " "),
-#          replace = paste0(" ", replace, " "))
-# 
-# ######
-# 
-# released_with_addresses <- readRDS("./temp/released_with_addresses.rds") %>% 
-#   mutate(address = gsub(" apt  ,", ",", address1),
-#          address = gsub("\\s+", " ", address),
-#          address = gsub(" ,", ",", address),
-#          address = tolower(gsub("[[:punct:]]|", "", address)))
-# 
-# for(i in 1:nrow(address_cleaner)){
-#   released_with_addresses$address <- gsub(address_cleaner$search[i],
-#                                           address_cleaner$replace[i],
-#                                           released_with_addresses$address)
-# }
-# 
-# saveRDS(released_with_addresses, "./temp/released_with_addresses_clean.rds")
+
+address_cleaner <- fread("./raw_data/misc/address_cleaning.csv") %>%
+  mutate(search = paste0(" ", search, " "),
+         replace = paste0(" ", replace, " "))
+
+######
+
+released_with_addresses <- readRDS("./temp/released_with_addresses.rds") %>%
+  mutate(address = gsub(" apt  ,", ",", ggl_address),
+         address = gsub("\\s+", " ", address),
+         address = gsub(" ,", ",", address),
+         address = tolower(gsub("[[:punct:]]|", "", address)))
+
+for(i in 1:nrow(address_cleaner)){
+  released_with_addresses$address <- gsub(address_cleaner$search[i],
+                                          address_cleaner$replace[i],
+                                          released_with_addresses$address)
+}
+
+saveRDS(released_with_addresses, "./temp/released_with_addresses_clean.rds")
 
 released_with_addresses <- readRDS("./temp/released_with_addresses_clean.rds")
 
@@ -116,6 +116,6 @@ fl_file <- left_join(fl_file, scrambled_ids) %>%
   select(-LALVOTERID, -address,
          -Residence_Addresses_Latitude,
          -Residence_Addresses_Longitude,
-         -Voters_LastName, -Voters_StateVoterID)
+         -Voters_StateVoterID)
 
 saveRDS(fl_file, "./temp/fl_file_cleaned_addresses.rds")
