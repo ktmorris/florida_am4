@@ -1,4 +1,4 @@
-load("temp/pre_reg.rdata")
+load("temp/pre_reg_av.rdata")
 
 matches <- filter(matches, as.Date(match_reg_date + as.Date("2000-01-01")) <= "2018-10-09")
 matches2 <- filter(matches2, as.Date(match_reg_date + as.Date("2000-01-01")) <= "2018-10-09")
@@ -37,10 +37,10 @@ ses_cl <- list(
   summary(lm.cluster(formula = f4, data = matches2, weights = matches2$weight, cluster = matches2$match_group))[ , 2]
 )
 
-save(models1, models2, ses_cl, file = "./temp/full_match_reg.rdata")
+save(models1, models2, ses_cl, file = "./temp/full_match_reg_av.rdata")
 ##make regression table
 source("./code/misc/make_big_reg_table.R")
-source("./code/misc/coef_plot.R")
+# source("./code/misc/coef_plot.R")
 ####
 matches3 <- filter(matches2, max_release < "2010-01-01")
 m1c <- lm(f1, data = matches3,
@@ -62,7 +62,7 @@ source("./code/misc/make_medium_reg_table.R")
 ll <- matches %>% 
   mutate(treated) %>% 
   group_by(treated, year) %>% 
-  summarize(voted = mean(voted)) %>% 
+  dplyr::summarize(voted = mean(voted)) %>% 
   ungroup() %>% 
   mutate(treated = ifelse(treated == 1, "Treated", "Control"))
 
@@ -76,6 +76,6 @@ plot <- ggplot(ll, aes(x = as.integer(year), y = voted,
        x = "Year", y = "Turnout Among Registered Voters") +
   scale_y_continuous(labels = percent) +
   theme_bw() + theme(text = element_text(family = "LM Roman 10"))
-saveRDS(plot, "./temp/parallel_trends_plot.rds")
+saveRDS(plot, "./temp/parallel_trends_plot_av.rds")
 
 ##########
