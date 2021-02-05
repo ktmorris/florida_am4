@@ -17,7 +17,8 @@ if(on_nyu){
 
 
 #####
-fl_roll <- readRDS("./temp/fl_file_pre_match.rds")
+fl_roll <- readRDS("./temp/fl_file_pre_match.rds") %>% 
+  ungroup()
 
 ##########
 
@@ -30,7 +31,7 @@ X <- fl_roll %>%
                 -max_release)
 
 
-genout <- readRDS("./temp/genout_t1.rds")
+genout <- readRDS("./temp/genout_av.rds")
 
 mout <- Matchby(Tr = fl_roll$treated, X = X,
                 by = c(X$US_Congressional_District,
@@ -43,4 +44,4 @@ mout <- Matchby(Tr = fl_roll$treated, X = X,
                        X$dem,
                        X$rep), estimand = "ATT", Weight.matrix = genout, M = 5)
 
-save(mout, file = "./temp/mout_t1.RData")
+save(mout, file = "./temp/mout_av.RData")
