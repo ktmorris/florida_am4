@@ -1,11 +1,11 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.1.27)  5 FEB 2021 09:42
+This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.2.7)  8 FEB 2021 18:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **amendment_4_turnout.tex
 (./amendment_4_turnout.tex
 LaTeX2e <2020-10-01> patch level 4
-L3 programming layer <2021-01-09> xparse <2020-03-03>
+L3 programming layer <2021-02-02>
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2020/04/10 v1.4m Standard LaTeX document class
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/size12.clo
@@ -150,15 +150,15 @@ Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
 code-math.sty
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3kernel/expl3.s
 ty
-Package: expl3 2021-01-09 L3 programming layer (loader) 
+Package: expl3 2021-02-02 L3 programming layer (loader) 
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3backend/l3back
 end-xetex.def
-File: l3backend-xetex.def 2021-01-09 L3 backend support: XeTeX
+File: l3backend-xetex.def 2020-01-29 L3 backend support: XeTeX
 (|extractbb --version)
 \c__kernel_sys_dvipdfmx_version_int=\count193
-\g__color_stack_int=\count194
-\l__kernel_color_stack_int=\count195
+\l__color_backend_stack_int=\count194
+\g__color_backend_stack_int=\count195
 \g__graphics_track_int=\count196
 \l__pdf_internal_box=\box49
 \g__pdf_backend_object_int=\count197
@@ -174,13 +174,13 @@ TeX
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3packages/xpars
 e/xparse.sty
-Package: xparse 2020-10-27 L3 Experimental document command parser
-
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3packages/xpars
-e/xparse-generic.tex))
+e/xparse-2020-10-01.sty
+(c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3packages/xpars
+e/xparse-generic.tex)))
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/l3packages/l3key
 s2e/l3keys2e.sty
-Package: l3keys2e 2020-10-27 LaTeX2e option processing using LaTeX3 keys
+Package: l3keys2e 2021-02-02 LaTeX2e option processing using LaTeX3 keys
 )
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/fontspec/fontspe
 c.sty
@@ -257,7 +257,7 @@ Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
 )
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/hyperref/hyperre
 f.sty
-Package: hyperref 2020-05-15 v7.00e Hypertext links for LaTeX
+Package: hyperref 2021-02-04 v7.00g Hypertext links for LaTeX
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/generic/ltxcmds/ltxcmd
 s.sty
@@ -315,7 +315,12 @@ Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.
 def
-File: pd1enc.def 2020-05-15 v7.00e Hyperref: PDFDocEncoding definition (HO)
+File: pd1enc.def 2021-02-04 v7.00g Hyperref: PDFDocEncoding definition (HO)
+)
+(c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/hyperref/hyperre
+f-langpatches.def
+File: hyperref-langpatches.def 2021-02-04 v7.00g Hyperref: patches for babel la
+nguages
 )
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/generic/intcalc/intcal
 c.sty
@@ -326,25 +331,25 @@ mds.sty
 Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 )
 \Hy@SavedSpaceFactor=\count282
-Package hyperref Info: Option `unicode' set `true' on input line 4338.
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.d
 ef
-File: puenc.def 2020-05-15 v7.00e Hyperref: PDF Unicode definition (HO)
+File: puenc.def 2021-02-04 v7.00g Hyperref: PDF Unicode definition (HO)
 )
-Package hyperref Info: Hyper figures OFF on input line 4464.
-Package hyperref Info: Link nesting OFF on input line 4469.
-Package hyperref Info: Hyper index ON on input line 4472.
-Package hyperref Info: Plain pages OFF on input line 4479.
-Package hyperref Info: Backreferencing OFF on input line 4484.
+Package hyperref Info: Option `unicode' set `true' on input line 4059.
+Package hyperref Info: Hyper figures OFF on input line 4178.
+Package hyperref Info: Link nesting OFF on input line 4183.
+Package hyperref Info: Hyper index ON on input line 4186.
+Package hyperref Info: Plain pages OFF on input line 4193.
+Package hyperref Info: Backreferencing OFF on input line 4198.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
-Package hyperref Info: Bookmarks ON on input line 4717.
+Package hyperref Info: Bookmarks ON on input line 4431.
 \c@Hy@tempcnt=\count283
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip18
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
-LaTeX Info: Redefining \url on input line 5076.
+LaTeX Info: Redefining \url on input line 4790.
 \XeTeXLinkMargin=\dimen152
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/generic/bitset/bitset.
@@ -359,15 +364,15 @@ Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 \Fld@menulength=\count284
 \Field@Width=\dimen153
 \Fld@charsize=\dimen154
-Package hyperref Info: Hyper figures OFF on input line 6347.
-Package hyperref Info: Link nesting OFF on input line 6352.
-Package hyperref Info: Hyper index ON on input line 6355.
-Package hyperref Info: backreferencing OFF on input line 6362.
-Package hyperref Info: Link coloring OFF on input line 6367.
-Package hyperref Info: Link coloring with OCG OFF on input line 6372.
-Package hyperref Info: PDF/A mode OFF on input line 6377.
-LaTeX Info: Redefining \ref on input line 6417.
-LaTeX Info: Redefining \pageref on input line 6421.
+Package hyperref Info: Hyper figures OFF on input line 6061.
+Package hyperref Info: Link nesting OFF on input line 6066.
+Package hyperref Info: Hyper index ON on input line 6069.
+Package hyperref Info: backreferencing OFF on input line 6076.
+Package hyperref Info: Link coloring OFF on input line 6081.
+Package hyperref Info: Link coloring with OCG OFF on input line 6086.
+Package hyperref Info: PDF/A mode OFF on input line 6091.
+LaTeX Info: Redefining \ref on input line 6131.
+LaTeX Info: Redefining \pageref on input line 6135.
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/base/atbegshi-lt
 x.sty
@@ -383,7 +388,7 @@ Package hyperref Info: Driver (autodetected): hxetex.
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/hyperref/hxetex.
 def
-File: hxetex.def 2020-05-15 v7.00e Hyperref driver for XeTeX
+File: hxetex.def 2021-02-04 v7.00g Hyperref driver for XeTeX
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/generic/stringenc/stri
 ngenc.sty
@@ -556,7 +561,7 @@ Package: array 2020/10/01 v2.5c Tabular extension package (FMi)
 )
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/multirow/multiro
 w.sty
-Package: multirow 2021/01/02 v2.6 Span multiple rows of a table
+Package: multirow 2021/01/29 v2.7 Span multiple rows of a table
 \multirow@colwidth=\skip61
 \multirow@cntb=\count313
 \multirow@dima=\skip62
@@ -996,7 +1001,7 @@ Package hyperref Info: Link coloring OFF on input line 101.
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/hyperref/nameref
 .sty
-Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
+Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 
 (c:/Users/morrisk/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/refcount/refcoun
 t.sty
@@ -1120,7 +1125,7 @@ Overfull \hbox (39.58498pt too wide) in paragraph at lines 6--21
  [][] 
  []
 
-) [9] [10]
+) [9] [10] [11]
 Underfull \hbox (badness 10000) in paragraph at lines 195--195
 [][]\TU/lmr/m/n/10 See []$[][][][] [] [] [] [][][] [] [][][][][] [] [][] [] [][
 ] [] [][][][][][][] [] [][][][][][][][] [][] [][][][][][] [] [][][][][][][][] [
@@ -1128,42 +1133,42 @@ Underfull \hbox (badness 10000) in paragraph at lines 195--195
  [][][][][] []
  []
 
-[11] [12] [13] [14] (../temp/table_whatever2.tex
+[12] [13] [14] (../temp/table_whatever2.tex
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
 (Font)              scaled to size 8.0pt on input line 21.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
 (Font)              scaled to size 8.00073pt on input line 21.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 7.99915pt on input line 21.
-) [15] (../temp/precinct_to.tex) [16]
+) [15] [16] (../temp/precinct_to.tex) [17]
 Overfull \vbox (16.8529pt too high) has occurred while \output is active []
 
-[17]
+[18]
 File: amendment_4_turnout_files/figure-latex/marg1-1.pdf Graphic file (type pdf
 )
 <use amendment_4_turnout_files/figure-latex/marg1-1.pdf>
-[18] (../temp/precinct_other.tex) [19]
+[19] (../temp/precinct_other.tex) [20]
 Overfull \vbox (17.0929pt too high) has occurred while \output is active []
 
-[20]
+[21]
 File: amendment_4_turnout_files/figure-latex/marg-alt-1.pdf Graphic file (type 
 pdf)
 <use amendment_4_turnout_files/figure-latex/marg-alt-1.pdf>
 File: amendment_4_turnout_files/figure-latex/marg-alt2-1.pdf Graphic file (type
  pdf)
 <use amendment_4_turnout_files/figure-latex/marg-alt2-1.pdf>
-[21] [22] [23]
+[22] [23] [24]
 File: amendment_4_turnout_files/figure-latex/dind-1.pdf Graphic file (type pdf)
 
 <use amendment_4_turnout_files/figure-latex/dind-1.pdf>
-[24] [25] (../temp/dind_reg_av.tex) [26] [27] (../temp/dind_reg_medium_av.tex
+[25] [26] (../temp/dind_reg_av.tex) [27] [28] (../temp/dind_reg_medium_av.tex
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
 (Font)              scaled to size 10.95pt on input line 5.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
 (Font)              scaled to size 10.95099pt on input line 5.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 10.94882pt on input line 5.
-) [28] [29] [30] [31] [32]
+) [29] [30] [31] [32] [33]
 Underfull \hbox (badness 10000) in paragraph at lines 413--415
 []$[][][][] [] [] [] [][][][][] [] [][][][][][][] [] [][][] [] [][][] [] [][][]
 [][] [] [][][] [] [][][][] [] [] [] [][][][][][] [] [][][][][][][][][] [] [][][
@@ -1184,7 +1189,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 425--427
 [][][] [][] [][][][][][][][] [][]
  []
 
-[33] [34] [35]
+[34] [35] [36]
 Underfull \hbox (badness 10000) in paragraph at lines 497--499
 [] [] [][][] [] [][][][][][][][][][][][][][][] [] [][][] [] [][][][][][][] [] [
 ][][][][][][][][][] [] [][] [][] [][] [][] [][][][][][][] [][] [][][][][][][][]
@@ -1198,7 +1203,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 500--502
  [][][][][][] [][] [][][] [][] [][][] [][]
  []
 
-[36]
+[37]
 Underfull \hbox (badness 1028) in paragraph at lines 512--514
 [][]\TU/lmr/m/n/12 Schlakman, Mar. 2018. “Some Facts and Figures You Might Not 
 Know About
@@ -1211,28 +1216,28 @@ Underfull \hbox (badness 10000) in paragraph at lines 512--514
 ][] [][][] [][] [][][][][] [][]
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 524--526
+[38]
+Underfull \hbox (badness 10000) in paragraph at lines 527--529
 []$[][][][][] [] [] [] [][][][][] [] [][][] [] [][][][] [][] [][][] [][] [][][]
 [][][][][] [] [][][][] [] [][] [] [][][][][][][] [][] [][][][][][][][][][][] []
 [] [][][][][] [][] [][][][][][] [][] [][][][][][] [][]
  []
 
-[37]
-Underfull \hbox (badness 10000) in paragraph at lines 530--532
+
+Underfull \hbox (badness 10000) in paragraph at lines 533--535
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][] [] [][][] [] [][][][][][][] [
 ] [][][][][][][][][][] [] [][][][][] [][] [][][][][][][][][][] [][] [][][] [][]
  [][] [][] [][][][][][][][][] [][]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 533--535
+Underfull \hbox (badness 10000) in paragraph at lines 536--538
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][][][] [] [][][] [] [][]
 [][][] [] [][][][] [] [][] [] [][] [] [][][][][][][][] [][] [][][][] [][] [][][
 ][][] [][] [][] [][] [][][][][][] [][]
  []
 
-[38] [39]
+[39] [40]
 File: amendment_4_turnout_files/figure-latex/corrplot-1.pdf Graphic file (type 
 pdf)
 <use amendment_4_turnout_files/figure-latex/corrplot-1.pdf>
@@ -1251,12 +1256,12 @@ Package rerunfilecheck Info: File `amendment_4_turnout.out' has not changed.
 (rerunfilecheck)             Checksum: 56D4148067ED968ED8A0A820DC224D61;2485.
  ) 
 Here is how much of TeX's memory you used:
- 18619 strings out of 479212
- 325895 string characters out of 5873097
- 829096 words of memory out of 5000000
- 37845 multiletter control sequences out of 15000+600000
+ 18645 strings out of 479211
+ 326845 string characters out of 5873098
+ 830007 words of memory out of 5000000
+ 37866 multiletter control sequences out of 15000+600000
  413855 words of font info for 108 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  98i,15n,122p,2232b,504s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on amendment_4_turnout.pdf (50 pages).
+Output written on amendment_4_turnout.pdf (51 pages).
