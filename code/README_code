@@ -2,5 +2,6 @@ Code is ordered within subanalyses
 
 Neighborhood-level analyses should be run before individual-level ones (the individual-level part calls a temp file created by Tidycensus in the nhood code)
 
-I've moved helper functions out of my personal package (like some wrappers for Tidycensus, etc) into the "misc" folder. That also includes the code that makes the big regression tables
+I've moved helper functions out of my personal package (like some wrappers for Tidycensus, etc) into the "helpers" folder.
 
+The "misc" folder includes functions to make the big regression tables, etc
