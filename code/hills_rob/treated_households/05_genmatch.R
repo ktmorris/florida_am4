@@ -1,27 +1,26 @@
-## this can be run locally or on NYU's HPC. Set option in next step
-## option allowed because of how long GenMatch can take
+## set seed for reproducibility. this is the same seed used in body
+set.seed(85132)
 
-on_nyu <- F
+library(Matching)
+library(data.table)
+library(scales)
+library(kableExtra)
+library(tidyverse)
+require(snow)
+require(parallel)
 
-if(on_nyu){
-  library(Matching)
-  library(data.table)
-  library(snow)
-  library(parallel)
-  library(scales)
-  library(kableExtra)
-  library(tidyverse)
-  
-  setwd("/scratch/km3815/matching")
-  
-  NodeFile = Sys.getenv("MY_HOSTFILE")
-  
-  
-  cl <- makeCluster(c(readLines(NodeFile)), type="SOCK")
-}else{
-  source("./code/misc/AutoCluster4.R")
-  cl <- NCPUS(detectCores() - 1)
-}
+
+Sys.info()
+
+NodeFile = Sys.getenv("MY_HOSTFILE")
+
+print(NodeFile)
+
+readLines(NodeFile)
+
+cl<-makeCluster(c(readLines(NodeFile)), type="SOCK")
+cl
+
 
 fl_file_pre_match <- readRDS("./temp/hills_file_pre_match.rds") 
 
@@ -31,8 +30,10 @@ samp <- fl_file_pre_match %>%
   ungroup()
 
 match_data <- samp %>% 
-  select(-LALVOTERID, -treated, -max_release)
+  select(-voter_id_anon, -treated, -max_release)
 
 genout <- GenMatch(Tr = samp$treated, X = match_data, replace = T, cluster = cl,
                    exact = c(rep(T, 6), F, F, T, T, F, F, T), pop.size = 1000)
-saveRDS(genout, "./temp/genout_t1_hills.rds")
+saveRDS(genout, "temp/genout_av_hills.rds")
+
+stopCluster(cl)

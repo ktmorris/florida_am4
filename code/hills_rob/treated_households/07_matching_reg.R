@@ -1,52 +1,41 @@
-
-
 fl_roll <- readRDS("./temp/hills_file_pre_match.rds")
 
-ids <- fl_roll %>% 
-  mutate(id = row_number()) %>% 
-  select(id, LALVOTERID)
+ids <- fl_roll %>%
+  mutate(id = row_number()) %>%
+  dplyr::select(id, voter_id_anon)
 
-load("./temp/mout_t1_hills.RData")
+load("./temp/mout_av_hills.RData")
 
-matches <- data.table(match_group = c(mout$index.treated, unique(mout$index.treated)),
-                      control = c(mout$index.control, unique(mout$index.treated)),
-                      weight = c(mout$weights, rep(1, length(unique(mout$index.treated)))))
+matches <- data.table(control = c(mout$index.control, mout$index.treated),
+                      match_group = rep(mout$index.treated, 2),
+                      weight = rep(mout$weights)) %>% 
+  group_by(match_group, control) %>% 
+  summarize(weight = sum(weight)) %>% 
+  ungroup()
 
-matches <- left_join(matches, ids, by = c("match_group" = "id")) %>% 
-  select(-match_group) %>% 
-  rename(match_group = LALVOTERID)
+matches <- left_join(matches, ids, by = c("match_group" = "id")) %>%
+  dplyr::select(-match_group) %>%
+  rename(match_group = voter_id_anon)
 
-matches <- left_join(matches, ids, by = c("control" = "id")) %>% 
-  select(-control) %>% 
-  rename(voter = LALVOTERID)
-
-######
-
-history <- dbConnect(SQLite(), "D:/national_file_history.db")
-fl_history <- dbGetQuery(history, "select LALVOTERID,
-                                   General_2018_11_06,
-                                   General_2016_11_08,
-                                   General_2014_11_04,
-                                   General_2012_11_06,
-                                   General_2010_11_02
-                                   from fl_history_18") %>% 
-  filter(LALVOTERID %in% matches$voter)
-
-fl_history <- reshape2::melt(fl_history, id.vars = "LALVOTERID") %>% 
-  mutate(year = substring(variable, 9, 12),
-         voted = ifelse(value == "Y", 1, 0)) %>% 
-  select(-variable, -value)
+matches <- left_join(matches, ids, by = c("control" = "id")) %>%
+  dplyr::select(-control) %>%
+  rename(voter = voter_id_anon)
+# 
+# ######
+# 
+fl_history <- readRDS("temp/fl_history_anon.rds") %>% 
+  filter(voter_id_anon %in% matches$voter)
 
 
 ######
 
-matches <- left_join(matches, fl_history, by = c("voter" = "LALVOTERID"))
+matches <- left_join(matches, fl_history, by = c("voter" = "voter_id_anon"))
 
-matches <- left_join(matches, fl_roll, by = c("voter" = "LALVOTERID")) %>% 
-  select(-max_release)
+matches <- left_join(matches, fl_roll, by = c("voter" = "voter_id_anon")) %>% 
+  dplyr::select(-max_release)
 
-matches <- left_join(matches, select(fl_roll, LALVOTERID, max_release, match_reg_date = reg_date),
-                     by = c("match_group" = "LALVOTERID")) %>% 
+matches <- left_join(matches, dplyr::select(fl_roll, voter_id_anon, max_release, match_reg_date = reg_date),
+                     by = c("match_group" = "voter_id_anon")) %>% 
   filter(max_release <= "2018-11-06")
 
 matches$interaction_term <- (matches$year == "2018") * matches$treated
@@ -68,23 +57,7 @@ matches_hills <- matches
 load("temp/pre_reg.rdata")
 rm(matches2)
 
-scrambled_ids <- readRDS("temp/id_lookup_anon.rds")
-
-matches <- left_join(matches, scrambled_ids, by = c("match_group" = "voter_id_anon")) %>% 
-  select(-match_group) %>% 
-  rename(match_group = LALVOTERID)
-
 matches <- filter(matches, match_group %in% matches_hills$voter)
-# t <- select(readRDS("./temp/hills_file_cleaned_addresses.rds"), LALVOTERID, prob)
-# matches$prob <- matches$voter %in% filter(t, prob)$LALVOTERID
-# h <- matches %>% filter(treated == 0) %>% summarize(t = weighted.mean(prob, weight))
-# h
-# 
-# i <- matches %>% filter(treated == 1) %>% summarize(t = weighted.mean(voter %in% pp$LALVOTERID, weight))
-# i
-
-######################
-## I HAVE TO RUN THIS ON THE HPC BECAUSE OF RAM CONSTRAINTS
 
 f1 <- voted ~ d18*treated
 f2 <- voted ~ d18*treated +
@@ -119,6 +92,6 @@ ses_cl <- list(
   summary(lm.cluster(formula = f4, data = matches_hills, weights = matches_hills$weight, cluster = matches_hills$match_group))[ , 2]
 )
 
-save(models1, models2, ses_cl, file = "./temp/full_match_reg_hills.rdata")
+save(models1, models2, ses_cl, file = "./temp/full_match_reg_hills_av.rdata")
 ##make regression table
 source("./code/misc/make_big_reg_table_hills.R")

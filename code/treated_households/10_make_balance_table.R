@@ -6,15 +6,15 @@ library(tidyverse)
 require(snow)
 require(parallel)
 
-# 
-# fl_roll <- readRDS("./temp/fl_file_pre_match.rds")
-# load("./temp/mout_av.RData")
-##########
-# balance <- MatchBalance(treated ~ white + black + latino + asian + female +
-#                           male + reg_date + age + dem + rep + median_income + some_college,
-#                         data = fl_roll, match.out = mout)
-# 
-# saveRDS(balance, "temp/balance_table_av.rds")
+
+fl_roll <- readRDS("./temp/fl_file_pre_match.rds")
+load("./temp/mout_av.RData")
+#########
+balance <- MatchBalance(treated ~ white + black + latino + asian + female +
+                          male + reg_date + age + dem + rep + median_income + some_college,
+                        data = fl_roll, match.out = mout)
+
+saveRDS(balance, "temp/balance_table_av.rds")
 
 
 varnames <- c("white", "black", "latino", "asian", "female",

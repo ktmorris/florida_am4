@@ -1,6 +1,6 @@
 
 ## needs to be run on nyu hpc or its way too slow
-## set seed for reproducibility. this is a random 5-digit number: floor(runif(1)*100000)
+## set seed for reproducibility. this is a random 5-digit number: floor(runif(1, min = 10000, max = 99999))
 ## on nyu hpc with 50 processors, 50gb RAM: Total run time : 66 hours 14 minutes and 25 seconds
 set.seed(85132)
 

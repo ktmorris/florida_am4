@@ -17,20 +17,21 @@ if(on_nyu){
 
 
 #####
-fl_roll <- readRDS("./temp/hills_file_pre_match.rds")
+fl_roll <- readRDS("./temp/hills_file_pre_match.rds") %>% 
+  ungroup()
 
 ##########
 
 ids <- fl_roll %>% 
   mutate(id = row_number()) %>% 
-  select(id, LALVOTERID)
+  select(id, voter_id_anon)
 
 X <- fl_roll %>%
-  dplyr::select(-LALVOTERID, -treated, -starts_with("General"),
+  dplyr::select(-voter_id_anon, -treated, -starts_with("General"),
                 -max_release)
 
 
-genout <- readRDS("./temp/genout_t1_hills.rds")
+genout <- readRDS("./temp/genout_av_hills.rds")
 
 mout <- Matchby(Tr = fl_roll$treated, X = X,
                 by = c(X$US_Congressional_District,
@@ -43,4 +44,4 @@ mout <- Matchby(Tr = fl_roll$treated, X = X,
                        X$dem,
                        X$rep), estimand = "ATT", Weight.matrix = genout, M = 5)
 
-save(mout, file = "./temp/mout_t1_hills.RData")
+save(mout, file = "./temp/mout_av_hills.RData")

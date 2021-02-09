@@ -65,5 +65,11 @@ fl_file_pre_match <- fl_file_pre_match %>%
 fl_file_pre_match <- left_join(fl_file_pre_match, select(fl_file, LALVOTERID, max_release,
                                                          US_Congressional_District))
 
+oth_ids <- readRDS("temp/id_lookup_anon.rds") %>% 
+  filter(LALVOTERID %in% fl_file_pre_match$LALVOTERID)
+
+fl_file_pre_match <- left_join(fl_file_pre_match, oth_ids) %>% 
+  select(-LALVOTERID)
+
 saveRDS(fl_file_pre_match, "./temp/hills_file_pre_match.rds")
 
