@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.2.9)  12 FEB 2021 14:37
+This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020/W32TeX) (preloaded format=xelatex 2021.2.9)  2 MAR 2021 12:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1108,14 +1108,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 214--214
  [][][][][] []
  []
 
-[12] [13] [14] (../temp/table_whatever2.tex
+[12] [13] [14] [15] (../temp/table_whatever2.tex
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
 (Font)              scaled to size 8.0pt on input line 21.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
 (Font)              scaled to size 8.00073pt on input line 21.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 7.99915pt on input line 21.
-) [15] [16] (../temp/precinct_to.tex) [17]
+) [16] (../temp/precinct_to.tex) [17]
 Overfull \vbox (16.8529pt too high) has occurred while \output is active []
 
 [18]
@@ -1144,88 +1144,131 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 10.94882pt on input line 5.
 ) [29] [30] [31] [32] [33]
-Underfull \hbox (badness 10000) in paragraph at lines 432--434
-[]$[][][][] [] [] [] [][][][][] [] [][][][][][][] [] [][][] [] [][][] [] [][][]
-[][] [] [][][] [] [][][][] [] [] [] [][][][][][] [] [][][][][][][][][] [] [][][
-] [] [][][][][] [] [][][][] []
+Underfull \hbox (badness 1616) in paragraph at lines 420--422
+[][]\TU/lmr/m/n/12 Bousquet, Steve. 2018. “Judge: Florida’s Early Voting-on-Cam
+pus Ban Shows
  []
 
 
-Underfull \hbox (badness 3199) in paragraph at lines 444--446
+Underfull \hbox (badness 1014) in paragraph at lines 420--422
+\TU/lmr/m/n/12 ‘Stark Pattern of Discrimination’.” \TU/lmr/m/it/12 Tampa Bay Ti
+mes\TU/lmr/m/n/12 , July 24, 2018. []$[][][][][] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 420--422
+[] [] [][][] [] [][][][][][][][] [] [][][] [] [][][][][][][] [][] [][][][][][][
+][] [] [][][][] [] [][][][] [] [][] [] [][] [] [][][][][] [][] [][][][][][] [][
+] [][][][][] [][] [][][] [][]
+ []
+
+[34]
+Underfull \hbox (badness 3199) in paragraph at lines 456--458
 \TU/lmr/m/n/12 ing.” \TU/lmr/m/it/12 Orlando Sentinel\TU/lmr/m/n/12 , August 7,
  2020. []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][][][][] [] [][][
 ] []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 444--446
+Underfull \hbox (badness 10000) in paragraph at lines 456--458
 [][][][][][][] [] [][][][][] [][] [][][][][][][][][][] [] [][] [][] [][] [][] [
 ][][][][][][][] [][] [][][][][][][][][] [][] [] [][] [][] [][] [] [][] [][][][]
 [][][] [][] [][][][][][][][] [][]
  []
 
-[34] [35] [36]
-Underfull \hbox (badness 10000) in paragraph at lines 516--518
+[35]
+Underfull \hbox (badness 2512) in paragraph at lines 471--473
+[][]\TU/lmr/m/n/12 King, Bridgett A., and Laura Erickson. 2016. “Disenfranchisi
+ng the Enfran-
+ []
+
+
+Underfull \hbox (badness 6592) in paragraph at lines 471--473
+\TU/lmr/m/n/12 chised: Exploring the Relationship Between Felony Disenfranchise
+ment and
+ []
+
+
+Underfull \hbox (badness 1057) in paragraph at lines 471--473
+\TU/lmr/m/n/12 African American Voter Turnout.” \TU/lmr/m/it/12 Journal of Blac
+k Studies \TU/lmr/m/n/12 47 (8): 799–821.
+ []
+
+[36] [37]
+Underfull \hbox (badness 10000) in paragraph at lines 528--530
 [] [] [][][] [] [][][][][][][][][][][][][][][] [] [][][] [] [][][][][][][] [] [
 ][][][][][][][][][] [] [][] [][] [][] [][] [][][][][][][] [][] [][][][][][][][]
  [][] [][][][][][][][][][][][] [][]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 519--521
+Underfull \hbox (badness 10000) in paragraph at lines 531--533
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][][] [] [][][] [] [][][]
 [] [] [][][][][][][][] [] [][][][][][][] [][] [][][][][] [][] [][][][][][] [][]
  [][][][][][] [][] [][][] [][] [][][] [][]
  []
 
-[37]
-Underfull \hbox (badness 1173) in paragraph at lines 531--533
-[][]\TU/lmr/m/n/12 Schlakman, Mar. 2018. “Some Facts and Figures You Might Not 
-Know about
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 531--533
+[38]
+Underfull \hbox (badness 10000) in paragraph at lines 543--545
 [] [] [][][] [] [][][][][][][][] [] [][][] [] [][][][][][][] [] [][][][][][][] 
 [] [][][][][][] [][] [][][][] [][] [][][][][] [][] [][][] [][] [][][][][][][] [
 ][] [][][] [][] [][][][][] [][]
  []
 
-[38]
-Underfull \hbox (badness 10000) in paragraph at lines 546--548
+
+Underfull \hbox (badness 1540) in paragraph at lines 552--554
+\TU/lmr/m/n/12 2018. []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][] 
+[] [][][] [] [][][][][][][][] [] [][][][][][][][] [][] [][][][][][][][] [] [][]
+[][][][] [][] [][][][][][] [][] [][][][][][][] [][]
+ []
+
+[39]
+Underfull \hbox (badness 10000) in paragraph at lines 558--560
 []$[][][][][] [] [] [] [][][][][] [] [][][] [] [][][][] [][] [][][] [][] [][][]
 [][][][][] [] [][][][] [] [][] [] [][][][][][][] [][] [][][][][][][][][][][] []
 [] [][][][][] [][] [][][][][][] [][] [][][][][][] [][]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 552--554
+Underfull \hbox (badness 10000) in paragraph at lines 564--566
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][] [] [][][] [] [][][][][][][] [
 ] [][][][][][][][][][] [] [][][][][] [][] [][][][][][][][][][] [][] [][][] [][]
  [][] [][] [][][][][][][][][] [][]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 555--557
+Underfull \hbox (badness 1292) in paragraph at lines 567--569
+[][]\TU/lmr/m/n/12 Taylor, Adam. 2018. “Florida’s Move to Allow Ex-Felons to Vo
+te Brings U.S.
+ []
+
+
+Underfull \hbox (badness 1067) in paragraph at lines 567--569
+\TU/lmr/m/n/12 Closer to International Election Norms.” \TU/lmr/m/it/12 Washing
+ton Post\TU/lmr/m/n/12 , November 7, 2018.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 567--569
 []$[][][][][] [] [] [] [][][] [] [][][][][][][][][][][][][][] [] [][][] [] [][]
 [][][] [] [][][][] [] [][] [] [][] [] [][][][][][][][] [][] [][][][] [][] [][][
 ][][] [][] [][] [][] [][][][][][] [][]
  []
 
-[39] [40] (./amendment_4_turnout.aux)
+[40] [41] (./amendment_4_turnout.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `amendment_4_turnout.out' has not changed.
-(rerunfilecheck)             Checksum: F17F114B3A44A5C2B11D54E7B190B39C;2287.
+(rerunfilecheck)             Checksum: FC35A273A42C24BADED7C5BD9FFA1858;2388.
  ) 
 Here is how much of TeX's memory you used:
- 17868 strings out of 479210
- 317972 string characters out of 5873083
- 811682 words of memory out of 5000000
- 37119 multiletter control sequences out of 15000+600000
+ 17869 strings out of 479210
+ 317985 string characters out of 5873083
+ 811779 words of memory out of 5000000
+ 37120 multiletter control sequences out of 15000+600000
  409743 words of font info for 88 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  98i,15n,122p,2270b,504s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on amendment_4_turnout.pdf (41 pages).
+Output written on amendment_4_turnout.pdf (42 pages).
