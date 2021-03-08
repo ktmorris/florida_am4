@@ -1,4 +1,4 @@
-results_demos <- readRDS("temp/results_demos_ll.rds")
+results_demos <- readRDS("temp/precint_level_reg_data.rds")
 
 f1 <- share_yes ~ small_res_doc + white + black + latino + asian +
   female + male + dem + rep + age +

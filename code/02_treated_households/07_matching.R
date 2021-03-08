@@ -42,6 +42,7 @@ mout <- Matchby(Tr = fl_roll$treated, X = X,
                        X$female,
                        X$male,
                        X$dem,
-                       X$rep), estimand = "ATT", Weight.matrix = genout, M = 5)
+                       X$rep), estimand = "ATT", Weight.matrix = genout, M = 5,
+                exact = c(rep(F, 12), T))
 
 save(mout, file = "./temp/mout_av.RData")

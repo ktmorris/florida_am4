@@ -128,7 +128,8 @@ results_demos$roll_off <- 1- (results_demos$votes / results_demos$highest_votes)
 results_demos$US_Congressional_District <- as.factor(results_demos$US_Congressional_District)
 results_demos$median_income <- results_demos$median_income / 10000
 
-saveRDS(results_demos, "temp/results_demos_ll.rds")
+saveRDS(results_demos %>% 
+          select(-precinct), "temp/precint_level_reg_data.rds")
 
 #################################################
 ############# BLOCK GROUP  ######################
@@ -204,4 +205,5 @@ bg_level <- rename(bg_level,
                    white = nh_white,
                    black = nh_black)
 
-saveRDS(bg_level, "temp/bg_level_reg_data.rds")
+saveRDS(bg_level %>% 
+          select(-GEOID), "temp/bg_level_reg_data.rds")

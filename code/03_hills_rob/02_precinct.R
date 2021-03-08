@@ -195,7 +195,7 @@
 # results_demos$prob_voter <- results_demos$probationers / results_demos$voter_count
 # results_demos$inc_voter <- results_demos$small_res_doc / results_demos$voter_count
 # 
-# saveRDS(results_demos, "temp/results_demos_hills_pre_reg.rds")
+# saveRDS(results_demos %>% select(-precinct), "temp/results_demos_hills_pre_reg.rds")
 ######################
 results_demos <- readRDS("temp/results_demos_hills_pre_reg.rds")
 
@@ -438,7 +438,7 @@ save(m3, m3_ses, m3b, m3b_ses, file = "./temp/precinct_rolloff_hills.rdata")
 # 
 # bg_level <- filter(bg_level, cvap > 0)
 # 
-# saveRDS(bg_level, "temp/bg_level_hills_prereg.rds")
+# saveRDS(bg_level %>% select(-GEOID), "temp/bg_level_hills_prereg.rds")
 ##################################
 bg_level <- readRDS("temp/bg_level_hills_prereg.rds")
 
