@@ -1,7 +1,17 @@
-Code is ordered within subanalyses
+00_initialize.R and 01_geocode_releasees.R create outputs that are used throughout the analyses and should be run first
 
-Neighborhood-level analyses should be run before individual-level ones (the individual-level part calls a temp file created by Tidycensus in the nhood code)
+01_precinct_results, 02_treated_households, and 03_hills_rob all represent different analyses from the paper. These folders (and the scripts within them) should be run in order).
 
-I've moved helper functions out of my personal package (like some wrappers for Tidycensus, etc) into the "helpers" folder.
+The "misc" folder includes the code for creating the LaTeX tables and for creating the parallelized cluster for the genetic matching.
 
-The "misc" folder includes functions to make the big regression tables, etc
+The "helpers" folder includes functions from the author's personal package that are called in the analyses; where relevant, the scripts in the main analyses load these functions.
+
+In an attempt to balance transparency with the need to protect the privacy of voters living with or near formerly incarcerated individuals, I have not included the raw data (though I do include the code used to get from the raw data to the regression data). I am instead including the following datasets:
+
+1. "temp/precint_level_reg_data.rds". This is the dataset on which the precinct-level regressions (and marginal effects plots) are run in script 01_precinct_level_results/04_precinct_bg_regs.R. The precinct id has been dropped.
+
+2. "temp/bg_level_reg_data.rds". This is the dataset on which the precinct-level regressions (and marginal effects plots) are run in script 01_precinct_level_results/04_precinct_bg_regs.R. The GEOID has been dropped.
+
+3. "temp/pre_reg_av.rdata". This is the result of the post-matching exercise on voters living with formerly incarcerated individuals. These include anonymized voter ID numbers. These data are the input for 02_treated_households/09_run_regressions.R.
+
+4. "temp/bg_level_hills_prereg.rds" and "temp/results_demos_hills_pre_reg.rds" provide the data for the neighborhood-level Hillsborough County analyses (for use in 03_hills_rob/02_precinct.R); "temp/pre_reg_hills.rdata" provides the individual-level (anonymized) data for Hillsborough County regressions (for use in 03_hills_rob/treated_households/07_matching_reg.R).
