@@ -8,7 +8,7 @@ load("./temp/mout_av.RData")
 
 matches <- data.table(control = c(mout$index.control, mout$index.treated),
                       match_group = rep(mout$index.treated, 2),
-                      weight = rep(mout$weights)) %>% 
+                      weight = rep(mout$weights, 2)) %>% 
   group_by(match_group, control) %>% 
   summarize(weight = sum(weight)) %>% 
   ungroup()

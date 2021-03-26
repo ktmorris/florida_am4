@@ -108,7 +108,7 @@ The relationship between disenfranchised residents and precinct-level support fo
 
 I next interrogate whether the use of only incarceration records is likely impacting the individual-level analyses presented in the body of the article. I re-run the matching procedure described above, where a registered voter is considered treated if they lived with *any* disenfranchised individual. Potential controls for this matching procedure are limited to Hillsborough County, where we can be sure registered voters do not live with individuals sentenced to felony probation. The matching procedure is successful at reducing differences between treated and control voters in Hillsborough County.
 
-In Table \ref{tab:ap-hills-2}, models 1 -- 4 re-estimate models 1 -- 4 from Table 6, where the pool is limited to treated voters who live in Hillsborough County and their matches. Models 5 -- 8 present the results using the broader treatment definition.
+In Table \ref{tab:ap-hills-2}, models 1 -- 4 re-estimate models 1 -- 4 from Table 6 from the main paper, where the pool is limited to treated voters who live in Hillsborough County and their matches. Models 5 -- 8 present the results using the broader treatment definition.
 
 \begin{singlespace}
 \input{"../temp/dind_reg_hills_av.tex"}
@@ -182,11 +182,11 @@ write.table(j, "./temp/ap_a_1.tex", quote = F, col.names = F,
 \input{"../temp/ap_a_1.tex"}
 \end{singlespace}
 
-The inclusion of all formerly incarcerated residents substantially shrinks the size of the estimated coefficients of interest with respect to the estimates presented in the body of the article. Nevertheless, turnout (measured at the block group and precinct level) and roll-off are significantly and negatively related with the formerly incarcerated population in a neighborhood, and support for Amendment 4 remains positively (and significantly) related. It appears, then, that formerly incarcerated residents who return to institutions have smaller spillover effects on their neighbors' voting behavior.
+The inclusion of all formerly incarcerated residents substantially shrinks the size of the estimated coefficients of interest with respect to the estimates presented in the body of the article. Nevertheless, turnout (measured at the block group and precinct level) and roll-off are significantly and negatively related with the formerly incarcerated population in a neighborhood, and support for Amendment 4 remains positively (and significantly) related.
 
 ## Re-Estimation with Recently Released Individuals {-}
 
-The body of the article also acknowledges that the use of release plan address data may be unreliable considering the fact that many individuals may have moved or died since their discharge from parole. This is especially possible for individuals who have not had contact with the state incarceration agency for many years. To account for this possibility, Table \ref{tab:ap-a-2} re-estimates the models presented in Tables 3 and 4, but limits the formerly incarcerated individuals to those residents who were last released from prison between 2015 and the 2018 election. These individuals are the least likely to have died or moved, simply because their information is the most recent. These models include only individuals who returned to non-institutions, as presented in the body of the article.
+The body of the article also acknowledges that the use of release plan address data may be unreliable considering the fact that many individuals may have moved or died since their discharge from parole. This is especially possible for individuals who have not had contact with the state incarceration agency for many years. To account for this possibility, Table \ref{tab:ap-a-2} re-estimates the models presented in Tables 3 and 4 from the main paper, but limits the formerly incarcerated individuals to those residents who were last released from prison between 2015 and the 2018 election. These individuals are the least likely to have died or moved, simply because their information is the most recent. These models include only individuals who returned to non-institutions, as presented in the body of the article.
 
 \begin{singlespace}
 ```{r precinct-other-chunk3, echo = F, results = "hide", message = F, warning = F}
@@ -249,3 +249,5 @@ write.table(j, "./temp/ap_a_2.tex", quote = F, col.names = F,
 \end{singlespace}
 
 In each of the models presented in Table \ref{tab:ap-a-2}, the independent variable of interest is statistically significant at the 99 percent level. Moreover, the estimated coefficient is in each case larger than that presented in the body of the article. This could be because using more recent data better identifies communities that are currently home, not just historically home, to formerly incarcerated individuals. On the other hand, the primary analyses in this article indicate that a community member's incarceration may be more salient in places where residents were more recently incarcerated. Proximal contact, in other words, might shape voters' behavior more strongly if that contact was recent. The "decaying" spillover effects in the individual-level difference-in-differences regressions presented later in the paper would seem to corroborate this as well.
+
+## References {-}
